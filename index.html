@@ -53,7 +53,7 @@
     }
     .logo span { color: var(--gold); }
 
-    nav { display: flex; gap: 4px; }
+    nav { display: flex; gap: 4px; align-items: center; }
 
     nav button {
       background: none;
@@ -71,6 +71,62 @@
     }
     nav button:hover { color: var(--white); background: rgba(255,255,255,0.07); }
     nav button.active { color: var(--white); border-bottom: 2px solid var(--white); border-radius: 0; }
+
+    /* ── NAV DROPDOWN ─────────────────────────────── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-trigger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-light);
+      padding: 8px 18px;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .nav-dropdown-trigger:hover { color: var(--white); background: rgba(255,255,255,0.07); }
+    .nav-dropdown-trigger.active { color: var(--white); border-bottom: 2px solid var(--white); border-radius: 0; }
+    .nav-dropdown-trigger .chevron {
+      font-size: 0.6rem;
+      transition: transform 0.2s;
+      opacity: 0.7;
+    }
+    .nav-dropdown.open .chevron { transform: rotate(180deg); }
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--navy-mid);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      min-width: 180px;
+      overflow: hidden;
+      z-index: 200;
+    }
+    .nav-dropdown.open .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 11px 18px;
+      font-size: 0.8rem;
+      border-radius: 0;
+      color: rgba(255,255,255,0.75);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-dropdown-menu button:last-child { border-bottom: none; }
+    .nav-dropdown-menu button:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    .nav-dropdown-menu button.active { color: var(--white); background: rgba(255,255,255,0.05); border-bottom: none; border-left: 2px solid var(--white); }
 
     /* ── TAB PANELS ──────────────────────────────── */
     .tab-panel { display: none; }
@@ -317,9 +373,214 @@
     }
     .project-link:hover { color: var(--navy-mid); }
 
+    /* ── AI USE CASES PAGE ───────────────────────── */
+    .ai-page { background: var(--navy); min-height: 100vh; padding: 72px 48px; }
+    .ai-page .section-label { color: var(--white); }
+    .ai-page h2 { color: var(--white); }
+    .ai-page h2 .accent { color: var(--white); }
+
+    .ai-controls {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .ai-filters { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
+    .ai-filter-select {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.8);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      padding: 8px 12px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 150px;
+    }
+    .ai-filter-select option { background: var(--navy-mid); color: var(--white); }
+    .ai-filter-select:focus { border-color: rgba(255,255,255,0.4); }
+    .filter-clear {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.5);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-clear:hover { border-color: rgba(255,255,255,0.4); color: var(--white); }
+
+    .view-toggle { display: flex; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; overflow: hidden; }
+    .view-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s, color 0.2s;
+      line-height: 1;
+    }
+    .view-btn.active { background: rgba(255,255,255,0.12); color: var(--white); }
+    .view-btn:first-child { border-right: 1px solid rgba(255,255,255,0.15); }
+
+    .ai-empty {
+      text-align: center;
+      padding: 60px 0;
+      color: rgba(255,255,255,0.35);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    /* Card view */
+    .ai-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .ai-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 22px;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ai-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.22); }
+    .ai-card-title {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+    }
+    .ai-card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ai-card-desc {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.68);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .ai-card-footer { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
+    .ai-card-tools-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+    }
+
     /* ── RESOURCES ───────────────────────────────── */
     .resources-section { background: var(--navy); }
     .resources-section h2, .resources-section .section-label { color: var(--white); }
+
+    /* ── RESOURCE SUB-TABS ───────────────────────── */
+    .res-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid rgba(255,255,255,0.15);
+      margin-bottom: 36px;
+    }
+    .res-tab-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      padding: 10px 22px;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .res-tab-btn:hover { color: rgba(255,255,255,0.85); }
+    .res-tab-btn.active { color: var(--white); border-bottom-color: var(--white); }
+    .res-panel { display: none; }
+    .res-panel.active { display: block; }
+
+    /* ── AI TABLE ────────────────────────────────── */
+    .ai-table-wrap { overflow-x: auto; }
+    .ai-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.86rem;
+    }
+    .ai-table thead tr {
+      background: rgba(255,255,255,0.08);
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+    }
+    .ai-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+    }
+    .ai-table td {
+      padding: 14px 16px;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.82);
+      line-height: 1.55;
+    }
+    .ai-table tbody tr:hover td { background: rgba(255,255,255,0.04); }
+    .ai-table tbody tr:last-child td { border-bottom: none; }
+    .outcome-tag {
+      display: inline-block;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin: 2px 2px 2px 0;
+    }
+    .tag-time   { background: rgba(99,179,237,0.18); color: #90cdf4; }
+    .tag-money  { background: rgba(72,187,120,0.18); color: #9ae6b4; }
+    .tag-save   { background: rgba(237,137,54,0.18); color: #fbd38d; }
+    .cat-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+    }
+    .tools-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .tools-list li {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+    }
 
     .resource-grid {
       display: grid;
@@ -485,7 +746,15 @@
     <button class="active" data-tab="home">Home</button>
     <button data-tab="about">About</button>
     <button data-tab="projects">Projects</button>
-    <button data-tab="resources">Resources</button>
+    <div class="nav-dropdown" id="resources-dropdown">
+      <button class="nav-dropdown-trigger" id="resources-trigger">
+        Resources <span class="chevron">▼</span>
+      </button>
+      <div class="nav-dropdown-menu">
+        <button data-tab="resources" id="dd-finance">Finance Resources</button>
+        <button data-tab="ai" id="dd-ai">AI Use Cases</button>
+      </div>
+    </div>
     <button data-tab="contact">Contact</button>
   </nav>
 </header>
@@ -697,6 +966,69 @@
 
 </div>
 
+<!-- ══════════════════════ AI USE CASES ══════════════════════ -->
+<div id="tab-ai" class="tab-panel">
+  <div class="ai-page">
+    <p class="section-label">Private Markets</p>
+    <h2 style="margin-bottom:28px;">AI <span class="accent">Use Cases</span></h2>
+
+    <div class="ai-controls">
+      <div class="ai-filters">
+        <select class="ai-filter-select" id="filter-category">
+          <option value="">All Categories</option>
+          <option>Education</option>
+          <option>Fund Operations</option>
+          <option>Investments</option>
+          <option>Investor Relations</option>
+          <option>Legal</option>
+          <option>Legal &amp; Compliance</option>
+          <option>Nonprofits</option>
+          <option>Personal</option>
+          <option>Portfolio Management</option>
+          <option>Research</option>
+        </select>
+        <select class="ai-filter-select" id="filter-outcome">
+          <option value="">All Outcomes</option>
+          <option>Make Money</option>
+          <option>Save Money</option>
+          <option>Save Time</option>
+        </select>
+        <select class="ai-filter-select" id="filter-tool">
+          <option value="">All Tools</option>
+          <option>ChatGPT</option>
+          <option>Chronograph</option>
+          <option>Clay</option>
+          <option>Claude</option>
+          <option>Harvey AI</option>
+          <option>Notion AI</option>
+          <option>Perplexity</option>
+          <option>Power BI</option>
+          <option>Sourcescrub</option>
+        </select>
+        <button class="filter-clear" id="filter-clear">Clear Filters</button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="view-card" title="Card view">⊞</button>
+        <button class="view-btn" id="view-table" title="Table view">☰</button>
+      </div>
+    </div>
+
+    <div id="ai-card-view"></div>
+    <div id="ai-table-view" style="display:none;">
+      <div class="ai-table-wrap">
+        <table class="ai-table">
+          <thead>
+            <tr>
+              <th>Use Case</th><th>Category</th><th>Outcome(s)</th><th>Description</th><th>Recommended Tools</th>
+            </tr>
+          </thead>
+          <tbody id="ai-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <div id="tab-contact" class="tab-panel">
 
@@ -776,33 +1108,306 @@
 </footer>
 
 <script>
-  /* ── Tab switching ─────────────────────────────── */
-  function switchTab(name) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    document.querySelector(`nav button[data-tab="${name}"]`).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (name === 'about') animateBars();
+  /* ══ AI USE CASES DATA ════════════════════════════ */
+  const AI_CASES = [
+    {
+      title: 'LP Report Drafting',
+      category: 'Fund Operations',
+      outcomes: ['Save Time'],
+      description: 'Use AI to generate first-draft quarterly LP reports from structured fund data, waterfall outputs, and portfolio updates — then layer in judgment and edits.',
+      tools: ['ChatGPT', 'Claude']
+    },
+    {
+      title: 'Capital Call & Distribution Notices',
+      category: 'Fund Operations',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Automate the drafting of capital call and distribution notices from template structures, reducing turnaround time and manual formatting errors.',
+      tools: ['Claude', 'Notion AI']
+    },
+    {
+      title: 'LP Agreement Summarization',
+      category: 'Legal & Compliance',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Extract key economic terms, waterfall structures, clawback provisions, and side letter clauses from lengthy LPAs using document AI — reducing legal review hours.',
+      tools: ['Harvey AI', 'Claude', 'ChatGPT']
+    },
+    {
+      title: 'Deal Sourcing & Screening',
+      category: 'Investments',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Use AI to screen large sets of CIM decks, financial summaries, and company profiles against predefined investment criteria to prioritize deal flow.',
+      tools: ['ChatGPT', 'Claude', 'Sourcescrub']
+    },
+    {
+      title: 'CIM & Memo Drafting',
+      category: 'Investments',
+      outcomes: ['Save Time'],
+      description: 'Accelerate investment memo and CIM drafting by generating structured first drafts from financial models, management interviews, and market research inputs.',
+      tools: ['Claude', 'ChatGPT']
+    },
+    {
+      title: 'Investor Outreach & Follow-Up',
+      category: 'Investor Relations',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Draft personalized LP outreach, follow-up emails, and roadshow communications at scale using AI, tailored to investor profiles and prior conversation context.',
+      tools: ['ChatGPT', 'Clay', 'Claude']
+    },
+    {
+      title: 'DDQ Responses',
+      category: 'Investor Relations',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Auto-populate standard LP DDQs by retrieving answers from a structured knowledge base of fund documents, past DDQs, and compliance materials.',
+      tools: ['Claude', 'Notion AI', 'ChatGPT']
+    },
+    {
+      title: 'Portfolio Company Monitoring',
+      category: 'Portfolio Management',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Aggregate and summarize portfolio company KPIs, board materials, and management updates into standardized monitoring reports using AI pipelines.',
+      tools: ['Chronograph', 'Claude', 'Power BI']
+    },
+    {
+      title: 'Market & Sector Research',
+      category: 'Research',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Synthesize industry reports, news, and competitor data into concise sector briefings and thematic memos to inform investment theses or LP updates.',
+      tools: ['Perplexity', 'ChatGPT', 'Claude']
+    },
+    // ── Claude.com official use cases ──────────────
+    {
+      title: 'See what your campaign goal actually requires',
+      category: 'Nonprofits',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Type a campaign goal and Claude draws the gift pyramid inline, tiered from the lead gift down, with each tier showing how many gifts you need and how many qualified prospects that realistically takes. Drag the goal and the whole shape rebuilds.',
+      tools: ['Claude']
+    },
+    {
+      title: 'See budget futures side by side',
+      category: 'Nonprofits',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Type your budget split and the thing that might change, and Claude draws three scenarios next to each other with a toggle between dollars and percentages. Click any scenario for a one-line read on where the real pressure lands.',
+      tools: ['Claude']
+    },
+    {
+      title: 'See why donor retention beats acquisition',
+      category: 'Nonprofits',
+      outcomes: ['Make Money', 'Save Money'],
+      description: 'Claude builds a five-year donor projection with sliders for retention and acquisition. Drag either one and the curve redraws, making it clear why a modest retention bump does more work than aggressive acquisition.',
+      tools: ['Claude']
+    },
+    {
+      title: 'See your theory of change and spot where the logic is thin',
+      category: 'Nonprofits',
+      outcomes: ['Save Time'],
+      description: 'Describe your program and Claude draws the causal chain inline, inputs through impact, with every arrow clickable to show the assumption behind it. For when you know what you do but have never drawn why it works.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Plan your syllabus and see which weeks are locked',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Attach your syllabus and Claude shows which weeks are locked by real prerequisites and which you are free to rearrange — right in chat as you work through the order.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Work through grant options in chat',
+      category: 'Education',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Claude plots every funder in one view — odds, award, deadline, effort — and you filter, test scenarios, ask for a prioritization, and narrow down together. For decisions where no single sort order shows the full picture.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Apply a formula as you learn it',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Claude builds a blank scatter right in the conversation — you place the points, drag them, and watch the formula update live. Learning by doing, inside the chat.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Map your lit review mid-conversation',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Claude reads your stack of papers and draws the argument structure inline — clusters by claim, tension lines where camps disagree, blind spots per group. A reading of the debate you test against your own as you work through the set.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Chart your data before you commit to a reading',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Upload a CSV and Claude builds the correlation grid inline, flagging the patterns worth a second look. The flags are a starting point — you click into what is interesting and the conversation goes from there.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Bring your whiteboard lesson to life',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Work through how to teach a concept with Claude sketching alongside. The visual streams in as part of the back-and-forth — a thinking tool for your prep first, and a teaching tool if you take it further.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Visualize the mechanism behind an explanation',
+      category: 'Education',
+      outcomes: ['Save Time'],
+      description: 'Claude builds an interactive visual inline as you talk through the problem — shaped to the specific question you are asking, with controls you manipulate and buttons that drill deeper. Useful when a concept has moving parts text cannot show.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Create a custom webpage',
+      category: 'Personal',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Build a portfolio site to showcase your work and learn how to deploy it live without writing a line of code.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Contract redlining and negotiation',
+      category: 'Legal',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Analyze agreements to spot terms affecting your work, with suggested redlines and negotiation points.',
+      tools: ['Claude']
+    },
+    {
+      title: 'Elevate Claude\'s design using skills',
+      category: 'Personal',
+      outcomes: ['Save Time'],
+      description: 'Design a skill that automatically activates design principles into Claude\'s outputs.',
+      tools: ['Claude']
+    }
+  ];
+
+  const OUTCOME_CLASSES  = { 'Save Time': 'tag-time', 'Make Money': 'tag-money', 'Save Money': 'tag-save' };
+  const OUTCOME_EMOJI    = { 'Save Time': '⏱️', 'Make Money': '💰', 'Save Money': '💸' };
+
+  function outcomeTag(o) {
+    return `<span class="outcome-tag ${OUTCOME_CLASSES[o]}">${OUTCOME_EMOJI[o]} ${o}</span>`;
   }
 
-  document.querySelectorAll('nav button').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  /* ── Render functions ──────────────────────────── */
+  function renderCards(data) {
+    const el = document.getElementById('ai-card-view');
+    if (!data.length) { el.innerHTML = '<p class="ai-empty">No use cases match your filters.</p>'; return; }
+    el.innerHTML = `<div class="ai-card-grid">${data.map(d => `
+      <div class="ai-card">
+        <div class="ai-card-title">${d.title}</div>
+        <div class="ai-card-footer">
+          <div class="ai-card-tools-label">Category</div>
+          <span class="cat-badge">${d.category}</span>
+        </div>
+        <div class="ai-card-footer">
+          <div class="ai-card-tools-label">Outcomes</div>
+          <div>${d.outcomes.map(outcomeTag).join('')}</div>
+        </div>
+        <div class="ai-card-desc">${d.description}</div>
+        <div class="ai-card-footer">
+          <div class="ai-card-tools-label">Recommended Tools</div>
+          <ul class="tools-list">${d.tools.map(t => `<li>${t}</li>`).join('')}</ul>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('ai-table-body');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" class="ai-empty">No use cases match your filters.</td></tr>'; return; }
+    tbody.innerHTML = data.map(d => `
+      <tr>
+        <td><strong>${d.title}</strong></td>
+        <td><span class="cat-badge">${d.category}</span></td>
+        <td>${d.outcomes.map(outcomeTag).join(' ')}</td>
+        <td>${d.description}</td>
+        <td><ul class="tools-list">${d.tools.map(t => `<li>${t}</li>`).join('')}</ul></td>
+      </tr>`).join('');
+  }
+
+  function applyFilters() {
+    const cat  = document.getElementById('filter-category').value;
+    const out  = document.getElementById('filter-outcome').value;
+    const tool = document.getElementById('filter-tool').value;
+    const filtered = AI_CASES.filter(d =>
+      (!cat  || d.category === cat) &&
+      (!out  || d.outcomes.includes(out)) &&
+      (!tool || d.tools.includes(tool))
+    );
+    renderCards(filtered);
+    renderTable(filtered);
+  }
+
+  /* ── View toggle ───────────────────────────────── */
+  let currentView = 'card';
+  document.getElementById('view-card').addEventListener('click', () => {
+    currentView = 'card';
+    document.getElementById('ai-card-view').style.display = '';
+    document.getElementById('ai-table-view').style.display = 'none';
+    document.getElementById('view-card').classList.add('active');
+    document.getElementById('view-table').classList.remove('active');
+  });
+  document.getElementById('view-table').addEventListener('click', () => {
+    currentView = 'table';
+    document.getElementById('ai-card-view').style.display = 'none';
+    document.getElementById('ai-table-view').style.display = '';
+    document.getElementById('view-card').classList.remove('active');
+    document.getElementById('view-table').classList.add('active');
   });
 
-  /* ── Skill bar animation ───────────────────────── */
-  let barsAnimated = false;
-  function animateBars() {
-    if (barsAnimated) return;
-    barsAnimated = true;
-    setTimeout(() => {
-      document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-        bar.style.width = bar.dataset.pct + '%';
-      });
-    }, 120);
+  /* ── Filter listeners ──────────────────────────── */
+  ['filter-category','filter-outcome','filter-tool'].forEach(id =>
+    document.getElementById(id).addEventListener('change', applyFilters)
+  );
+  document.getElementById('filter-clear').addEventListener('click', () => {
+    ['filter-category','filter-outcome','filter-tool'].forEach(id =>
+      document.getElementById(id).value = ''
+    );
+    applyFilters();
+  });
+
+  /* Initial render */
+  renderCards(AI_CASES);
+  renderTable(AI_CASES);
+
+  /* ══ NAV DROPDOWN ════════════════════════════════ */
+  const dropdown = document.getElementById('resources-dropdown');
+  const trigger  = document.getElementById('resources-trigger');
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', () => dropdown.classList.remove('open'));
+
+  document.getElementById('dd-finance').addEventListener('click', () => {
+    switchTab('resources');
+    dropdown.classList.remove('open');
+  });
+  document.getElementById('dd-ai').addEventListener('click', () => {
+    switchTab('ai');
+    dropdown.classList.remove('open');
+  });
+
+  /* ══ TAB SWITCHING ════════════════════════════════ */
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    /* Highlight regular nav buttons */
+    document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.remove('active'));
+    /* Highlight resources dropdown trigger if resources or ai */
+    trigger.classList.toggle('active', name === 'resources' || name === 'ai');
+    /* Update dropdown item highlight */
+    document.getElementById('dd-finance').classList.toggle('active', name === 'resources');
+    document.getElementById('dd-ai').classList.toggle('active', name === 'ai');
+    /* Highlight plain buttons */
+    const plain = document.querySelector(`nav button[data-tab="${name}"]`);
+    if (plain) plain.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ── Contact form mock submit ──────────────────── */
+  document.querySelectorAll('nav button[data-tab]').forEach(btn => {
+    if (!btn.closest('.nav-dropdown-menu')) {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    }
+  });
+
+  /* Set home active on load */
+  document.querySelector('nav button[data-tab="home"]').classList.add('active');
+
+  /* ── Contact form ──────────────────────────────── */
   function handleSubmit(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
