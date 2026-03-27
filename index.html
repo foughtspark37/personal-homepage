@@ -726,6 +726,138 @@
     }
     .footer-links a:hover { color: var(--white); }
 
+    /* ── NEWS ────────────────────────────────────── */
+    .news-section { background: var(--off-white); padding: 48px 48px 72px; }
+    .news-source-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .news-source-btn {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .news-source-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .news-source-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
+      max-width: 1080px;
+    }
+    .news-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-top: 3px solid var(--navy);
+      border-radius: 6px;
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .news-card:hover { box-shadow: 0 8px 28px rgba(13,27,62,0.1); transform: translateY(-3px); }
+    .news-card-source {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--navy-mid);
+    }
+    .news-card-title { font-size: 0.97rem; font-weight: 700; color: var(--navy); line-height: 1.4; }
+    .news-card-desc {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.84rem;
+      color: var(--gray);
+      line-height: 1.6;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .news-card-date { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: var(--gray); margin-top: 2px; }
+    .news-status { font-family: 'Arial', sans-serif; font-size: 0.9rem; color: var(--gray); padding: 32px 0; }
+    .news-meta-row { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+    .news-refresh-btn {
+      background: none;
+      border: 1px solid var(--gray-light);
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .news-refresh-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .news-last-updated { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--gray); }
+
+
+    /* ── NEWS TAG FILTERS ────────────────────────── */
+    .news-filter-section { margin-bottom: 12px; }
+    .news-filter-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+    .news-tag-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .news-tag-filter {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 99px;
+      padding: 4px 13px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.71rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--gray);
+    }
+    .news-tag-filter:hover { border-color: var(--navy); color: var(--navy); }
+    .news-tag-filter.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+    /* ── NEWS CARD TAGS ──────────────────────────── */
+    .news-card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .n-tag {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid;
+    }
+    .ntag-pe      { background: rgba(42,79,148,0.1);  color: #2a4f94; border-color: rgba(42,79,148,0.25); }
+    .ntag-vc      { background: rgba(107,70,193,0.1); color: #6b46c1; border-color: rgba(107,70,193,0.25); }
+    .ntag-ma      { background: rgba(22,128,161,0.1); color: #1680a1; border-color: rgba(22,128,161,0.25); }
+    .ntag-markets { background: rgba(26,86,161,0.1);  color: #1a56a1; border-color: rgba(26,86,161,0.25); }
+    .ntag-rates   { background: rgba(192,120,40,0.1); color: #c07828; border-color: rgba(192,120,40,0.25); }
+    .ntag-macro   { background: rgba(40,148,80,0.1);  color: #289450; border-color: rgba(40,148,80,0.25); }
+    .ntag-real    { background: rgba(140,90,35,0.1);  color: #8c5a23; border-color: rgba(140,90,35,0.25); }
+    .ntag-credit  { background: rgba(88,66,171,0.1);  color: #5842ab; border-color: rgba(88,66,171,0.25); }
+    .ntag-tech    { background: rgba(30,140,140,0.1); color: #1e8c8c; border-color: rgba(30,140,140,0.25); }
+    .ntag-esg     { background: rgba(75,140,35,0.1);  color: #4b8c23; border-color: rgba(75,140,35,0.25); }
+
     /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 720px) {
       header { padding: 0 20px; }
@@ -755,6 +887,7 @@
         <button data-tab="ai" id="dd-ai">AI Use Cases</button>
       </div>
     </div>
+    <button data-tab="news">News</button>
     <button data-tab="contact">Contact</button>
   </nav>
 </header>
@@ -1029,6 +1162,44 @@
   </div>
 </div>
 
+<!-- ══════════════════════ NEWS ══════════════════════ -->
+<div id="tab-news" class="tab-panel">
+  <div class="news-section">
+    <p class="section-label">Latest Headlines</p>
+    <h2>News <span class="accent">Feed</span></h2>
+
+    <div class="news-filter-section">
+      <div class="news-filter-label">Source</div>
+      <div class="news-source-bar" id="news-source-bar">
+        <button class="news-source-btn active" data-source="all">All Sources</button>
+        <button class="news-source-btn" data-source="Reuters">Reuters</button>
+        <button class="news-source-btn" data-source="CNBC">CNBC</button>
+        <button class="news-source-btn" data-source="Yahoo Finance">Yahoo Finance</button>
+        <button class="news-source-btn" data-source="WSJ">WSJ</button>
+        <button class="news-source-btn" data-source="PE Wire">PE Wire</button>
+        <button class="news-source-btn" data-source="PE International">PE International</button>
+        <button class="news-source-btn" data-source="Buyouts Insider">Buyouts Insider</button>
+        <button class="news-source-btn" data-source="Secondaries Investor">Secondaries Investor</button>
+        <button class="news-source-btn" data-source="TechCrunch">TechCrunch</button>
+      </div>
+    </div>
+
+    <div class="news-filter-section">
+      <div class="news-filter-label">Topic</div>
+      <div class="news-tag-bar" id="news-tag-bar">
+        <button class="news-tag-filter active" data-tag="all">All Topics</button>
+      </div>
+    </div>
+
+    <div class="news-meta-row">
+      <button class="news-refresh-btn" id="news-refresh">↻ Refresh</button>
+      <span class="news-last-updated" id="news-last-updated"></span>
+    </div>
+
+    <div id="news-output"><p class="news-status">Loading headlines…</p></div>
+  </div>
+</div>
+
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <div id="tab-contact" class="tab-panel">
 
@@ -1271,6 +1442,48 @@
       outcomes: ['Save Time'],
       description: 'Design a skill that automatically activates design principles into Claude\'s outputs.',
       tools: ['Claude']
+    },
+    {
+      title: 'Automate Weekly Status Reporting',
+      category: 'Fund Operations',
+      outcomes: ['Save Time'],
+      description: 'Notion AI summarizes your project tracking database each week — surfacing completion status, blockers, and upcoming milestones — then creates a formatted status table and tags team members for review.',
+      tools: ['Notion AI']
+    },
+    {
+      title: 'Draft Meeting Summaries from Call Transcripts',
+      category: 'Investor Relations',
+      outcomes: ['Save Time'],
+      description: 'Paste a transcript from an LP call, roadshow, or advisory meeting and Notion AI generates a structured summary with key decisions, action items, and follow-ups — ready to share or file directly in your workspace.',
+      tools: ['Notion AI']
+    },
+    {
+      title: 'Build & Maintain a Team Knowledge Base',
+      category: 'Fund Operations',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Notion AI helps create, organize, and keep fund documentation current — from onboarding guides and process runbooks to compliance checklists and fund policies — so institutional knowledge stays accessible as teams grow.',
+      tools: ['Notion AI']
+    },
+    {
+      title: 'Onboard a New Team Member',
+      category: 'Fund Operations',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Generate tailored onboarding guides from your people and tools databases, including setup checklists, key contact directories, and links to critical fund resources — reducing ramp time for new hires.',
+      tools: ['Notion AI']
+    },
+    {
+      title: 'Triage and Route Internal Feedback',
+      category: 'Fund Operations',
+      outcomes: ['Save Time'],
+      description: 'Notion AI monitors incoming feedback from team members or clients, routes it to the right owner, files new action items, and logs unresolved queries to a tracking database — keeping nothing lost in the shuffle.',
+      tools: ['Notion AI']
+    },
+    {
+      title: 'Plan a Team Offsite or Event',
+      category: 'Personal',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Notion AI organizes logistics for team offsites — comparing venues, generating budget tables by location, and drafting agendas — so planning stays collaborative and cost-efficient.',
+      tools: ['Notion AI']
     }
   ];
 
@@ -1406,6 +1619,163 @@
 
   /* Set home active on load */
   document.querySelector('nav button[data-tab="home"]').classList.add('active');
+
+  /* ══ NEWS FEED ═══════════════════════════════════ */
+  const NEWS_FEEDS = [
+    { source: 'Reuters',               url: 'https://news.google.com/rss/search?q=site:reuters.com+finance&hl=en-US&gl=US&ceid=US:en' },
+    { source: 'CNBC',                  url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
+    { source: 'Yahoo Finance',         url: 'https://finance.yahoo.com/news/rssindex' },
+    { source: 'WSJ',                   url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml' },
+    { source: 'PE Wire',               url: 'https://www.privateequitywire.co.uk/feed/' },
+    { source: 'PE International',      url: 'https://www.privateequityinternational.com/feed/' },
+    { source: 'Buyouts Insider',       url: 'https://www.buyoutsinsider.com/feed/' },
+    { source: 'Secondaries Investor',  url: 'https://www.secondariesinvestor.com/feed/' },
+    { source: 'TechCrunch',            url: 'https://techcrunch.com/feed/' },
+  ];
+
+  const TAG_RULES = [
+    { tag: 'Private Equity', cls: 'ntag-pe',      kw: ['private equity','buyout','lbo','carried interest','fund manager','general partner','limited partner'] },
+    { tag: 'Venture Capital', cls: 'ntag-vc',     kw: ['venture capital','venture-backed','startup','seed round','series a','series b','series c','unicorn','founder'] },
+    { tag: 'M&A',             cls: 'ntag-ma',     kw: ['merger','acquisition','acquires','acqui','takeover','deal','buyout','buys ','bid for','purchase'] },
+    { tag: 'Markets',         cls: 'ntag-markets',kw: ['stock','market','s&p','dow jones','nasdaq','equity','equities','shares','rally','selloff','trading session'] },
+    { tag: 'Interest Rates',  cls: 'ntag-rates',  kw: ['federal reserve','fed ','interest rate','rate cut','rate hike','inflation','cpi','fomc','monetary policy','treasury yield'] },
+    { tag: 'Macro',           cls: 'ntag-macro',  kw: ['gdp','recession','economy','economic growth','trade war','tariff','geopolit','dollar','currency','global growth'] },
+    { tag: 'Real Assets',     cls: 'ntag-real',   kw: ['real estate','reit','property','infrastructure','housing market','commercial real','office space','industrial park'] },
+    { tag: 'Credit',          cls: 'ntag-credit', kw: ['credit market','bond market','debt','yield curve','fixed income','high yield','junk bond','clo','default','spread'] },
+    { tag: 'Technology',      cls: 'ntag-tech',   kw: ['artificial intelligence',' ai ','technology','software','digital','cybersecurity','semiconductor','chip','data center'] },
+    { tag: 'ESG',             cls: 'ntag-esg',    kw: ['esg','sustainability','climate','green bond','carbon','renewable','net zero','impact investing'] },
+  ];
+
+  const PROXY = 'https://api.allorigins.win/get?url=';
+  let allArticles = [];
+  let activeNewsSource = 'all';
+  let activeNewsTag = 'all';
+
+  function assignTags(article) {
+    const text = (article.title + ' ' + article.desc).toLowerCase();
+    return TAG_RULES.filter(r => r.kw.some(k => text.includes(k)));
+  }
+
+  const todayStr = new Date().toDateString();
+
+  function parseRSS(xml, sourceName) {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    const allItems = Array.from(doc.querySelectorAll('item')).map(item => {
+      const a = {
+        source: sourceName,
+        title:  item.querySelector('title')?.textContent?.trim() || '',
+        desc:   (item.querySelector('description')?.textContent || '').replace(/<[^>]+>/g, '').trim(),
+        link:   item.querySelector('link')?.textContent?.trim() || '#',
+        date:   item.querySelector('pubDate')?.textContent?.trim() || '',
+      };
+      a.tags = assignTags(a);
+      return a;
+    });
+    // Filter to today; fall back to all items if none match (e.g. slow-moving feeds)
+    const todayItems = allItems.filter(a => a.date && new Date(a.date).toDateString() === todayStr);
+    return todayItems.length ? todayItems : allItems;
+  }
+
+  function fmtDate(str) {
+    if (!str) return '';
+    const d = new Date(str);
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function applyNewsFilters() {
+    return allArticles.filter(a =>
+      (activeNewsSource === 'all' || a.source === activeNewsSource) &&
+      (activeNewsTag === 'all' || a.tags.some(t => t.tag === activeNewsTag))
+    );
+  }
+
+  function renderNews() {
+    const el = document.getElementById('news-output');
+    const list = applyNewsFilters();
+    if (!list.length) { el.innerHTML = '<p class="news-status">No articles match the selected filters.</p>'; return; }
+    el.innerHTML = `<div class="news-grid">${list.map(a => `
+      <a class="news-card" href="${a.link}" target="_blank" rel="noopener noreferrer">
+        <div class="news-card-source">${a.source}</div>
+        <div class="news-card-title">${a.title}</div>
+        ${a.tags.length ? `<div class="news-card-tags">${a.tags.map(t => `<span class="n-tag ${t.cls}">${t.tag}</span>`).join('')}</div>` : ''}
+        ${a.desc ? `<div class="news-card-desc">${a.desc}</div>` : ''}
+        <div class="news-card-date">${fmtDate(a.date)}</div>
+      </a>`).join('')}</div>`;
+  }
+
+  function buildTagFilters() {
+    const tagBar = document.getElementById('news-tag-bar');
+    const seen = new Set();
+    allArticles.forEach(a => a.tags.forEach(t => seen.add(t.tag)));
+    const sorted = [...seen].sort();
+    tagBar.innerHTML = `<button class="news-tag-filter active" data-tag="all">All Topics</button>` +
+      sorted.map(tag => {
+        const rule = TAG_RULES.find(r => r.tag === tag);
+        return `<button class="news-tag-filter" data-tag="${tag}">${tag}</button>`;
+      }).join('');
+    tagBar.addEventListener('click', e => {
+      const btn = e.target.closest('.news-tag-filter');
+      if (!btn) return;
+      tagBar.querySelectorAll('.news-tag-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeNewsTag = btn.dataset.tag;
+      renderNews();
+    });
+  }
+
+
+  const LOCAL_PROXY = 'http://localhost:3000/rss?url=';
+
+  async function fetchFeed(feed) {
+    // Try local server.js proxy first (reliable for all sources)
+    try {
+      const r = await fetch(LOCAL_PROXY + encodeURIComponent(feed.url));
+      if (r.ok) {
+        const xml = await r.text();
+        if (xml.includes('<item')) return parseRSS(xml, feed.source);
+      }
+    } catch {}
+    // Fallback: allorigins CORS proxy (works for CNBC, Yahoo Finance)
+    try {
+      const r = await fetch(PROXY + encodeURIComponent(feed.url));
+      const j = await r.json();
+      return parseRSS(j.contents, feed.source);
+    } catch { return []; }
+  }
+
+  async function loadNews() {
+    document.getElementById('news-output').innerHTML = '<p class="news-status">Loading headlines…</p>';
+    document.getElementById('news-last-updated').textContent = '';
+    const results = await Promise.all(NEWS_FEEDS.map(fetchFeed));
+    allArticles = results.flat().sort((a, b) => new Date(b.date) - new Date(a.date));
+    buildTagFilters();
+    renderNews();
+    document.getElementById('news-last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  document.getElementById('news-source-bar').addEventListener('click', e => {
+    const btn = e.target.closest('.news-source-btn');
+    if (!btn) return;
+    document.querySelectorAll('.news-source-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeNewsSource = btn.dataset.source;
+    renderNews();
+  });
+
+  document.getElementById('news-refresh').addEventListener('click', () => {
+    activeNewsSource = 'all';
+    activeNewsTag = 'all';
+    document.querySelectorAll('.news-source-btn').forEach(b => b.classList.toggle('active', b.dataset.source === 'all'));
+    loadNews();
+  });
+
+  /* Trigger load when News tab is first opened */
+  const _switchTabOrig = switchTab;
+  switchTab = function(name) {
+    _switchTabOrig(name);
+    if (name === 'news' && !allArticles.length) loadNews();
+  };
 
   /* ── Contact form ──────────────────────────────── */
   function handleSubmit(e) {
