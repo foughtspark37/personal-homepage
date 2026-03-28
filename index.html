@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Darren Lo — Finance Professional</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -509,6 +510,176 @@
     .res-panel { display: none; }
     .res-panel.active { display: block; }
 
+    /* ── MARKET MAP ──────────────────────────────── */
+    .mm-page { background: var(--navy); min-height: 100vh; color: var(--white); display: flex; flex-direction: column; }
+    .mm-header { padding: 36px 48px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .mm-header .section-label { color: rgba(255,255,255,0.55); }
+    .mm-header h2 { margin-bottom: 20px; }
+    .mm-header h2 .accent { color: var(--white); }
+    .mm-search-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .mm-search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 380px; }
+    .mm-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
+    .mm-search {
+      width: 100%; padding: 9px 14px 9px 38px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; color: var(--white); font-family: 'Arial', sans-serif; font-size: 0.88rem;
+      outline: none; transition: border-color 0.2s, background 0.2s;
+    }
+    .mm-search::placeholder { color: rgba(255,255,255,0.35); }
+    .mm-search:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); }
+    .mm-sector-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mm-sector-btn {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.65); border-radius: 20px; padding: 6px 16px;
+      font-family: 'Arial', sans-serif; font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; transition: all 0.18s;
+    }
+    .mm-sector-btn:hover { background: rgba(255,255,255,0.13); color: var(--white); }
+    .mm-sector-btn.active { background: var(--white); color: var(--navy); border-color: var(--white); }
+    .mm-body { display: flex; gap: 0; overflow: hidden; height: 620px; }
+    .mm-graph-col { flex: 1; position: relative; height: 620px; overflow: hidden; }
+    #mm-svg { width: 100%; height: 620px; display: block; }
+    .mm-sidebar { width: 300px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.08); overflow-y: auto; padding: 28px 24px; }
+    .mm-sector-desc { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.6; margin-bottom: 24px; }
+    .mm-sidebar-label { font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 12px; }
+    .mm-metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+    .mm-metric { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; }
+    .mm-metric-val { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+    .mm-metric-lbl { font-size: 0.68rem; color: rgba(255,255,255,0.45); letter-spacing: 0.04em; line-height: 1.3; }
+    .mm-insights { list-style: none; margin-bottom: 28px; }
+    .mm-insights li { font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.6; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 8px; }
+    .mm-insights li::before { content: '→'; color: rgba(255,255,255,0.3); flex-shrink: 0; margin-top: 1px; }
+    .mm-insights li:last-child { border-bottom: none; }
+    .mm-legend { display: flex; flex-direction: column; gap: 7px; }
+    .mm-legend-item { display: flex; align-items: center; gap: 9px; font-size: 0.78rem; color: rgba(255,255,255,0.65); }
+    .mm-legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    /* D3 graph styles */
+    .mm-link { stroke: rgba(255,255,255,0.12); stroke-width: 1.5px; }
+    .mm-link.highlighted { stroke: rgba(255,255,255,0.5); stroke-width: 2px; }
+    .mm-node circle { stroke: rgba(255,255,255,0.2); stroke-width: 1.5px; cursor: pointer; transition: stroke 0.15s; }
+    .mm-node circle:hover { stroke: rgba(255,255,255,0.7); stroke-width: 2.5px; }
+    .mm-node.highlighted circle { stroke: var(--white); stroke-width: 3px; }
+    .mm-node.dimmed circle { opacity: 0.2; }
+    .mm-node.dimmed text { opacity: 0.15; }
+    .mm-node text { font-family: 'Arial', sans-serif; font-size: 10px; fill: rgba(255,255,255,0.8); pointer-events: none; }
+    .mm-node image { pointer-events: none; }
+    .mm-tooltip {
+      position: absolute; background: rgba(10,20,50,0.95); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; padding: 12px 16px; pointer-events: none; opacity: 0;
+      transition: opacity 0.15s; max-width: 220px; z-index: 100;
+    }
+    .mm-tooltip-name { font-weight: 700; font-size: 0.88rem; color: var(--white); margin-bottom: 3px; }
+    .mm-tooltip-cat { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .mm-tooltip-note { font-size: 0.78rem; color: rgba(255,255,255,0.6); line-height: 1.45; }
+    .mm-tooltip-rel { font-size: 0.74rem; color: rgba(255,255,255,0.5); margin-top: 5px; font-style: italic; }
+    .mm-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px; color: rgba(255,255,255,0.3); font-family: 'Arial', sans-serif; }
+    .mm-empty-icon { font-size: 3rem; opacity: 0.3; }
+
+    /* ── DIRECTORY ───────────────────────────────── */
+    .dir-page { padding: 48px 48px 72px; background: var(--off-white); min-height: 60vh; }
+    .dir-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; align-items: flex-end; }
+    .dir-search {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+      padding: 7px 12px;
+      border: 1px solid var(--gray-light);
+      border-radius: 6px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.84rem;
+      color: var(--navy);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .dir-search:focus { border-color: var(--navy); }
+    .dir-filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .dir-select {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 6px;
+      padding: 7px 32px 7px 12px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      color: var(--navy);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23334e68'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      min-width: 160px;
+      transition: border-color 0.2s;
+    }
+    .dir-select:hover, .dir-select:focus { border-color: var(--navy); outline: none; }
+    .dir-filter-label { font-family: 'Arial', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); }
+    .dir-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-light); background: var(--white); }
+    .dir-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.84rem;
+    }
+    .dir-table thead tr { background: var(--navy); }
+    .dir-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .dir-table th.sortable { cursor: pointer; user-select: none; }
+    .dir-table th.sortable:hover { color: var(--white); }
+    .dir-table th .sort-icon { margin-left: 4px; opacity: 0.45; font-size: 0.65rem; }
+    .dir-table th.sort-asc .sort-icon::after { content: '▲'; opacity: 1; }
+    .dir-table th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
+    .dir-table th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
+    .dir-table td {
+      padding: 13px 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--gray-light);
+      color: var(--navy);
+      line-height: 1.45;
+    }
+    .dir-table tbody tr:last-child td { border-bottom: none; }
+    .dir-table tbody tr:hover td { background: #f0f4f8; }
+    .dir-firm-cell { display: flex; align-items: center; gap: 10px; }
+    .dir-logo-wrap {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 6px; border: 1px solid var(--gray-light);
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .dir-logo-wrap img { width: 28px; height: 28px; object-fit: contain; display: block; }
+    .dir-logo-initials {
+      width: 28px; height: 28px;
+      background: var(--navy); color: var(--white);
+      border-radius: 4px;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; line-height: 1.1;
+    }
+    .dir-firm-name { font-weight: 700; color: var(--navy); }
+    .dir-website a { color: var(--navy-mid); text-decoration: none; font-size: 0.8rem; }
+    .dir-website a:hover { text-decoration: underline; }
+    .dir-stage-tag {
+      display: inline-block;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin: 2px 2px 2px 0;
+      background: rgba(13,27,62,0.07);
+      color: var(--navy-mid);
+    }
+    .dir-count { font-size: 0.82rem; color: var(--gray); }
+    .dir-no-results { padding: 40px 20px; text-align: center; color: var(--gray); font-family: 'Arial', sans-serif; font-size: 0.9rem; }
+
     /* ── AI TABLE ────────────────────────────────── */
     .ai-table-wrap { overflow-x: auto; }
     .ai-table {
@@ -728,23 +899,27 @@
 
     /* ── NEWS ────────────────────────────────────── */
     .news-section { background: var(--off-white); padding: 48px 48px 72px; }
-    .news-source-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-    .news-source-btn {
+    .news-filter-bar { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 28px; align-items: flex-end; }
+    .news-filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .news-select {
       background: var(--white);
       border: 1px solid var(--gray-light);
-      border-radius: 99px;
-      padding: 6px 16px;
+      border-radius: 6px;
+      padding: 7px 32px 7px 12px;
       font-family: 'Arial', sans-serif;
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--gray);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--navy);
       cursor: pointer;
-      transition: all 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23334e68'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color 0.2s;
+      min-width: 170px;
     }
-    .news-source-btn:hover { border-color: var(--navy); color: var(--navy); }
-    .news-source-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .news-select:hover, .news-select:focus { border-color: var(--navy); outline: none; }
     .news-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -806,8 +981,7 @@
     .news-last-updated { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--gray); }
 
 
-    /* ── NEWS TAG FILTERS ────────────────────────── */
-    .news-filter-section { margin-bottom: 12px; }
+    /* ── NEWS FILTER LABEL ───────────────────────── */
     .news-filter-label {
       font-family: 'Arial', sans-serif;
       font-size: 0.68rem;
@@ -815,25 +989,7 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--gray);
-      margin-bottom: 8px;
     }
-    .news-tag-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-    .news-tag-filter {
-      background: var(--white);
-      border: 1px solid var(--gray-light);
-      border-radius: 99px;
-      padding: 4px 13px;
-      font-family: 'Arial', sans-serif;
-      font-size: 0.71rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: var(--gray);
-    }
-    .news-tag-filter:hover { border-color: var(--navy); color: var(--navy); }
-    .news-tag-filter.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
 
     /* ── NEWS CARD TAGS ──────────────────────────── */
     .news-card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
@@ -877,7 +1033,15 @@
   <nav id="main-nav">
     <button class="active" data-tab="home">Home</button>
     <button data-tab="about">About</button>
-    <button data-tab="projects">Projects</button>
+    <div class="nav-dropdown" id="projects-dropdown">
+      <button class="nav-dropdown-trigger" id="projects-trigger">
+        Projects <span class="chevron">▼</span>
+      </button>
+      <div class="nav-dropdown-menu">
+        <button data-tab="projects" id="dd-projects-overview">Featured Projects</button>
+        <button data-tab="marketmap" id="dd-marketmap">Market Map Maker</button>
+      </div>
+    </div>
     <div class="nav-dropdown" id="resources-dropdown">
       <button class="nav-dropdown-trigger" id="resources-trigger">
         Resources <span class="chevron">▼</span>
@@ -885,6 +1049,7 @@
       <div class="nav-dropdown-menu">
         <button data-tab="resources" id="dd-finance">Finance Resources</button>
         <button data-tab="ai" id="dd-ai">AI Use Cases</button>
+        <button data-tab="directory" id="dd-directory">Private Market Directory</button>
       </div>
     </div>
     <button data-tab="news">News</button>
@@ -1010,6 +1175,38 @@
 
 </div>
 
+<!-- ══════════════════════ MARKET MAP MAKER ══════════════════════ -->
+<div id="tab-marketmap" class="tab-panel">
+  <div class="mm-page">
+
+    <div class="mm-header">
+      <p class="section-label">Private Markets</p>
+      <h2>Market <span class="accent">Map Maker</span></h2>
+      <div class="mm-search-row">
+        <div class="mm-search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="mm-search" id="mm-search" type="text" placeholder="Search a company or sector…" />
+        </div>
+        <div class="mm-sector-btns" id="mm-sector-btns"></div>
+      </div>
+    </div>
+
+    <div class="mm-body">
+      <div class="mm-graph-col" id="mm-graph-col">
+        <svg id="mm-svg"></svg>
+        <div class="mm-tooltip" id="mm-tooltip"></div>
+      </div>
+      <div class="mm-sidebar" id="mm-sidebar">
+        <div class="mm-empty">
+          <div class="mm-empty-icon">🗺️</div>
+          <div>Select a sector or search a company to generate a market map.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══════════════════════ PROJECTS ══════════════════════ -->
 <div id="tab-projects" class="tab-panel">
 
@@ -1099,6 +1296,57 @@
 
 </div>
 
+<!-- ══════════════════════ PRIVATE MARKET DIRECTORY ══════════════════════ -->
+<div id="tab-directory" class="tab-panel">
+  <div class="dir-page">
+    <p class="section-label">Private Markets</p>
+    <h2>Firm <span class="accent">Directory</span></h2>
+
+    <div class="dir-controls">
+      <input class="dir-search" id="dir-search" type="text" placeholder="Search firms…" />
+      <div class="dir-filter-group">
+        <div class="dir-filter-label">Type</div>
+        <select class="dir-select" id="dir-type-filter">
+          <option value="all">All Types</option>
+          <option>Private Equity</option>
+          <option>Venture Capital</option>
+        </select>
+      </div>
+      <div class="dir-filter-group">
+        <div class="dir-filter-label">Stage</div>
+        <select class="dir-select" id="dir-stage-filter">
+          <option value="all">All Stages</option>
+        </select>
+      </div>
+      <div class="dir-filter-group">
+        <div class="dir-filter-label">State</div>
+        <select class="dir-select" id="dir-state-filter">
+          <option value="all">All States</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="dir-table-wrap">
+      <table class="dir-table" id="dir-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-col="name">Firm <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="type">Type <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="hq">Headquarters <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="aum">AUM <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="funds">Funds <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="investments">Investments <span class="sort-icon"></span></th>
+            <th>Stage(s)</th>
+            <th>Website</th>
+          </tr>
+        </thead>
+        <tbody id="dir-tbody"></tbody>
+      </table>
+    </div>
+    <div id="dir-count" class="dir-count" style="margin-top:12px;"></div>
+  </div>
+</div>
+
 <!-- ══════════════════════ AI USE CASES ══════════════════════ -->
 <div id="tab-ai" class="tab-panel">
   <div class="ai-page">
@@ -1168,26 +1416,27 @@
     <p class="section-label">Latest Headlines</p>
     <h2>News <span class="accent">Feed</span></h2>
 
-    <div class="news-filter-section">
-      <div class="news-filter-label">Source</div>
-      <div class="news-source-bar" id="news-source-bar">
-        <button class="news-source-btn active" data-source="all">All Sources</button>
-        <button class="news-source-btn" data-source="Reuters">Reuters</button>
-        <button class="news-source-btn" data-source="CNBC">CNBC</button>
-        <button class="news-source-btn" data-source="Yahoo Finance">Yahoo Finance</button>
-        <button class="news-source-btn" data-source="WSJ">WSJ</button>
-        <button class="news-source-btn" data-source="PE Wire">PE Wire</button>
-        <button class="news-source-btn" data-source="PE International">PE International</button>
-        <button class="news-source-btn" data-source="Buyouts Insider">Buyouts Insider</button>
-        <button class="news-source-btn" data-source="Secondaries Investor">Secondaries Investor</button>
-        <button class="news-source-btn" data-source="TechCrunch">TechCrunch</button>
+    <div class="news-filter-bar">
+      <div class="news-filter-group">
+        <div class="news-filter-label">Source</div>
+        <select class="news-select" id="news-source-select">
+          <option value="all">All Sources</option>
+          <option value="Buyouts Insider">Buyouts Insider</option>
+          <option value="CNBC">CNBC</option>
+          <option value="PE International">PE International</option>
+          <option value="PE Wire">PE Wire</option>
+          <option value="Reuters">Reuters</option>
+          <option value="Secondaries Investor">Secondaries Investor</option>
+          <option value="TechCrunch">TechCrunch</option>
+          <option value="WSJ">WSJ</option>
+          <option value="Yahoo Finance">Yahoo Finance</option>
+        </select>
       </div>
-    </div>
-
-    <div class="news-filter-section">
-      <div class="news-filter-label">Topic</div>
-      <div class="news-tag-bar" id="news-tag-bar">
-        <button class="news-tag-filter active" data-tag="all">All Topics</button>
+      <div class="news-filter-group">
+        <div class="news-filter-label">Topic</div>
+        <select class="news-select" id="news-tag-select">
+          <option value="all">All Topics</option>
+        </select>
       </div>
     </div>
 
@@ -1209,8 +1458,6 @@
     <div class="contact-layout">
 
       <div class="contact-info">
-        <p>Whether you're interested in collaboration, advisory work, speaking engagements, or just want to discuss markets — I'm happy to connect. I typically respond within one business day.</p>
-
         <div class="contact-detail">
           <div class="contact-icon">🏙️</div>
           <div>
@@ -1226,42 +1473,6 @@
           </div>
         </div>
       </div>
-
-      <form onsubmit="handleSubmit(event)">
-        <div class="form-row">
-          <div>
-            <label for="fname">First Name</label>
-            <input type="text" id="fname" placeholder="Jane" />
-          </div>
-          <div>
-            <label for="lname">Last Name</label>
-            <input type="text" id="lname" placeholder="Smith" />
-          </div>
-        </div>
-        <div>
-          <label for="email">Email Address</label>
-          <input type="email" id="email" placeholder="jane@example.com" />
-        </div>
-        <div>
-          <label for="subject">Subject</label>
-          <select id="subject">
-            <option value="">Select a topic…</option>
-            <option>Investment Advisory</option>
-            <option>Research Collaboration</option>
-            <option>Speaking Engagement</option>
-            <option>Career / Mentorship</option>
-            <option>General Inquiry</option>
-          </select>
-        </div>
-        <div>
-          <label for="message">Message</label>
-          <textarea id="message" placeholder="Tell me how I can help…"></textarea>
-        </div>
-        <div class="form-submit">
-          <button type="submit" class="btn btn-primary">Send Message</button>
-        </div>
-        <p class="form-note">Your information is kept strictly confidential.</p>
-      </form>
 
     </div>
   </section>
@@ -1593,6 +1804,10 @@
     switchTab('ai');
     dropdown.classList.remove('open');
   });
+  document.getElementById('dd-directory').addEventListener('click', () => {
+    switchTab('directory');
+    dropdown.classList.remove('open');
+  });
 
   /* ══ TAB SWITCHING ════════════════════════════════ */
   function switchTab(name) {
@@ -1601,10 +1816,11 @@
     /* Highlight regular nav buttons */
     document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.remove('active'));
     /* Highlight resources dropdown trigger if resources or ai */
-    trigger.classList.toggle('active', name === 'resources' || name === 'ai');
+    trigger.classList.toggle('active', name === 'resources' || name === 'ai' || name === 'directory');
     /* Update dropdown item highlight */
     document.getElementById('dd-finance').classList.toggle('active', name === 'resources');
     document.getElementById('dd-ai').classList.toggle('active', name === 'ai');
+    document.getElementById('dd-directory').classList.toggle('active', name === 'directory');
     /* Highlight plain buttons */
     const plain = document.querySelector(`nav button[data-tab="${name}"]`);
     if (plain) plain.classList.add('active');
@@ -1704,23 +1920,13 @@
   }
 
   function buildTagFilters() {
-    const tagBar = document.getElementById('news-tag-bar');
+    const sel = document.getElementById('news-tag-select');
     const seen = new Set();
     allArticles.forEach(a => a.tags.forEach(t => seen.add(t.tag)));
     const sorted = [...seen].sort();
-    tagBar.innerHTML = `<button class="news-tag-filter active" data-tag="all">All Topics</button>` +
-      sorted.map(tag => {
-        const rule = TAG_RULES.find(r => r.tag === tag);
-        return `<button class="news-tag-filter" data-tag="${tag}">${tag}</button>`;
-      }).join('');
-    tagBar.addEventListener('click', e => {
-      const btn = e.target.closest('.news-tag-filter');
-      if (!btn) return;
-      tagBar.querySelectorAll('.news-tag-filter').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeNewsTag = btn.dataset.tag;
-      renderNews();
-    });
+    sel.innerHTML = `<option value="all">All Topics</option>` +
+      sorted.map(tag => `<option value="${tag}">${tag}</option>`).join('');
+    sel.value = activeNewsTag;
   }
 
 
@@ -1754,19 +1960,21 @@
       'Updated ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   }
 
-  document.getElementById('news-source-bar').addEventListener('click', e => {
-    const btn = e.target.closest('.news-source-btn');
-    if (!btn) return;
-    document.querySelectorAll('.news-source-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeNewsSource = btn.dataset.source;
+  document.getElementById('news-source-select').addEventListener('change', e => {
+    activeNewsSource = e.target.value;
+    renderNews();
+  });
+
+  document.getElementById('news-tag-select').addEventListener('change', e => {
+    activeNewsTag = e.target.value;
     renderNews();
   });
 
   document.getElementById('news-refresh').addEventListener('click', () => {
     activeNewsSource = 'all';
     activeNewsTag = 'all';
-    document.querySelectorAll('.news-source-btn').forEach(b => b.classList.toggle('active', b.dataset.source === 'all'));
+    document.getElementById('news-source-select').value = 'all';
+    document.getElementById('news-tag-select').value = 'all';
     loadNews();
   });
 
@@ -1775,6 +1983,708 @@
   switchTab = function(name) {
     _switchTabOrig(name);
     if (name === 'news' && !allArticles.length) loadNews();
+  };
+
+  /* ══ PRIVATE MARKET DIRECTORY ═══════════════════ */
+  const FIRMS = [
+    { name: 'Blackstone', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$1,100B', funds: 50, investments: 580, stages: ['Buyout', 'Growth', 'Credit'], website: 'blackstone.com' },
+    { name: 'KKR', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$553B', funds: 45, investments: 520, stages: ['Buyout', 'Growth', 'Infrastructure'], website: 'kkr.com' },
+    { name: 'Apollo Global Management', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$671B', funds: 40, investments: 490, stages: ['Buyout', 'Credit', 'Real Assets'], website: 'apollo.com' },
+    { name: 'Carlyle Group', type: 'Private Equity', city: 'Washington', state: 'DC', aum: '$426B', funds: 38, investments: 450, stages: ['Buyout', 'Growth', 'Real Assets'], website: 'carlyle.com' },
+    { name: 'TPG', type: 'Private Equity', city: 'Fort Worth', state: 'TX', aum: '$224B', funds: 30, investments: 380, stages: ['Buyout', 'Growth'], website: 'tpg.com' },
+    { name: 'Warburg Pincus', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$83B', funds: 18, investments: 900, stages: ['Growth', 'Buyout'], website: 'warburgpincus.com' },
+    { name: 'Bain Capital', type: 'Private Equity', city: 'Boston', state: 'MA', aum: '$185B', funds: 28, investments: 350, stages: ['Buyout', 'Venture', 'Credit'], website: 'baincapital.com' },
+    { name: 'Vista Equity Partners', type: 'Private Equity', city: 'Austin', state: 'TX', aum: '$96B', funds: 12, investments: 520, stages: ['Buyout', 'Growth'], website: 'vistaequitypartners.com' },
+    { name: 'Francisco Partners', type: 'Private Equity', city: 'San Francisco', state: 'CA', aum: '$45B', funds: 10, investments: 310, stages: ['Buyout', 'Growth'], website: 'franciscopartners.com' },
+    { name: 'Silver Lake', type: 'Private Equity', city: 'Menlo Park', state: 'CA', aum: '$102B', funds: 14, investments: 420, stages: ['Buyout', 'Growth'], website: 'silverlake.com' },
+    { name: 'Thoma Bravo', type: 'Private Equity', city: 'Chicago', state: 'IL', aum: '$134B', funds: 16, investments: 430, stages: ['Buyout', 'Growth'], website: 'thomabravo.com' },
+    { name: 'Advent International', type: 'Private Equity', city: 'Boston', state: 'MA', aum: '$94B', funds: 11, investments: 400, stages: ['Buyout', 'Growth'], website: 'adventinternational.com' },
+    { name: 'Apax Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$65B', funds: 11, investments: 300, stages: ['Buyout', 'Growth'], website: 'apax.com' },
+    { name: 'General Atlantic', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$84B', funds: 8, investments: 500, stages: ['Growth'], website: 'generalatlantic.com' },
+    { name: 'Insight Partners', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$90B', funds: 15, investments: 700, stages: ['Growth', 'Late Stage'], website: 'insightpartners.com' },
+    { name: 'Sequoia Capital', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$85B', funds: 20, investments: 1500, stages: ['Seed', 'Early Stage', 'Late Stage'], website: 'sequoiacap.com' },
+    { name: 'Andreessen Horowitz (a16z)', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$42B', funds: 14, investments: 1000, stages: ['Seed', 'Early Stage', 'Late Stage'], website: 'a16z.com' },
+    { name: 'Accel', type: 'Venture Capital', city: 'Palo Alto', state: 'CA', aum: '$20B', funds: 16, investments: 900, stages: ['Early Stage', 'Growth'], website: 'accel.com' },
+    { name: 'Bessemer Venture Partners', type: 'Venture Capital', city: 'Redwood City', state: 'CA', aum: '$20B', funds: 12, investments: 850, stages: ['Seed', 'Early Stage', 'Late Stage'], website: 'bvp.com' },
+    { name: 'Kleiner Perkins', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$9B', funds: 22, investments: 800, stages: ['Seed', 'Early Stage'], website: 'kleinerperkins.com' },
+    { name: 'New Enterprise Associates (NEA)', type: 'Venture Capital', city: 'Chevy Chase', state: 'MD', aum: '$25B', funds: 18, investments: 1100, stages: ['Early Stage', 'Growth', 'Late Stage'], website: 'nea.com' },
+    { name: 'Lightspeed Venture Partners', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$18B', funds: 10, investments: 500, stages: ['Early Stage', 'Growth'], website: 'lsvp.com' },
+    { name: 'Greylock Partners', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$5B', funds: 17, investments: 500, stages: ['Seed', 'Early Stage'], website: 'greylock.com' },
+    { name: 'Index Ventures', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$8B', funds: 12, investments: 450, stages: ['Seed', 'Early Stage', 'Growth'], website: 'indexventures.com' },
+    { name: 'Battery Ventures', type: 'Venture Capital', city: 'Boston', state: 'MA', aum: '$13B', funds: 14, investments: 600, stages: ['Early Stage', 'Growth'], website: 'battery.com' },
+    { name: 'General Catalyst', type: 'Venture Capital', city: 'Cambridge', state: 'MA', aum: '$28B', funds: 13, investments: 700, stages: ['Seed', 'Early Stage', 'Growth'], website: 'generalcatalyst.com' },
+    { name: 'Tiger Global Management', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$58B', funds: 16, investments: 900, stages: ['Growth', 'Late Stage'], website: 'tigerglobal.com' },
+    { name: 'Founders Fund', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$11B', funds: 9, investments: 250, stages: ['Seed', 'Early Stage', 'Late Stage'], website: 'foundersfund.com' },
+    { name: 'Benchmark', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$3B', funds: 10, investments: 300, stages: ['Early Stage'], website: 'benchmark.com' },
+    { name: 'Union Square Ventures', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$2B', funds: 8, investments: 150, stages: ['Early Stage', 'Growth'], website: 'usv.com' },
+    { name: 'First Round Capital', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$3B', funds: 7, investments: 350, stages: ['Seed', 'Early Stage'], website: 'firstround.com' },
+    { name: 'Redpoint Ventures', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$7B', funds: 10, investments: 400, stages: ['Early Stage', 'Growth'], website: 'redpoint.com' },
+    { name: 'ICONIQ Capital', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$80B', funds: 10, investments: 200, stages: ['Growth', 'Late Stage'], website: 'iconiqcapital.com' },
+    { name: 'IVP (Institutional Venture Partners)', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$10B', funds: 18, investments: 400, stages: ['Late Stage', 'Growth'], website: 'ivp.com' },
+    { name: 'Summit Partners', type: 'Private Equity', city: 'Boston', state: 'MA', aum: '$42B', funds: 14, investments: 600, stages: ['Growth', 'Buyout'], website: 'summitpartners.com' },
+    { name: 'Leonard Green & Partners', type: 'Private Equity', city: 'Los Angeles', state: 'CA', aum: '$70B', funds: 10, investments: 200, stages: ['Buyout'], website: 'leonardgreen.com' },
+    { name: 'Hellman & Friedman', type: 'Private Equity', city: 'San Francisco', state: 'CA', aum: '$100B', funds: 11, investments: 120, stages: ['Buyout'], website: 'hf.com' },
+    { name: 'Clayton, Dubilier & Rice', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$55B', funds: 12, investments: 120, stages: ['Buyout'], website: 'cdr-inc.com' },
+    { name: 'Ares Management', type: 'Private Equity', city: 'Los Angeles', state: 'CA', aum: '$428B', funds: 40, investments: 500, stages: ['Buyout', 'Growth', 'Credit'], website: 'aresmgmt.com' },
+    { name: 'Permira', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$80B', funds: 12, investments: 250, stages: ['Buyout', 'Growth'], website: 'permira.com' },
+    { name: 'EQT', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$246B', funds: 30, investments: 450, stages: ['Buyout', 'Growth', 'Infrastructure'], website: 'eqtgroup.com' },
+
+    /* ── AI-Focused ── */
+    { name: 'Coatue Management', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$50B', funds: 12, investments: 600, stages: ['Growth', 'Late Stage'], website: 'coatue.com' },
+    { name: 'Khosla Ventures', type: 'Venture Capital', city: 'Menlo Park', state: 'CA', aum: '$15B', funds: 14, investments: 700, stages: ['Seed', 'Early Stage'], website: 'khoslaventures.com' },
+    { name: 'GV (Google Ventures)', type: 'Venture Capital', city: 'Mountain View', state: 'CA', aum: '$8B', funds: 10, investments: 900, stages: ['Seed', 'Early Stage', 'Growth'], website: 'gv.com' },
+    { name: 'Lux Capital', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$5B', funds: 10, investments: 200, stages: ['Seed', 'Early Stage'], website: 'luxcapital.com' },
+    { name: '8VC', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$4B', funds: 6, investments: 200, stages: ['Early Stage', 'Growth'], website: '8vc.com' },
+    { name: 'Radical Ventures', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$2B', funds: 3, investments: 60, stages: ['Early Stage', 'Growth'], website: 'radical.vc' },
+    { name: 'Sapphire Ventures', type: 'Venture Capital', city: 'Palo Alto', state: 'CA', aum: '$10B', funds: 8, investments: 350, stages: ['Early Stage', 'Growth'], website: 'sapphireventures.com' },
+    { name: 'Emergence Capital', type: 'Venture Capital', city: 'San Francisco', state: 'CA', aum: '$3B', funds: 8, investments: 180, stages: ['Early Stage', 'Growth'], website: 'emcap.com' },
+    { name: 'Intel Capital', type: 'Venture Capital', city: 'Santa Clara', state: 'CA', aum: '$5B', funds: 15, investments: 1500, stages: ['Early Stage', 'Growth'], website: 'intel.com/capital' },
+    { name: 'Norwest Venture Partners', type: 'Venture Capital', city: 'Palo Alto', state: 'CA', aum: '$12B', funds: 17, investments: 650, stages: ['Early Stage', 'Growth', 'Late Stage'], website: 'nvp.com' },
+    { name: 'Spark Capital', type: 'Venture Capital', city: 'Boston', state: 'MA', aum: '$5B', funds: 9, investments: 350, stages: ['Seed', 'Early Stage'], website: 'sparkcapital.com' },
+    { name: 'Prime Movers Lab', type: 'Venture Capital', city: 'Jackson', state: 'WY', aum: '$1B', funds: 3, investments: 80, stages: ['Seed', 'Early Stage'], website: 'primemoverslab.com' },
+    { name: 'Eclipse Ventures', type: 'Venture Capital', city: 'Palo Alto', state: 'CA', aum: '$2B', funds: 4, investments: 100, stages: ['Seed', 'Early Stage'], website: 'eclipse.vc' },
+    { name: 'SoftBank Vision Fund', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$100B', funds: 3, investments: 500, stages: ['Growth', 'Late Stage'], website: 'softbank.com' },
+
+    /* ── Industrial-Focused ── */
+    { name: 'American Industrial Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$8B', funds: 7, investments: 60, stages: ['Buyout'], website: 'americanindustrial.com' },
+    { name: 'Arcline Investment Management', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$11B', funds: 4, investments: 40, stages: ['Buyout'], website: 'arcline.com' },
+    { name: 'American Securities', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$27B', funds: 9, investments: 120, stages: ['Buyout'], website: 'american-securities.com' },
+    { name: 'Berkshire Partners', type: 'Private Equity', city: 'Boston', state: 'MA', aum: '$20B', funds: 10, investments: 140, stages: ['Buyout', 'Growth'], website: 'berkshirepartners.com' },
+    { name: 'CCMP Capital', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$11B', funds: 5, investments: 80, stages: ['Buyout'], website: 'ccmpcapital.com' },
+    { name: 'Charlesbank Capital Partners', type: 'Private Equity', city: 'Boston', state: 'MA', aum: '$18B', funds: 9, investments: 130, stages: ['Buyout', 'Growth'], website: 'charlesbank.com' },
+    { name: 'Genstar Capital', type: 'Private Equity', city: 'San Francisco', state: 'CA', aum: '$25B', funds: 10, investments: 160, stages: ['Buyout'], website: 'genstarcapital.com' },
+    { name: 'Harvest Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$8B', funds: 8, investments: 100, stages: ['Buyout', 'Growth'], website: 'harvestpartners.com' },
+    { name: 'Huron Capital Partners', type: 'Private Equity', city: 'Detroit', state: 'MI', aum: '$2B', funds: 6, investments: 120, stages: ['Buyout', 'Growth'], website: 'huroncapital.com' },
+    { name: 'Kohlberg & Company', type: 'Private Equity', city: 'Mount Kisco', state: 'NY', aum: '$11B', funds: 9, investments: 100, stages: ['Buyout'], website: 'kohlberg.com' },
+    { name: 'MidOcean Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$10B', funds: 6, investments: 80, stages: ['Buyout', 'Growth'], website: 'midoceanpartners.com' },
+    { name: 'Odyssey Investment Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$5B', funds: 7, investments: 70, stages: ['Buyout'], website: 'odysseyinvestment.com' },
+    { name: 'One Rock Capital Partners', type: 'Private Equity', city: 'New York', state: 'NY', aum: '$5B', funds: 4, investments: 50, stages: ['Buyout'], website: 'onerockcapital.com' },
+    { name: 'Pfingsten Partners', type: 'Private Equity', city: 'Chicago', state: 'IL', aum: '$2B', funds: 7, investments: 90, stages: ['Buyout'], website: 'pfingsten.com' },
+    { name: 'Wynnchurch Capital', type: 'Private Equity', city: 'Rosemont', state: 'IL', aum: '$7B', funds: 7, investments: 80, stages: ['Buyout'], website: 'wynnchurch.com' },
+    { name: 'Energy Impact Partners', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$4B', funds: 5, investments: 150, stages: ['Early Stage', 'Growth'], website: 'energyimpactpartners.com' },
+    { name: 'Breakthrough Energy Ventures', type: 'Venture Capital', city: 'Kirkland', state: 'WA', aum: '$3B', funds: 3, investments: 100, stages: ['Early Stage', 'Growth'], website: 'breakthroughenergy.com' },
+  ];
+
+  let dirSortCol = 'name';
+  let dirSortDir = 'asc';
+
+  function getDirFiltered() {
+    const q     = document.getElementById('dir-search').value.toLowerCase();
+    const type  = document.getElementById('dir-type-filter').value;
+    const stage = document.getElementById('dir-stage-filter').value;
+    const state = document.getElementById('dir-state-filter').value;
+    return FIRMS.filter(f =>
+      (!q     || f.name.toLowerCase().includes(q) || f.city.toLowerCase().includes(q)) &&
+      (type  === 'all' || f.type === type) &&
+      (stage === 'all' || f.stages.includes(stage)) &&
+      (state === 'all' || f.state === state)
+    );
+  }
+
+  function aumSortVal(s) {
+    const m = s.replace(/[^0-9.]/g, '');
+    const n = parseFloat(m) || 0;
+    return s.includes('T') ? n * 1000 : n;
+  }
+
+  function renderDir() {
+    const rows = getDirFiltered().slice().sort((a, b) => {
+      let va, vb;
+      if (dirSortCol === 'aum')         { va = aumSortVal(a.aum); vb = aumSortVal(b.aum); }
+      else if (dirSortCol === 'funds')  { va = a.funds; vb = b.funds; }
+      else if (dirSortCol === 'investments') { va = a.investments; vb = b.investments; }
+      else if (dirSortCol === 'hq')     { va = a.state + a.city; vb = b.state + b.city; }
+      else { va = a[dirSortCol] || ''; vb = b[dirSortCol] || ''; }
+      if (va < vb) return dirSortDir === 'asc' ? -1 : 1;
+      if (va > vb) return dirSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    const tbody = document.getElementById('dir-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="8" class="dir-no-results">No firms match your filters.</td></tr>`;
+    } else {
+      tbody.innerHTML = rows.map(f => {
+        const initials = f.name.split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join('');
+        const clearbitUrl = `https://logo.clearbit.com/${f.website}`;
+        const googleUrl   = `https://www.google.com/s2/favicons?domain=${f.website}&sz=64`;
+        const logoHtml = `
+          <div class="dir-logo-wrap">
+            <img src="${clearbitUrl}" alt="${f.name} logo"
+              onerror="this.src='${googleUrl}';this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};"
+              onload="this.nextElementSibling.style.display='none';" />
+            <div class="dir-logo-initials">${initials}</div>
+          </div>`;
+        return `
+        <tr>
+          <td><div class="dir-firm-cell">${logoHtml}<span class="dir-firm-name">${f.name}</span></div></td>
+          <td>${f.type}</td>
+          <td>${f.city}, ${f.state}</td>
+          <td>${f.aum}</td>
+          <td>${f.funds}</td>
+          <td>${f.investments.toLocaleString()}</td>
+          <td>${f.stages.map(s => `<span class="dir-stage-tag">${s}</span>`).join('')}</td>
+          <td class="dir-website"><a href="https://${f.website}" target="_blank" rel="noopener">${f.website}</a></td>
+        </tr>`;
+      }).join('');
+    }
+    document.getElementById('dir-count').textContent =
+      rows.length === FIRMS.length ? `Showing all ${FIRMS.length} firms` : `Showing ${rows.length} of ${FIRMS.length} firms`;
+
+    /* Update sort icons */
+    document.querySelectorAll('#dir-table th.sortable').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.col === dirSortCol) th.classList.add('sort-' + dirSortDir);
+    });
+  }
+
+  function buildDirFilterOptions() {
+    const stages = [...new Set(FIRMS.flatMap(f => f.stages))].sort();
+    const states = [...new Set(FIRMS.map(f => f.state))].sort();
+    const stageSel = document.getElementById('dir-stage-filter');
+    const stateSel = document.getElementById('dir-state-filter');
+    stageSel.innerHTML = `<option value="all">All Stages</option>` + stages.map(s => `<option>${s}</option>`).join('');
+    stateSel.innerHTML = `<option value="all">All States</option>` + states.map(s => `<option>${s}</option>`).join('');
+  }
+
+  buildDirFilterOptions();
+  renderDir();
+
+  document.getElementById('dir-search').addEventListener('input', renderDir);
+  document.getElementById('dir-type-filter').addEventListener('change', renderDir);
+  document.getElementById('dir-stage-filter').addEventListener('change', renderDir);
+  document.getElementById('dir-state-filter').addEventListener('change', renderDir);
+
+  document.querySelectorAll('#dir-table th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      if (dirSortCol === th.dataset.col) {
+        dirSortDir = dirSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        dirSortCol = th.dataset.col;
+        dirSortDir = 'asc';
+      }
+      renderDir();
+    });
+  });
+
+  /* ══ PROJECTS DROPDOWN ═══════════════════════════ */
+  const projDropdown = document.getElementById('projects-dropdown');
+  const projTrigger  = document.getElementById('projects-trigger');
+  projTrigger.addEventListener('click', e => { e.stopPropagation(); projDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => projDropdown.classList.remove('open'));
+  document.getElementById('dd-projects-overview').addEventListener('click', () => { switchTab('projects'); projDropdown.classList.remove('open'); });
+  document.getElementById('dd-marketmap').addEventListener('click', () => { switchTab('marketmap'); projDropdown.classList.remove('open'); });
+
+  /* patch switchTab to handle projects dropdown highlight */
+  const _origSwitchTab2 = switchTab;
+  switchTab = function(name) {
+    _origSwitchTab2(name);
+    projTrigger.classList.toggle('active', name === 'projects' || name === 'marketmap');
+    document.getElementById('dd-projects-overview').classList.toggle('active', name === 'projects');
+    document.getElementById('dd-marketmap').classList.toggle('active', name === 'marketmap');
+  };
+
+  /* ══ MARKET MAP MAKER ═══════════════════════════ */
+  const MARKET_MAPS = {
+    ai: {
+      label: 'Artificial Intelligence', icon: '🤖',
+      description: 'The AI ecosystem spans foundation model providers, cloud infrastructure, developer tooling, and vertical applications — all backed by a new generation of specialist investors.',
+      metrics: [
+        { label: 'Global TAM (2030)', value: '$1.8T' },
+        { label: 'CAGR', value: '37%' },
+        { label: 'Active Companies', value: '15,000+' },
+        { label: '2023 VC Funding', value: '$91B' },
+      ],
+      insights: [
+        'Foundation model providers are capturing the majority of VC dollars, with OpenAI and Anthropic leading at $10B+ rounds',
+        'Infrastructure layer (compute, MLOps) is consolidating as hyperscalers expand AI services',
+        'Enterprise AI applications seeing 200%+ YoY adoption rates in legal, finance, and healthcare',
+        'Open-source models (Meta Llama) are challenging proprietary model dominance on cost',
+        'Regulatory pressure in EU and US creating compliance-focused AI governance opportunities',
+      ],
+      categories: { 'Foundation Models': '#3b82f6', 'Infrastructure': '#8b5cf6', 'AI Applications': '#10b981', 'AI Tooling': '#f59e0b', 'Investors': '#ef4444' },
+      nodes: [
+        { id: 'openai',      name: 'OpenAI',          cat: 'Foundation Models', domain: 'openai.com',           note: 'GPT-4o, ChatGPT, $157B valuation' },
+        { id: 'anthropic',   name: 'Anthropic',        cat: 'Foundation Models', domain: 'anthropic.com',        note: 'Claude, $18B valuation' },
+        { id: 'deepmind',    name: 'Google DeepMind',  cat: 'Foundation Models', domain: 'deepmind.google',      note: 'Gemini, AlphaFold' },
+        { id: 'meta',        name: 'Meta AI',          cat: 'Foundation Models', domain: 'ai.meta.com',          note: 'Llama (open-source)' },
+        { id: 'mistral',     name: 'Mistral AI',       cat: 'Foundation Models', domain: 'mistral.ai',           note: 'Mixtral, open-weight' },
+        { id: 'xai',         name: 'xAI',              cat: 'Foundation Models', domain: 'x.ai',                 note: 'Grok, Musk-founded' },
+        { id: 'nvidia',      name: 'NVIDIA',           cat: 'Infrastructure',    domain: 'nvidia.com',           note: 'GPU compute, $3T mkt cap' },
+        { id: 'aws',         name: 'AWS Bedrock',      cat: 'Infrastructure',    domain: 'aws.amazon.com',       note: 'Cloud + model hosting' },
+        { id: 'microsoft',   name: 'Microsoft Azure',  cat: 'Infrastructure',    domain: 'azure.microsoft.com',  note: 'Copilot, OpenAI partner' },
+        { id: 'databricks',  name: 'Databricks',       cat: 'Infrastructure',    domain: 'databricks.com',       note: 'Data + ML platform, $43B' },
+        { id: 'scale',       name: 'Scale AI',         cat: 'Infrastructure',    domain: 'scale.com',            note: 'Data labeling, $14B' },
+        { id: 'huggingface', name: 'Hugging Face',     cat: 'AI Tooling',        domain: 'huggingface.co',       note: 'Model hub, $4.5B' },
+        { id: 'langchain',   name: 'LangChain',        cat: 'AI Tooling',        domain: 'langchain.com',        note: 'LLM orchestration framework' },
+        { id: 'wandb',       name: 'Weights & Biases', cat: 'AI Tooling',        domain: 'wandb.ai',             note: 'MLOps experiment tracking' },
+        { id: 'harvey',      name: 'Harvey AI',        cat: 'AI Applications',   domain: 'harvey.ai',            note: 'Legal AI, $3B valuation' },
+        { id: 'cursor',      name: 'Cursor',           cat: 'AI Applications',   domain: 'cursor.com',           note: 'AI code editor, $9B valuation' },
+        { id: 'glean',       name: 'Glean',            cat: 'AI Applications',   domain: 'glean.com',            note: 'Enterprise AI search, $4.6B' },
+        { id: 'perplexity',  name: 'Perplexity',       cat: 'AI Applications',   domain: 'perplexity.ai',        note: 'AI search engine, $9B' },
+        { id: 'a16z',        name: 'a16z',             cat: 'Investors',         domain: 'a16z.com',             note: '$7.2B AI dedicated fund' },
+        { id: 'sequoia',     name: 'Sequoia',          cat: 'Investors',         domain: 'sequoiacap.com',       note: 'Early OpenAI, Mistral backer' },
+        { id: 'khosla',      name: 'Khosla Ventures',  cat: 'Investors',         domain: 'khoslaventures.com',   note: 'DeepTech and AI focus' },
+        { id: 'coatue',      name: 'Coatue',           cat: 'Investors',         domain: 'coatue.com',           note: 'Cross-stage tech investor' },
+      ],
+      edges: [
+        { s: 'microsoft', t: 'openai',     rel: 'Investor / Cloud Partner' },
+        { s: 'aws',       t: 'anthropic',  rel: 'Cloud Partner / Investor' },
+        { s: 'deepmind',  t: 'anthropic',  rel: 'Competitor' },
+        { s: 'a16z',      t: 'mistral',    rel: 'Investor' },
+        { s: 'a16z',      t: 'cursor',     rel: 'Investor' },
+        { s: 'a16z',      t: 'perplexity', rel: 'Investor' },
+        { s: 'sequoia',   t: 'openai',     rel: 'Investor' },
+        { s: 'sequoia',   t: 'harvey',     rel: 'Investor' },
+        { s: 'khosla',    t: 'openai',     rel: 'Early Investor' },
+        { s: 'coatue',    t: 'openai',     rel: 'Investor' },
+        { s: 'nvidia',    t: 'openai',     rel: 'Compute Partner' },
+        { s: 'nvidia',    t: 'anthropic',  rel: 'Compute Partner' },
+        { s: 'scale',     t: 'openai',     rel: 'Data Partner' },
+        { s: 'scale',     t: 'anthropic',  rel: 'Data Partner' },
+        { s: 'databricks',t: 'huggingface',rel: 'Partner' },
+        { s: 'langchain', t: 'openai',     rel: 'Built on' },
+        { s: 'langchain', t: 'anthropic',  rel: 'Built on' },
+        { s: 'harvey',    t: 'openai',     rel: 'Built on' },
+        { s: 'glean',     t: 'openai',     rel: 'Built on' },
+        { s: 'cursor',    t: 'anthropic',  rel: 'Built on' },
+        { s: 'perplexity',t: 'openai',     rel: 'Built on' },
+        { s: 'openai',    t: 'anthropic',  rel: 'Competitor' },
+        { s: 'meta',      t: 'openai',     rel: 'Competitor' },
+        { s: 'xai',       t: 'openai',     rel: 'Competitor' },
+      ],
+    },
+
+    pe: {
+      label: 'Private Equity', icon: '🏦',
+      description: 'The private equity ecosystem spans mega-cap GPs, mid-market specialists, institutional LPs, secondary buyers, GP solutions platforms, and a broad array of advisory service providers.',
+      metrics: [
+        { label: 'Global AUM', value: '$13T' },
+        { label: 'Dry Powder', value: '$3.9T' },
+        { label: 'Avg Hold Period', value: '5.8 yrs' },
+        { label: '2023 Buyout Volume', value: '$438B' },
+      ],
+      insights: [
+        'Dry powder sits at record levels as exit markets remain challenged by high interest rates and bid-ask spread',
+        'Continuation funds and NAV lending are growing as GPs seek alternative liquidity pathways for LPs',
+        'GP stakes platforms (Blue Owl, Dyal) seeing accelerating demand as LPs seek diversified exposure',
+        'Retail democratization of PE accelerating via registered funds (BDCs, interval funds, and 40 Act vehicles)',
+        'AI-powered deal sourcing, due diligence, and portfolio monitoring becoming table stakes for top GPs',
+      ],
+      categories: { 'Mega-Cap GPs': '#1e40af', 'Mid-Market GPs': '#3b82f6', 'LP Community': '#7c3aed', 'Secondaries & GP Solutions': '#059669', 'Service Providers': '#d97706' },
+      nodes: [
+        { id: 'blackstone', name: 'Blackstone',       cat: 'Mega-Cap GPs',             domain: 'blackstone.com',         note: '$1.1T AUM, largest PE firm globally' },
+        { id: 'kkr',        name: 'KKR',              cat: 'Mega-Cap GPs',             domain: 'kkr.com',                note: '$553B AUM, diversified alternatives' },
+        { id: 'apollo',     name: 'Apollo',           cat: 'Mega-Cap GPs',             domain: 'apollo.com',             note: '$671B AUM, credit-heavy strategy' },
+        { id: 'carlyle',    name: 'Carlyle',          cat: 'Mega-Cap GPs',             domain: 'carlyle.com',            note: '$426B AUM, global reach' },
+        { id: 'tpg',        name: 'TPG',              cat: 'Mega-Cap GPs',             domain: 'tpg.com',                note: '$224B AUM, impact + growth' },
+        { id: 'vista',      name: 'Vista Equity',     cat: 'Mid-Market GPs',           domain: 'vistaequitypartners.com',note: '$96B AUM, software buyouts' },
+        { id: 'thoma',      name: 'Thoma Bravo',      cat: 'Mid-Market GPs',           domain: 'thomabravo.com',         note: '$134B AUM, tech buyouts' },
+        { id: 'francisco',  name: 'Francisco Partners',cat: 'Mid-Market GPs',          domain: 'franciscopartners.com',  note: '$45B AUM, tech focus' },
+        { id: 'calpers',    name: 'CalPERS',          cat: 'LP Community',             domain: 'calpers.ca.gov',         note: '$500B+ pension fund' },
+        { id: 'calstrs',    name: 'CalSTRS',          cat: 'LP Community',             domain: 'calstrs.com',            note: '$330B teacher pension' },
+        { id: 'gic',        name: 'GIC (Singapore)',  cat: 'LP Community',             domain: 'gic.com.sg',             note: 'Sovereign wealth, $770B' },
+        { id: 'harbourvest',name: 'HarbourVest',      cat: 'Secondaries & GP Solutions',domain: 'harbourvest.com',      note: 'Fund-of-funds + secondaries' },
+        { id: 'lexington',  name: 'Lexington Partners',cat: 'Secondaries & GP Solutions',domain: 'lexingtonpartners.com',note: 'Leading secondary buyer' },
+        { id: 'blueowl',    name: 'Blue Owl',         cat: 'Secondaries & GP Solutions',domain: 'blueowl.com',          note: 'GP stakes + direct lending' },
+        { id: 'pitchbook',  name: 'PitchBook',        cat: 'Service Providers',        domain: 'pitchbook.com',          note: 'PE/VC data & analytics' },
+        { id: 'preqin',     name: 'Preqin',           cat: 'Service Providers',        domain: 'preqin.com',             note: 'Alternatives market data' },
+        { id: 'ey',         name: 'EY',               cat: 'Service Providers',        domain: 'ey.com',                 note: 'Audit and transaction advisory' },
+        { id: 'ipreo',      name: 'Allvue Systems',   cat: 'Service Providers',        domain: 'allvuesystems.com',      note: 'PE portfolio management software' },
+      ],
+      edges: [
+        { s: 'calpers',     t: 'blackstone',  rel: 'LP' },
+        { s: 'calpers',     t: 'kkr',         rel: 'LP' },
+        { s: 'calstrs',     t: 'apollo',      rel: 'LP' },
+        { s: 'calstrs',     t: 'carlyle',     rel: 'LP' },
+        { s: 'gic',         t: 'blackstone',  rel: 'LP / Co-investor' },
+        { s: 'gic',         t: 'kkr',         rel: 'LP / Co-investor' },
+        { s: 'harbourvest', t: 'blackstone',  rel: 'Secondary buyer' },
+        { s: 'harbourvest', t: 'carlyle',     rel: 'Secondary buyer' },
+        { s: 'lexington',   t: 'kkr',         rel: 'Secondary buyer' },
+        { s: 'lexington',   t: 'tpg',         rel: 'Secondary buyer' },
+        { s: 'blueowl',     t: 'vista',       rel: 'GP stakes investor' },
+        { s: 'blueowl',     t: 'thoma',       rel: 'GP stakes investor' },
+        { s: 'blueowl',     t: 'francisco',   rel: 'GP stakes investor' },
+        { s: 'ey',          t: 'blackstone',  rel: 'Auditor' },
+        { s: 'ey',          t: 'kkr',         rel: 'Auditor' },
+        { s: 'pitchbook',   t: 'kkr',         rel: 'Data coverage' },
+        { s: 'preqin',      t: 'blackstone',  rel: 'Data coverage' },
+        { s: 'ipreo',       t: 'carlyle',     rel: 'Portfolio software' },
+        { s: 'vista',       t: 'thoma',       rel: 'Competitor' },
+        { s: 'blackstone',  t: 'apollo',      rel: 'Competitor' },
+        { s: 'kkr',         t: 'carlyle',     rel: 'Competitor' },
+      ],
+    },
+
+    fintech: {
+      label: 'FinTech', icon: '💳',
+      description: 'FinTech encompasses payments infrastructure, neobanking, lending platforms, wealth management, and the Banking-as-a-Service layer enabling embedded finance across industries.',
+      metrics: [
+        { label: 'Global TAM (2030)', value: '$882B' },
+        { label: 'CAGR', value: '17%' },
+        { label: '2023 Funding', value: '$51B' },
+        { label: 'Unicorns', value: '272' },
+      ],
+      insights: [
+        'Embedded finance enabling non-financial companies to offer banking products natively at the point of need',
+        'BNPL facing regulatory headwinds from CFPB while traditional credit rebounds among Gen Z',
+        'Stablecoin infrastructure gaining traction for cross-border payments and real-time settlement',
+        'AI-driven underwriting and fraud detection reducing default rates by 20%+ and saving billions annually',
+        'Open banking (CFPB 1033) expected to reshape financial data sharing and consent management',
+      ],
+      categories: { 'Payments': '#2563eb', 'Banking / Neobanks': '#7c3aed', 'Lending & Credit': '#059669', 'Wealth & Investing': '#d97706', 'Infrastructure / BaaS': '#dc2626' },
+      nodes: [
+        { id: 'stripe',     name: 'Stripe',        cat: 'Payments',             domain: 'stripe.com',      note: '$65B valuation, global payments' },
+        { id: 'paypal',     name: 'PayPal',        cat: 'Payments',             domain: 'paypal.com',      note: 'Public, $70B mkt cap' },
+        { id: 'adyen',      name: 'Adyen',         cat: 'Payments',             domain: 'adyen.com',       note: 'Enterprise merchant acquiring' },
+        { id: 'square',     name: 'Block (Square)',cat: 'Payments',             domain: 'block.xyz',       note: 'SMB POS + Cash App' },
+        { id: 'chime',      name: 'Chime',         cat: 'Banking / Neobanks',   domain: 'chime.com',       note: '$25B valuation, 21M+ accounts' },
+        { id: 'nubank',     name: 'Nubank',        cat: 'Banking / Neobanks',   domain: 'nu.com',          note: 'Largest neobank, 100M+ customers' },
+        { id: 'revolut',    name: 'Revolut',       cat: 'Banking / Neobanks',   domain: 'revolut.com',     note: '$33B valuation, 40M users' },
+        { id: 'dave',       name: 'Dave',          cat: 'Banking / Neobanks',   domain: 'dave.com',        note: 'Cash advance neobank' },
+        { id: 'affirm',     name: 'Affirm',        cat: 'Lending & Credit',     domain: 'affirm.com',      note: 'BNPL, public, $15B mkt cap' },
+        { id: 'klarna',     name: 'Klarna',        cat: 'Lending & Credit',     domain: 'klarna.com',      note: 'BNPL, $14.6B valuation, pre-IPO' },
+        { id: 'upstart',    name: 'Upstart',       cat: 'Lending & Credit',     domain: 'upstart.com',     note: 'AI credit underwriting' },
+        { id: 'robinhood',  name: 'Robinhood',     cat: 'Wealth & Investing',   domain: 'robinhood.com',   note: 'Commission-free retail trading' },
+        { id: 'betterment', name: 'Betterment',    cat: 'Wealth & Investing',   domain: 'betterment.com',  note: 'Robo-advisor, $35B AUM' },
+        { id: 'wealthfront',name: 'Wealthfront',   cat: 'Wealth & Investing',   domain: 'wealthfront.com', note: 'Robo-advisor, $50B AUM' },
+        { id: 'plaid',      name: 'Plaid',         cat: 'Infrastructure / BaaS',domain: 'plaid.com',       note: 'Bank data connectivity, $13B' },
+        { id: 'marqeta',    name: 'Marqeta',       cat: 'Infrastructure / BaaS',domain: 'marqeta.com',     note: 'Modern card issuing platform' },
+        { id: 'unit',       name: 'Unit',          cat: 'Infrastructure / BaaS',domain: 'unit.co',         note: 'BaaS for fintechs, $1.2B' },
+      ],
+      edges: [
+        { s: 'plaid',    t: 'chime',      rel: 'Bank connectivity' },
+        { s: 'plaid',    t: 'robinhood',  rel: 'Bank connectivity' },
+        { s: 'plaid',    t: 'betterment', rel: 'Bank connectivity' },
+        { s: 'plaid',    t: 'wealthfront',rel: 'Bank connectivity' },
+        { s: 'marqeta',  t: 'chime',      rel: 'Card issuing' },
+        { s: 'marqeta',  t: 'square',     rel: 'Card issuing' },
+        { s: 'marqeta',  t: 'klarna',     rel: 'Card issuing' },
+        { s: 'unit',     t: 'dave',       rel: 'BaaS infrastructure' },
+        { s: 'stripe',   t: 'affirm',     rel: 'Payments partner' },
+        { s: 'affirm',   t: 'klarna',     rel: 'Competitor' },
+        { s: 'chime',    t: 'dave',       rel: 'Competitor' },
+        { s: 'chime',    t: 'revolut',    rel: 'Competitor' },
+        { s: 'betterment',t:'wealthfront',rel: 'Competitor' },
+        { s: 'paypal',   t: 'stripe',     rel: 'Competitor' },
+        { s: 'adyen',    t: 'stripe',     rel: 'Competitor' },
+        { s: 'nubank',   t: 'chime',      rel: 'Competitor' },
+        { s: 'upstart',  t: 'affirm',     rel: 'Competitor' },
+        { s: 'square',   t: 'paypal',     rel: 'Competitor' },
+      ],
+    },
+
+    industrial: {
+      label: 'Industrial & Manufacturing', icon: '🏭',
+      description: 'The industrial ecosystem spans advanced manufacturing, automation & robotics, defense tech, supply chain software, and the private equity firms reshaping capital-intensive industries through operational transformation.',
+      metrics: [
+        { label: 'US Manufacturing GDP', value: '$2.4T' },
+        { label: 'PE Industrial Deals', value: '$180B (2023)' },
+        { label: 'Automation CAGR', value: '12%' },
+        { label: 'Reshoring Jobs (2023)', value: '287,000' },
+      ],
+      insights: [
+        'IRA and CHIPS Act driving $600B+ in announced US manufacturing investments since 2022',
+        'Reshoring accelerating as companies de-risk China-concentrated supply chains',
+        'Robotics and automation PE buyouts surging as labor costs rise and ROI improves',
+        'Defense tech attracting dual-use commercial/military capital from crossover investors',
+        'Industrial AI enabling predictive maintenance, quality control, and yield optimization at scale',
+      ],
+      categories: { 'Advanced Manufacturing': '#1e40af', 'Automation & Robotics': '#7c3aed', 'Defense Tech': '#059669', 'Supply Chain Tech': '#d97706', 'Industrial PE': '#dc2626' },
+      nodes: [
+        { id: 'rockwell',   name: 'Rockwell Automation', cat: 'Advanced Manufacturing', domain: 'rockwellautomation.com', note: 'Industrial automation leader' },
+        { id: 'honeywell',  name: 'Honeywell',           cat: 'Advanced Manufacturing', domain: 'honeywell.com',          note: 'Diversified industrials' },
+        { id: 'siemens',    name: 'Siemens',             cat: 'Advanced Manufacturing', domain: 'siemens.com',            note: 'Digital factory, $130B rev' },
+        { id: 'fanuc',      name: 'FANUC',               cat: 'Automation & Robotics',  domain: 'fanuc.com',             note: 'CNC and robotics leader' },
+        { id: 'boston',     name: 'Boston Dynamics',     cat: 'Automation & Robotics',  domain: 'bostondynamics.com',    note: 'Spot robot, owned by Hyundai' },
+        { id: 'covariant',  name: 'Covariant',           cat: 'Automation & Robotics',  domain: 'covariant.ai',          note: 'AI robotics for warehouses' },
+        { id: 'velo3d',     name: 'Velo3D',             cat: 'Advanced Manufacturing', domain: 'velo3d.com',             note: 'Metal additive manufacturing' },
+        { id: 'palantir',   name: 'Palantir',            cat: 'Defense Tech',           domain: 'palantir.com',          note: 'Defense AI + data ops' },
+        { id: 'anduril',    name: 'Anduril Industries',  cat: 'Defense Tech',           domain: 'anduril.com',           note: 'Defense tech, $14B valuation' },
+        { id: 'shield',     name: 'Shield AI',           cat: 'Defense Tech',           domain: 'shield.ai',             note: 'Autonomous military AI' },
+        { id: 'flexport',   name: 'Flexport',            cat: 'Supply Chain Tech',      domain: 'flexport.com',          note: 'Global freight platform' },
+        { id: 'project44',  name: 'Project44',           cat: 'Supply Chain Tech',      domain: 'project44.com',         note: 'Supply chain visibility' },
+        { id: 'samsara',    name: 'Samsara',             cat: 'Supply Chain Tech',      domain: 'samsara.com',           note: 'Fleet & operations IoT' },
+        { id: 'aip',        name: 'American Industrial', cat: 'Industrial PE',          domain: 'americanindustrial.com',note: '$8B AUM industrial buyouts' },
+        { id: 'arcline',    name: 'Arcline Investment',  cat: 'Industrial PE',          domain: 'arcline.com',           note: '$11B AUM aerospace + defense' },
+        { id: 'lux',        name: 'Lux Capital',         cat: 'Industrial PE',          domain: 'luxcapital.com',        note: 'DeepTech + industrial VC' },
+        { id: 'eclipse',    name: 'Eclipse Ventures',    cat: 'Industrial PE',          domain: 'eclipse.vc',            note: 'Hard tech + manufacturing VC' },
+      ],
+      edges: [
+        { s: 'rockwell',  t: 'siemens',   rel: 'Competitor' },
+        { s: 'rockwell',  t: 'honeywell', rel: 'Competitor' },
+        { s: 'fanuc',     t: 'rockwell',  rel: 'Integration partner' },
+        { s: 'covariant', t: 'fanuc',     rel: 'AI layer on hardware' },
+        { s: 'boston',    t: 'covariant', rel: 'Competitor / Partner' },
+        { s: 'palantir',  t: 'anduril',   rel: 'Defense ecosystem partner' },
+        { s: 'anduril',   t: 'shield',    rel: 'Competitor' },
+        { s: 'lux',       t: 'anduril',   rel: 'Investor' },
+        { s: 'lux',       t: 'velo3d',    rel: 'Investor' },
+        { s: 'eclipse',   t: 'covariant', rel: 'Investor' },
+        { s: 'eclipse',   t: 'flexport',  rel: 'Investor' },
+        { s: 'aip',       t: 'honeywell', rel: 'PE buyer of divisions' },
+        { s: 'arcline',   t: 'anduril',   rel: 'Ecosystem overlap' },
+        { s: 'project44', t: 'flexport',  rel: 'Integration' },
+        { s: 'samsara',   t: 'project44', rel: 'Competitor / Integration' },
+        { s: 'flexport',  t: 'samsara',   rel: 'Logistics partner' },
+        { s: 'velo3d',    t: 'siemens',   rel: 'Software partner' },
+      ],
+    },
+
+    cleantech: {
+      label: 'Clean Energy & CleanTech', icon: '⚡',
+      description: 'Clean energy spans solar, wind, grid-scale storage, grid modernization, and decarbonization technology — catalyzed by the $369B Inflation Reduction Act and accelerating private capital.',
+      metrics: [
+        { label: 'Global Investment (2023)', value: '$1.7T' },
+        { label: 'CAGR', value: '24%' },
+        { label: 'IRA Incentives', value: '$369B' },
+        { label: 'Battery Cost Decline', value: '90% since 2010' },
+      ],
+      insights: [
+        'IRA is the largest clean energy investment in US history, catalyzing $3T+ in announced private capital',
+        'Battery storage deployments doubled in 2023, pushing levelized cost below $100/kWh at utility scale',
+        'Green hydrogen emerging as key decarbonization path for steel, cement, and shipping sectors',
+        'Offshore wind facing near-term headwinds from supply chain costs and PPA contract repricing',
+        'Carbon credit markets maturing with improved verification standards from Verra and Science Based Targets',
+      ],
+      categories: { 'Solar': '#f59e0b', 'Wind': '#3b82f6', 'Energy Storage': '#8b5cf6', 'Grid & Infrastructure': '#dc2626', 'CleanTech Investors': '#059669' },
+      nodes: [
+        { id: 'nextracker', name: 'Nextracker',      cat: 'Solar',               domain: 'nextracker.com',            note: 'Solar tracking systems, public' },
+        { id: 'firstsolar', name: 'First Solar',     cat: 'Solar',               domain: 'firstsolar.com',            note: 'US thin-film module leader' },
+        { id: 'sunrun',     name: 'Sunrun',          cat: 'Solar',               domain: 'sunrun.com',                note: 'Residential solar + storage' },
+        { id: 'sunnova',    name: 'Sunnova',         cat: 'Solar',               domain: 'sunnova.com',               note: 'Residential solar services' },
+        { id: 'vestas',     name: 'Vestas',          cat: 'Wind',                domain: 'vestas.com',                note: 'Global wind turbine OEM' },
+        { id: 'orsted',     name: 'Ørsted',          cat: 'Wind',                domain: 'orsted.com',                note: 'Offshore wind developer' },
+        { id: 'ge',         name: 'GE Vernova',      cat: 'Wind',                domain: 'gevernova.com',             note: 'Onshore + offshore turbines' },
+        { id: 'tesla',      name: 'Tesla Energy',    cat: 'Energy Storage',      domain: 'tesla.com',                 note: 'Megapack, Powerwall' },
+        { id: 'form',       name: 'Form Energy',     cat: 'Energy Storage',      domain: 'formenergy.com',            note: 'Iron-air multi-day storage' },
+        { id: 'quantumscape',name:'QuantumScape',    cat: 'Energy Storage',      domain: 'quantumscape.com',          note: 'Solid-state batteries, public' },
+        { id: 'stem',       name: 'Stem Inc.',       cat: 'Grid & Infrastructure',domain: 'stem.com',                 note: 'AI-driven grid optimization' },
+        { id: 'enphase',    name: 'Enphase Energy',  cat: 'Grid & Infrastructure',domain: 'enphase.com',              note: 'Microinverters + EMS, public' },
+        { id: 'eip',        name: 'Energy Impact Partners',cat:'CleanTech Investors',domain:'energyimpactpartners.com',note:'Utility-backed cleantech VC' },
+        { id: 'breakthrough',name:'Breakthrough Energy',cat:'CleanTech Investors',domain:'breakthroughenergy.com',    note: 'Gates-backed climate fund' },
+        { id: 'lowercarbon',name:'Lowercarbon Capital',cat:'CleanTech Investors',domain:'lowercarbon.com',            note: 'Climate-focused VC' },
+      ],
+      edges: [
+        { s: 'eip',         t: 'form',       rel: 'Investor' },
+        { s: 'breakthrough',t: 'form',       rel: 'Investor' },
+        { s: 'breakthrough',t: 'quantumscape',rel: 'Investor' },
+        { s: 'lowercarbon', t: 'sunrun',     rel: 'Investor' },
+        { s: 'lowercarbon', t: 'sunnova',    rel: 'Investor' },
+        { s: 'tesla',       t: 'enphase',    rel: 'Competitor (storage)' },
+        { s: 'enphase',     t: 'sunrun',     rel: 'Supplier' },
+        { s: 'enphase',     t: 'sunnova',    rel: 'Supplier' },
+        { s: 'nextracker',  t: 'firstsolar', rel: 'Integration partner' },
+        { s: 'sunrun',      t: 'sunnova',    rel: 'Competitor' },
+        { s: 'stem',        t: 'enphase',    rel: 'Integration' },
+        { s: 'tesla',       t: 'sunrun',     rel: 'Partner (Powerwall)' },
+        { s: 'vestas',      t: 'ge',         rel: 'Competitor' },
+        { s: 'orsted',      t: 'vestas',     rel: 'Turbine customer' },
+        { s: 'orsted',      t: 'ge',         rel: 'Turbine customer' },
+        { s: 'eip',         t: 'stem',       rel: 'Investor' },
+      ],
+    },
+  };
+
+  /* ── Company → sector lookup ──────────────────── */
+  const COMPANY_TO_SECTOR = {};
+  Object.entries(MARKET_MAPS).forEach(([key, map]) => {
+    COMPANY_TO_SECTOR[map.label.toLowerCase()] = key;
+    map.nodes.forEach(n => {
+      COMPANY_TO_SECTOR[n.name.toLowerCase()] = key;
+      COMPANY_TO_SECTOR[n.id.toLowerCase()] = key;
+    });
+  });
+
+  /* ── Build sector pill buttons ─────────────────── */
+  const sectorBtnsEl = document.getElementById('mm-sector-btns');
+  Object.entries(MARKET_MAPS).forEach(([key, map]) => {
+    const btn = document.createElement('button');
+    btn.className = 'mm-sector-btn';
+    btn.dataset.sector = key;
+    btn.textContent = map.icon + ' ' + map.label;
+    btn.addEventListener('click', () => loadMap(key));
+    sectorBtnsEl.appendChild(btn);
+  });
+
+  /* ── Search handler ────────────────────────────── */
+  document.getElementById('mm-search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    if (!q) return;
+    const match = COMPANY_TO_SECTOR[q];
+    if (match) loadMap(match);
+    else {
+      // fuzzy: check if any key starts with query
+      const fuzzy = Object.entries(COMPANY_TO_SECTOR).find(([k]) => k.startsWith(q));
+      if (fuzzy) loadMap(fuzzy[1]);
+    }
+  });
+
+  let currentSector = null;
+  let mmSimulation = null;
+
+  function loadMap(sectorKey) {
+    currentSector = sectorKey;
+    const map = MARKET_MAPS[sectorKey];
+
+    /* Highlight active sector btn */
+    document.querySelectorAll('.mm-sector-btn').forEach(b => b.classList.toggle('active', b.dataset.sector === sectorKey));
+
+    /* Update sidebar */
+    const sidebar = document.getElementById('mm-sidebar');
+    sidebar.innerHTML = `
+      <p class="mm-sector-desc">${map.description}</p>
+      <div class="mm-sidebar-label">Key Metrics</div>
+      <div class="mm-metrics-grid">
+        ${map.metrics.map(m => `<div class="mm-metric"><div class="mm-metric-val">${m.value}</div><div class="mm-metric-lbl">${m.label}</div></div>`).join('')}
+      </div>
+      <div class="mm-sidebar-label">Market Insights</div>
+      <ul class="mm-insights">${map.insights.map(i => `<li>${i}</li>`).join('')}</ul>
+      <div class="mm-sidebar-label">Categories</div>
+      <div class="mm-legend">
+        ${Object.entries(map.categories).map(([cat, color]) => `
+          <div class="mm-legend-item">
+            <div class="mm-legend-dot" style="background:${color}"></div>
+            <span>${cat}</span>
+          </div>`).join('')}
+      </div>`;
+
+    /* Render D3 graph */
+    renderGraph(map);
+  }
+
+  function renderGraph(map) {
+    const container = document.getElementById('mm-graph-col');
+    const W = container.clientWidth || 800;
+    const tooltip = document.getElementById('mm-tooltip');
+
+    /* Stop existing simulation */
+    if (mmSimulation) mmSimulation.stop();
+
+    const svg = d3.select('#mm-svg')
+      .attr('width', W).attr('height', 620);
+    svg.selectAll('*').remove();
+
+    const g = svg.append('g');
+
+    /* Zoom & pan */
+    svg.call(d3.zoom().scaleExtent([0.3, 3]).on('zoom', e => g.attr('transform', e.transform)));
+
+    /* Prep node/edge data */
+    const nodes = map.nodes.map(n => ({ ...n }));
+    const nodeById = Object.fromEntries(nodes.map(n => [n.id, n]));
+    const links = map.edges
+      .filter(e => nodeById[e.s] && nodeById[e.t])
+      .map(e => ({ source: e.s, target: e.t, rel: e.rel }));
+
+    const catColors = map.categories;
+    const color = d => catColors[d.cat] || '#94a3b8';
+    const radius = 22;
+
+    /* Force simulation */
+    const H_FIXED = 620;
+    mmSimulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(90).strength(0.5))
+      .force('charge', d3.forceManyBody().strength(-180).distanceMax(300))
+      .force('center', d3.forceCenter(W / 2, H_FIXED / 2).strength(0.08))
+      .force('collide', d3.forceCollide(radius + 14))
+      .force('x', d3.forceX(W / 2).strength(0.04))
+      .force('y', d3.forceY(H_FIXED / 2).strength(0.04))
+      .alphaDecay(0.025);
+
+    /* Links */
+    const link = g.append('g').selectAll('line')
+      .data(links).join('line')
+      .attr('class', 'mm-link');
+
+    /* Nodes */
+    const node = g.append('g').selectAll('g')
+      .data(nodes).join('g')
+      .attr('class', 'mm-node')
+      .call(d3.drag()
+        .on('start', (event, d) => { if (!event.active) mmSimulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on('drag',  (event, d) => { d.fx = event.x; d.fy = event.y; })
+        .on('end',   (event, d) => { if (!event.active) mmSimulation.alphaTarget(0); d.fx = null; d.fy = null; }));
+
+    node.append('circle')
+      .attr('r', radius)
+      .attr('fill', d => color(d) + '22')
+      .attr('stroke', d => color(d));
+
+    /* Logo image with fallback to initial text */
+    node.each(function(d) {
+      const g = d3.select(this);
+      const img = g.append('image')
+        .attr('x', -13).attr('y', -13).attr('width', 26).attr('height', 26)
+        .attr('href', `https://logo.clearbit.com/${d.domain}`)
+        .attr('clip-path', 'circle(12px)');
+
+      /* fallback text if image fails */
+      const txt = g.append('text')
+        .attr('text-anchor', 'middle').attr('dy', '0.35em')
+        .attr('font-size', '11px').attr('font-weight', '700')
+        .attr('fill', d => color(d))
+        .text(d.name.split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0,2).map(w=>w[0]).join(''))
+        .attr('display', 'none');
+
+      /* Use native image element to detect error */
+      const im = new Image();
+      im.onload = () => {};
+      im.onerror = () => { img.attr('href', ''); txt.attr('display', null); };
+      im.src = `https://logo.clearbit.com/${d.domain}`;
+    });
+
+    /* Label below node */
+    node.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('y', radius + 13)
+      .attr('font-size', '10px')
+      .attr('fill', 'rgba(255,255,255,0.75)')
+      .text(d => d.name.length > 18 ? d.name.slice(0, 17) + '…' : d.name);
+
+    /* Tooltip + highlight on hover */
+    node.on('mouseover', function(event, d) {
+        const connectedIds = new Set([d.id, ...links.filter(l => l.source.id === d.id || l.target.id === d.id).flatMap(l => [l.source.id, l.target.id])]);
+        node.classed('highlighted', n => n.id === d.id);
+        node.classed('dimmed', n => !connectedIds.has(n.id));
+        link.classed('highlighted', l => l.source.id === d.id || l.target.id === d.id);
+
+        const rels = links.filter(l => l.source.id === d.id || l.target.id === d.id)
+          .map(l => `${l.source.id === d.id ? '→' : '←'} ${l.source.id === d.id ? l.target.name || l.target.id : l.source.name || l.source.id} <em>(${l.rel})</em>`)
+          .slice(0,5).join('<br/>');
+        tooltip.innerHTML = `<div class="mm-tooltip-name">${d.name}</div>
+          <div class="mm-tooltip-cat" style="color:${color(d)}">${d.cat}</div>
+          <div class="mm-tooltip-note">${d.note}</div>
+          ${rels ? `<div class="mm-tooltip-rel" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;">${rels}</div>` : ''}`;
+        tooltip.style.opacity = 1;
+        tooltip.style.left = (event.offsetX + 16) + 'px';
+        tooltip.style.top  = (event.offsetY - 10) + 'px';
+      })
+      .on('mousemove', function(event) {
+        tooltip.style.left = (event.offsetX + 16) + 'px';
+        tooltip.style.top  = (event.offsetY - 10) + 'px';
+      })
+      .on('mouseout', function() {
+        node.classed('highlighted dimmed', false);
+        link.classed('highlighted', false);
+        tooltip.style.opacity = 0;
+      });
+
+    /* Tick */
+    mmSimulation.on('tick', () => {
+      link
+        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+  }
+
+  /* Load AI map by default when market map tab is opened */
+  const _origSwitchTab3 = switchTab;
+  switchTab = function(name) {
+    _origSwitchTab3(name);
+    if (name === 'marketmap' && !currentSector) loadMap('ai');
   };
 
   /* ── Contact form ──────────────────────────────── */
