@@ -159,7 +159,7 @@
           rgba(255,255,255,0.028) 60px
         );
     }
-    .hero-inner { position: relative; max-width: 760px; }
+    .hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
     .hero-eyebrow {
       font-size: 0.78rem;
       font-family: 'Arial', sans-serif;
@@ -204,6 +204,7 @@
 
     /* ── SECTION BASE ────────────────────────────── */
     section { padding: 72px 48px; }
+    .section-inner { max-width: 900px; margin: 0 auto; }
     .section-label {
       font-family: 'Arial', sans-serif;
       font-size: 0.72rem;
@@ -981,6 +982,62 @@
     .news-last-updated { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--gray); }
 
 
+    /* ── NEWS VIEW TOGGLE ───────────────────────── */
+    .news-view-toggle { display: flex; gap: 0; border: 1px solid var(--gray-light); border-radius: 6px; overflow: hidden; }
+    .news-view-btn {
+      background: var(--white); border: none; cursor: pointer;
+      padding: 7px 14px; font-family: 'Arial', sans-serif; font-size: 0.78rem;
+      font-weight: 700; letter-spacing: 0.05em; color: var(--gray);
+      display: flex; align-items: center; gap: 6px; transition: background 0.15s, color 0.15s;
+    }
+    .news-view-btn + .news-view-btn { border-left: 1px solid var(--gray-light); }
+    .news-view-btn.active { background: var(--navy); color: var(--white); }
+    .news-view-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── NEWS TABLE ──────────────────────────────── */
+    .news-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-light); background: var(--white); }
+    .news-table { width: 100%; border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 0.84rem; }
+    .news-table thead tr { background: var(--navy); }
+    .news-table th {
+      text-align: left; padding: 11px 16px;
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); white-space: nowrap; font-weight: 700;
+    }
+    .news-table td { padding: 12px 16px; vertical-align: middle; border-bottom: 1px solid var(--gray-light); color: var(--navy); line-height: 1.4; }
+    .news-table tbody tr:last-child td { border-bottom: none; }
+    .news-table tbody tr:hover td { background: #f5f7fa; }
+    .news-table-title { position: relative; }
+    .news-table-title a { color: var(--navy); text-decoration: none; font-weight: 600; }
+    .news-table-title a:hover { text-decoration: underline; color: var(--navy-mid); }
+    .news-table-title .nt-tooltip {
+      display: none;
+      position: absolute;
+      left: 0; top: calc(100% + 6px);
+      width: 320px;
+      background: var(--navy);
+      color: rgba(255,255,255,0.88);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      padding: 11px 14px;
+      border-radius: 7px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 999;
+      pointer-events: none;
+    }
+    .news-table-title .nt-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 18px;
+      width: 10px; height: 10px;
+      background: var(--navy);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+    .news-table-title:hover .nt-tooltip { display: block; }
+    .news-table-source { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--navy-mid); white-space: nowrap; }
+    .news-table-date { font-size: 0.72rem; color: var(--gray); white-space: nowrap; }
+    .news-table-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+
     /* ── NEWS FILTER LABEL ───────────────────────── */
     .news-filter-label {
       font-family: 'Arial', sans-serif;
@@ -1073,6 +1130,7 @@
   </div>
 
   <section style="background: var(--off-white);">
+    <div class="section-inner">
     <p class="section-label">Areas of Focus</p>
     <h2>Core <span class="accent">Expertise</span></h2>
     <div class="card-grid">
@@ -1107,6 +1165,7 @@
         <p>Deep familiarity with PE and VC fund structures, deal lifecycle, valuation methodologies, and the investor dynamics that shape GP–LP relationships across the fund lifecycle.</p>
       </div>
     </div>
+    </div>
   </section>
 
 </div>
@@ -1115,6 +1174,7 @@
 <div id="tab-about" class="tab-panel">
 
   <section style="background: var(--off-white);">
+    <div class="section-inner">
     <p class="section-label">Background</p>
     <h2>Who <span class="accent">I Am</span></h2>
     <div class="about-layout">
@@ -1169,6 +1229,7 @@
           </li>
         </ul>
       </div>
+    </div>
     </div>
   </section>
 
@@ -1432,6 +1493,16 @@
     <div class="news-meta-row">
       <button class="news-refresh-btn" id="news-refresh">↻ Refresh</button>
       <span class="news-last-updated" id="news-last-updated"></span>
+      <div class="news-view-toggle" style="margin-left:auto;">
+        <button class="news-view-btn" id="news-view-card" title="Card view">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Cards
+        </button>
+        <button class="news-view-btn active" id="news-view-table" title="Table view">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="14" height="3" rx="0.5"/><rect x="1" y="6" width="14" height="3" rx="0.5"/><rect x="1" y="11" width="14" height="3" rx="0.5"/></svg>
+          Table
+        </button>
+      </div>
     </div>
 
     <div id="news-output"><p class="news-status">Loading headlines…</p></div>
@@ -1894,19 +1965,59 @@
     );
   }
 
+  let newsView = 'table'; // default to table
+
   function renderNews() {
     const el = document.getElementById('news-output');
     const list = applyNewsFilters();
     if (!list.length) { el.innerHTML = '<p class="news-status">No articles match the selected filters.</p>'; return; }
-    el.innerHTML = `<div class="news-grid">${list.map(a => `
-      <a class="news-card" href="${a.link}" target="_blank" rel="noopener noreferrer">
-        <div class="news-card-source">${a.source}</div>
-        <div class="news-card-title">${a.title}</div>
-        ${a.tags.length ? `<div class="news-card-tags">${a.tags.map(t => `<span class="n-tag ${t.cls}">${t.tag}</span>`).join('')}</div>` : ''}
-        ${a.desc ? `<div class="news-card-desc">${a.desc}</div>` : ''}
-        <div class="news-card-date">${fmtDate(a.date)}</div>
-      </a>`).join('')}</div>`;
+
+    if (newsView === 'card') {
+      el.innerHTML = `<div class="news-grid">${list.map(a => `
+        <a class="news-card" href="${a.link}" target="_blank" rel="noopener noreferrer">
+          <div class="news-card-source">${a.source}</div>
+          <div class="news-card-title">${a.title}</div>
+          ${a.tags.length ? `<div class="news-card-tags">${a.tags.map(t => `<span class="n-tag ${t.cls}">${t.tag}</span>`).join('')}</div>` : ''}
+          ${a.desc ? `<div class="news-card-desc">${a.desc}</div>` : ''}
+          <div class="news-card-date">${fmtDate(a.date)}</div>
+        </a>`).join('')}</div>`;
+    } else {
+      el.innerHTML = `<div class="news-table-wrap">
+        <table class="news-table">
+          <thead><tr>
+            <th>Source</th>
+            <th>Headline</th>
+            <th>Topics</th>
+            <th>Date</th>
+          </tr></thead>
+          <tbody>${list.map(a => `
+            <tr>
+              <td class="news-table-source">${a.source}</td>
+              <td class="news-table-title">
+                <a href="${a.link}" target="_blank" rel="noopener noreferrer">${a.title}</a>
+                ${a.desc ? `<div class="nt-tooltip">${a.desc}</div>` : ''}
+              </td>
+              <td><div class="news-table-tags">${a.tags.map(t => `<span class="n-tag ${t.cls}">${t.tag}</span>`).join('')}</div></td>
+              <td class="news-table-date">${fmtDate(a.date)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
   }
+
+  document.getElementById('news-view-card').addEventListener('click', () => {
+    newsView = 'card';
+    document.getElementById('news-view-card').classList.add('active');
+    document.getElementById('news-view-table').classList.remove('active');
+    renderNews();
+  });
+  document.getElementById('news-view-table').addEventListener('click', () => {
+    newsView = 'table';
+    document.getElementById('news-view-table').classList.add('active');
+    document.getElementById('news-view-card').classList.remove('active');
+    renderNews();
+  });
 
   function buildTagFilters() {
     const sel = document.getElementById('news-tag-select');
