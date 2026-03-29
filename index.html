@@ -141,6 +141,16 @@
       position: relative;
       overflow: hidden;
     }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('NewYorkBridge.jpg');
+      background-size: cover;
+      background-position: center 60%;
+      opacity: 0.13;
+      pointer-events: none;
+    }
     .hero::before {
       content: '';
       position: absolute;
@@ -158,8 +168,9 @@
           transparent 59px,
           rgba(255,255,255,0.028) 60px
         );
+      z-index: 1;
     }
-    .hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
+    .hero-inner { position: relative; z-index: 2; max-width: 860px; margin: 0 auto; }
     .hero-eyebrow {
       font-size: 0.78rem;
       font-family: 'Arial', sans-serif;
@@ -288,6 +299,19 @@
     }
     .timeline-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin: 3px 0; }
     .timeline-sub { font-family: 'Arial', sans-serif; font-size: 0.85rem; color: var(--gray); }
+    .timeline-logo { height: 18px; width: auto; vertical-align: middle; margin-right: 6px; opacity: 0.85; position: relative; top: -1px; }
+
+    /* ── CERTIFICATIONS ──────────────────────────── */
+    .cert-list { display: flex; flex-direction: column; gap: 14px; }
+    .cert-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--white); border: 1px solid var(--gray-light);
+      border-radius: 8px; padding: 12px 16px;
+    }
+    .cert-logo { height: 36px; width: 36px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
+    .cert-info { display: flex; flex-direction: column; gap: 2px; }
+    .cert-name { font-size: 0.9rem; font-weight: 700; color: var(--navy); }
+    .cert-issuer { font-family: 'Arial', sans-serif; font-size: 0.78rem; color: var(--gray); }
 
     .skills-section { background: var(--navy); }
     .skills-section h2, .skills-section .section-label { color: var(--white); }
@@ -795,6 +819,151 @@
       flex-shrink: 0;
     }
 
+    /* ── EVENT CALENDAR ──────────────────────────────── */
+    .events-section { background: var(--navy); color: var(--white); }
+    .events-section .section-label { color: rgba(255,255,255,0.55); }
+    .events-section h2 { color: var(--white); }
+    .events-layout { display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start; }
+    .events-filter-col { position: sticky; top: 80px; }
+    .events-filter-label { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; }
+    .events-filter-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: rgba(255,255,255,0.6); font-family: 'Arial', sans-serif; font-size: 0.82rem; padding: 7px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s; margin-bottom: 3px; }
+    .events-filter-btn:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    .events-filter-btn.active { background: rgba(255,255,255,0.12); color: var(--white); font-weight: 700; }
+    .events-month-group { margin-bottom: 36px; }
+    .events-month-title { font-family: 'Arial', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 14px; }
+    .event-row { display: flex; align-items: flex-start; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .event-row:last-child { border-bottom: none; }
+    .event-date-col { min-width: 52px; text-align: center; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 7px 6px; flex-shrink: 0; }
+    .event-date-day { font-size: 1.25rem; font-weight: 700; color: var(--white); line-height: 1; }
+    .event-date-mon { font-family: 'Arial', sans-serif; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
+    .event-info { flex: 1; }
+    .event-name { font-size: 0.92rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+    .event-detail { font-family: 'Arial', sans-serif; font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+    .event-tag { display: inline-block; font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; flex-shrink: 0; }
+    .event-tag-fomc { background: rgba(99,179,237,0.2); color: #90cdf4; }
+    .event-tag-econ { background: rgba(72,187,120,0.2); color: #9ae6b4; }
+    .event-tag-conf { background: rgba(237,137,54,0.2); color: #fbd38d; }
+    .event-tag-pe { background: rgba(159,122,234,0.2); color: #d6bcfa; }
+    .event-tag-holiday { background: rgba(252,129,129,0.2); color: #fc8181; }
+    .event-empty { font-family: 'Arial', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.35); padding: 40px 0; text-align: center; }
+    @media (max-width: 680px) { .events-layout { grid-template-columns: 1fr; } .events-filter-col { position: static; } }
+    /* ── EVENT MINI-CALENDAR ─────────────────────── */
+    .evcal-wrap { margin-bottom: 40px; }
+    .evcal-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .evcal-nav-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: var(--white); padding: 5px 14px; font-size: 1rem; cursor: pointer; transition: background 0.15s; }
+    .evcal-nav-btn:hover { background: rgba(255,255,255,0.18); }
+    .evcal-month-label { font-family: 'Arial', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--white); min-width: 180px; text-align: center; }
+    .evcal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .evcal-dow { font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-align: center; padding: 4px 0 8px; }
+    .evcal-day { min-height: 58px; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 6px 7px; font-family: 'Arial', sans-serif; font-size: 0.8rem; color: rgba(255,255,255,0.5); position: relative; background: rgba(255,255,255,0.03); }
+    .evcal-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
+    .evcal-day.has-events { color: var(--white); cursor: pointer; border-color: rgba(255,255,255,0.15); }
+    .evcal-day.has-events:hover { background: rgba(255,255,255,0.1); }
+    .evcal-day.today { box-shadow: 0 0 0 2px var(--gold); }
+    .evcal-day.selected { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.4) !important; color: var(--white); }
+    .evcal-dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .evcal-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .evcal-dot-fomc { background: #90cdf4; }
+    .evcal-dot-econ { background: #9ae6b4; }
+    .evcal-dot-conf { background: #fbd38d; }
+    .evcal-dot-pe { background: #d6bcfa; }
+    .evcal-dot-holiday { background: #fc8181; }
+    .evcal-day { position: relative; }
+    .evcal-tooltip {
+      display: none;
+      position: absolute;
+      left: 50%; top: calc(100% + 8px);
+      transform: translateX(-50%);
+      min-width: 200px; max-width: 260px;
+      background: #1a2540;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 13px;
+      z-index: 999;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    .evcal-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 9px; height: 9px;
+      background: #1a2540;
+      border-left: 1px solid rgba(255,255,255,0.15);
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .evcal-day.has-events:hover .evcal-tooltip { display: block; }
+    .evcal-tooltip-entry { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .evcal-tooltip-entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .evcal-tooltip-entry:first-child { padding-top: 0; }
+    .evcal-tooltip-name { font-size: 0.78rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+    .evcal-tooltip-detail { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: rgba(255,255,255,0.55); line-height: 1.45; }
+
+    /* ── PERSONAL LIBRARY ───────────────────────── */
+    .lib-page { background: var(--navy); min-height: 100vh; padding: 72px 48px; }
+    .lib-page .section-label { color: rgba(255,255,255,0.55); }
+    .lib-page h2 { color: var(--white); }
+    .lib-intro { font-family: 'Arial', sans-serif; font-size: 0.95rem; color: rgba(255,255,255,0.6); max-width: 640px; margin-bottom: 36px; line-height: 1.65; }
+    .lib-featured-label { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .lib-featured-strip { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 40px; scrollbar-width: thin; }
+    .lib-featured-strip::-webkit-scrollbar { height: 4px; }
+    .lib-featured-strip::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    .lib-featured-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .lib-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 28px; }
+    .lib-search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+    .lib-search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
+    .lib-search { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--white); font-family: 'Arial', sans-serif; font-size: 0.85rem; padding: 9px 12px 9px 34px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+    .lib-search::placeholder { color: rgba(255,255,255,0.3); }
+    .lib-search:focus { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.1); }
+    .lib-select { background: var(--navy); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--white); font-family: 'Arial', sans-serif; font-size: 0.82rem; padding: 8px 12px; outline: none; cursor: pointer; }
+    .lib-select option { background: var(--navy); color: var(--white); }
+    .lib-select:focus { border-color: rgba(255,255,255,0.45); }
+    .lib-view-toggle { display: flex; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; margin-left: 4px; }
+    .lib-view-btn { background: none; border: none; cursor: pointer; padding: 7px 10px; color: rgba(255,255,255,0.5); display: flex; align-items: center; transition: all 0.15s; }
+    .lib-view-btn svg { width: 14px; height: 14px; }
+    .lib-view-btn + .lib-view-btn { border-left: 1px solid rgba(255,255,255,0.2); }
+    .lib-view-btn.active { background: rgba(255,255,255,0.12); color: var(--white); }
+    .lib-view-btn:hover { color: var(--white); }
+    .lib-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+    .lib-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .lib-table thead tr { background: rgba(255,255,255,0.06); }
+    .lib-table th { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 10px 14px; text-align: left; }
+    .lib-table td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); vertical-align: middle; }
+    .lib-table tbody tr:last-child td { border-bottom: none; }
+    .lib-table tbody tr:hover td { background: rgba(255,255,255,0.04); }
+    .lib-table-title a { color: var(--white); text-decoration: none; font-weight: 600; }
+    .lib-table-title a:hover { text-decoration: underline; }
+    .lib-table-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+    .lib-table-meta { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.4); white-space: nowrap; }
+    .lib-clear { background: none; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: rgba(255,255,255,0.55); font-family: 'Arial', sans-serif; font-size: 0.8rem; padding: 8px 14px; cursor: pointer; transition: all 0.15s; }
+    .lib-clear:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .lib-count { font-family: 'Arial', sans-serif; font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-left: auto; }
+    .lib-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .lib-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transition: background 0.2s, border-color 0.2s; }
+    .lib-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+    .lib-card.featured { border-color: rgba(255,255,255,0.28); }
+    .lib-card-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lib-type-badge { font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+    .lib-type-article { background: rgba(99,179,237,0.18); color: #90cdf4; }
+    .lib-type-video { background: rgba(245,101,101,0.18); color: #fc8181; }
+    .lib-type-reference { background: rgba(72,187,120,0.18); color: #9ae6b4; }
+    .lib-type-tool { background: rgba(237,137,54,0.18); color: #fbd38d; }
+    .lib-new-badge { font-family: 'Arial', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: var(--gold); color: var(--navy); margin-left: auto; }
+    .lib-card-title { font-size: 0.97rem; font-weight: 700; line-height: 1.4; }
+    .lib-card-title a { color: var(--white); text-decoration: none; }
+    .lib-card-title a:hover { text-decoration: underline; color: rgba(255,255,255,0.85); }
+    .lib-card-desc { font-family: 'Arial', sans-serif; font-size: 0.84rem; color: rgba(255,255,255,0.6); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .lib-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .lib-tag { font-family: 'Arial', sans-serif; font-size: 0.68rem; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 2px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .lib-tag:hover { border-color: rgba(255,255,255,0.4); color: var(--white); background: rgba(255,255,255,0.07); }
+    .lib-card-footer { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+    .lib-card-meta { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: rgba(255,255,255,0.38); }
+    .lib-open-link { font-family: 'Arial', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.15s; }
+    .lib-open-link:hover { color: var(--white); }
+    .lib-empty { text-align: center; padding: 80px 0; font-family: 'Arial', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.3); }
+    @media (max-width: 680px) { .lib-page { padding: 52px 20px; } .lib-card-grid { grid-template-columns: 1fr; } }
+
     /* ── CONTACT ─────────────────────────────────── */
     .contact-layout {
       display: grid;
@@ -994,6 +1163,33 @@
     .news-view-btn.active { background: var(--navy); color: var(--white); }
     .news-view-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
 
+    /* ── CHANGELOG ──────────────────────────────── */
+    .cl-section { background: var(--off-white, #f8f9fb); }
+    .cl-nav { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; }
+    .cl-nav-btn { background: none; border: 1px solid var(--gray-light); border-radius: 6px; padding: 6px 14px; font-size: 1.1rem; cursor: pointer; color: var(--navy); transition: all 0.15s; }
+    .cl-nav-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .cl-month-label { font-family: 'Arial', sans-serif; font-size: 1rem; font-weight: 700; color: var(--navy); min-width: 160px; text-align: center; letter-spacing: 0.04em; text-transform: uppercase; }
+    .cl-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 28px; }
+    .cl-dow { font-family: 'Arial', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-align: center; padding: 6px 0 10px; }
+    .cl-day { min-height: 52px; border: 1px solid var(--gray-light); border-radius: 6px; padding: 6px 8px; font-family: 'Arial', sans-serif; font-size: 0.82rem; color: var(--navy); position: relative; background: var(--white); }
+    .cl-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
+    .cl-day.has-entries { border-color: var(--navy-mid); cursor: pointer; }
+    .cl-day.has-entries:hover { background: #eef1f8; }
+    .cl-day.today { box-shadow: 0 0 0 2px var(--navy-mid); }
+    .cl-day.selected { background: var(--navy) !important; color: var(--white) !important; border-color: var(--navy) !important; }
+    .cl-day.selected .cl-dot { background: var(--white); }
+    .cl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--navy-mid); position: absolute; bottom: 6px; right: 6px; }
+    .cl-detail { background: var(--white); border: 1px solid var(--gray-light); border-radius: 10px; padding: 22px 24px; }
+    .cl-detail-date { font-family: 'Arial', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy-mid); margin-bottom: 14px; }
+    .cl-entry { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-light); }
+    .cl-entry:last-child { border-bottom: none; }
+    .cl-cat { font-family: 'Arial', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .cl-cat-feature { background: rgba(99,179,237,0.15); color: #2b6cb0; }
+    .cl-cat-ui { background: rgba(237,137,54,0.15); color: #c05621; }
+    .cl-cat-content { background: rgba(72,187,120,0.15); color: #276749; }
+    .cl-cat-fix { background: rgba(245,101,101,0.15); color: #c53030; }
+    .cl-cat-performance { background: rgba(159,122,234,0.15); color: #553c9a; }
+
     /* ── NEWS TABLE ──────────────────────────────── */
     .news-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-light); background: var(--white); }
     .news-table { width: 100%; border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 0.84rem; }
@@ -1086,7 +1282,7 @@
 <body>
 
 <header>
-  <div class="logo">Darren <span>Lo</span></div>
+  <div class="logo" onclick="switchTab('home')" style="cursor:pointer;">Darren <span>Lo</span></div>
   <nav id="main-nav">
     <button class="active" data-tab="home">Home</button>
     <button data-tab="about">About</button>
@@ -1107,6 +1303,8 @@
         <button data-tab="resources" id="dd-finance">Finance Resources</button>
         <button data-tab="ai" id="dd-ai">AI Use Case Ideas</button>
         <button data-tab="directory" id="dd-directory">Private Market Directory</button>
+        <button data-tab="events" id="dd-events">Event Calendar</button>
+        <button data-tab="library" id="dd-library">Personal Library</button>
       </div>
     </div>
     <button data-tab="news">News</button>
@@ -1121,10 +1319,11 @@
     <div class="hero-inner">
       <p class="hero-eyebrow">Private Markets &middot; Fund Operations &middot; Investor Relations &middot; Investor Services</p>
       <h1>Building and Supporting the<br>Growth of <em>Private Financial Markets</em></h1>
-      <p>Finance professional focused on private market operations, fund lifecycle management, and strengthening the infrastructure that enables GPs, LPs, and intermediaries to operate with clarity and confidence.</p>
+      <p>Finance professional focused on private market operations, fund lifecycle management, and investor relations.</p>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="switchTab('projects')">View My Work</button>
-        <button class="btn btn-outline" onclick="switchTab('contact')">Get in Touch</button>
+        <button class="btn btn-primary" onclick="switchTab('about')">About</button>
+        <button class="btn btn-primary" onclick="switchTab('projects')">My Projects</button>
+        <button class="btn btn-primary" onclick="switchTab('contact')">Get in Touch</button>
       </div>
     </div>
   </div>
@@ -1179,8 +1378,8 @@
     <h2>Who <span class="accent">I Am</span></h2>
     <div class="about-layout">
       <div class="about-text">
-        <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in capital events and performance across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
-        <p>My work sits at the intersection of fund operations and client partnership — translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
+        <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in managing fund capital activity across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
+        <p>My work sits at the intersection of fund operations and client partnership, translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
         <p>• <strong>Investments:</strong> Worked with private equity search funds to source and evaluate mature, industrial businesses in the southern US</p>
         <p>• <strong>Investor Relations:</strong> Successfully raised pre-seed/seed stage rounds to fuel product development</p>
         <p>• <strong>Fund Operations:</strong> Currently at Juniper Square, I partner with General Partners across the private market to streamline and manage their funds' capital activity and investor communications over its lifecycle while navigating complex fund structures.</p>
@@ -1191,32 +1390,32 @@
           <li>
             <div class="timeline-year">2025 – Present</div>
             <div class="timeline-title">Senior Associate, Fund Administration</div>
-            <div class="timeline-sub">Juniper Square — Capital Events &amp; Performance</div>
+            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
           </li>
           <li>
             <div class="timeline-year">2023 – 2025</div>
             <div class="timeline-title">Associate I &amp; II, Fund Administration</div>
-            <div class="timeline-sub">Juniper Square — Capital Events &amp; Performance</div>
+            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
           </li>
           <li>
             <div class="timeline-year">2022 – 2023</div>
             <div class="timeline-title">Private Equity Analyst</div>
-            <div class="timeline-sub">WIDEangle Ventures — Search Fund</div>
+            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
           </li>
           <li>
             <div class="timeline-year">2022</div>
             <div class="timeline-title">Investor Relations Intern</div>
-            <div class="timeline-sub">Objective Reality, Inc.</div>
+            <div class="timeline-sub"><img src="objective-reality.jpeg" class="timeline-logo" alt="Objective Reality">Objective Reality, Inc.</div>
           </li>
           <li>
             <div class="timeline-year">2022</div>
             <div class="timeline-title">Investment Analyst Intern</div>
-            <div class="timeline-sub">Vienna Holdings Group — Search Fund</div>
+            <div class="timeline-sub"><img src="vienna-holdings.jpeg" class="timeline-logo" alt="Vienna Holdings Group">Vienna Holdings Group — Search Fund</div>
           </li>
           <li>
             <div class="timeline-year">2021 – 2022</div>
             <div class="timeline-title">Private Equity Research Intern</div>
-            <div class="timeline-sub">WIDEangle Ventures — Search Fund</div>
+            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
           </li>
         </ul>
 
@@ -1225,9 +1424,27 @@
           <li>
             <div class="timeline-year">2023</div>
             <div class="timeline-title">B.A., Finance &amp; Data Analytics</div>
-            <div class="timeline-sub">Ohio Wesleyan University</div>
+            <div class="timeline-sub"><img src="ohio-wesleyan.png" class="timeline-logo" alt="Ohio Wesleyan University">Ohio Wesleyan University</div>
           </li>
         </ul>
+
+        <p class="section-label" style="margin-top:36px; margin-bottom:20px;">Licenses &amp; Certifications</p>
+        <div class="cert-list">
+          <div class="cert-item">
+            <img src="cfi.png" class="cert-logo" alt="Corporate Finance Institute">
+            <div class="cert-info">
+              <span class="cert-name">Financial Analysis and Modeling Professional Certificate</span>
+              <span class="cert-issuer">Corporate Finance Institute (CFI)</span>
+            </div>
+          </div>
+          <div class="cert-item">
+            <img src="anthropic.jpeg" class="cert-logo" alt="Anthropic">
+            <div class="cert-info">
+              <span class="cert-name">Claude 101</span>
+              <span class="cert-issuer">Anthropic</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     </div>
@@ -1509,12 +1726,98 @@
   </div>
 </div>
 
+<!-- ══════════════════════ EVENT CALENDAR ══════════════════════ -->
+<div id="tab-events" class="tab-panel">
+  <section class="resources-section events-section">
+    <p class="section-label">Key Dates &amp; Conferences</p>
+    <h2>Event <span class="accent">Calendar</span></h2>
+
+    <!-- Mini Calendar -->
+    <div class="evcal-wrap">
+      <div class="evcal-nav">
+        <button class="evcal-nav-btn" id="evcal-prev">&#8249;</button>
+        <span class="evcal-month-label" id="evcal-month-label"></span>
+        <button class="evcal-nav-btn" id="evcal-next">&#8250;</button>
+      </div>
+      <div class="evcal-grid" id="evcal-grid"></div>
+    </div>
+
+    <!-- Filter + Listings -->
+    <div class="events-layout">
+      <div class="events-filter-col">
+        <div class="events-filter-label">Filter by Type</div>
+        <button class="events-filter-btn active" data-filter="all">All Events</button>
+        <button class="events-filter-btn" data-filter="econ"><span class="evcal-dot evcal-dot-econ" style="display:inline-block;margin-right:8px;vertical-align:middle;"></span>Economic Data</button>
+        <button class="events-filter-btn" data-filter="conf"><span class="evcal-dot evcal-dot-conf" style="display:inline-block;margin-right:8px;vertical-align:middle;"></span>Finance Conferences</button>
+        <button class="events-filter-btn" data-filter="fomc"><span class="evcal-dot evcal-dot-fomc" style="display:inline-block;margin-right:8px;vertical-align:middle;"></span>FOMC Meetings</button>
+        <button class="events-filter-btn" data-filter="holiday"><span class="evcal-dot evcal-dot-holiday" style="display:inline-block;margin-right:8px;vertical-align:middle;"></span>Holidays</button>
+        <button class="events-filter-btn" data-filter="pe"><span class="evcal-dot evcal-dot-pe" style="display:inline-block;margin-right:8px;vertical-align:middle;"></span>Private Markets</button>
+      </div>
+      <div id="events-list"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════ PERSONAL LIBRARY ══════════════════════ -->
+<div id="tab-library" class="tab-panel">
+  <div class="lib-page">
+    <p class="section-label">Curated Resources</p>
+    <h2>Personal Library</h2>
+    <p class="lib-intro">Running collection of articles, videos, tools, and reference documents spanning across technology, finance, business, and personal development.</p>
+
+    <div id="lib-featured-wrap" style="display:none;">
+      <div class="lib-featured-label">🆕 Newest</div>
+      <div class="lib-featured-strip" id="lib-featured-strip"></div>
+    </div>
+
+    <div class="lib-controls">
+      <div class="lib-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="lib-search" id="lib-search" type="text" placeholder="Search titles, descriptions, tags…" />
+      </div>
+      <select class="lib-select" id="lib-type-filter">
+        <option value="">All Types</option>
+        <option value="article">📄 Article</option>
+        <option value="video">🎬 Video</option>
+        <option value="reference">📋 Reference</option>
+        <option value="tool">🔧 Tool</option>
+      </select>
+      <select class="lib-select" id="lib-cat-filter"><option value="">All Categories</option></select>
+      <select class="lib-select" id="lib-sort">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="az">A – Z</option>
+      </select>
+      <button class="lib-clear" id="lib-clear">Clear</button>
+      <span class="lib-count" id="lib-count"></span>
+      <div class="lib-view-toggle">
+        <button class="lib-view-btn active" id="lib-view-card" title="Card view">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </button>
+        <button class="lib-view-btn" id="lib-view-table" title="Table view">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="14" height="3" rx="0.5"/><rect x="1" y="6" width="14" height="3" rx="0.5"/><rect x="1" y="11" width="14" height="3" rx="0.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="lib-card-grid" id="lib-grid"></div>
+    <div class="lib-table-wrap" id="lib-table-wrap" style="display:none;">
+      <table class="lib-table">
+        <thead><tr><th>Type</th><th>Title</th><th>Category</th><th>Tags</th><th>Source</th><th>Date</th></tr></thead>
+        <tbody id="lib-table-body"></tbody>
+      </table>
+    </div>
+    <div class="lib-empty" id="lib-empty" style="display:none;">No items match your search.</div>
+  </div>
+</div>
+
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <div id="tab-contact" class="tab-panel">
 
   <section style="background: var(--off-white);">
     <p class="section-label">Reach Out</p>
     <h2>Get in <span class="accent">Touch</span></h2>
+    <p style="font-size:1.05rem; color:var(--gray); margin: -8px 0 36px; line-height:1.7;">I'm happy to chat virtually and in-person! Best way to reach out is through <a href="https://www.linkedin.com/in/darren-lo-989886183/" target="_blank" rel="noopener noreferrer" style="color:var(--navy); font-weight:600;">LinkedIn</a> and connecting there.</p>
     <div class="contact-layout">
 
       <div class="contact-info">
@@ -1539,13 +1842,32 @@
 
 </div>
 
+<!-- ══════════════════════ CHANGELOG ══════════════════════ -->
+<div id="tab-changelog" class="tab-panel">
+  <section class="section cl-section">
+    <div class="section-inner" style="max-width:760px;">
+      <p class="section-label">Site History</p>
+      <h2>Changelog <span class="accent">Calendar</span></h2>
+      <div class="cl-nav">
+        <button class="cl-nav-btn" id="cl-prev">&#8249;</button>
+        <span class="cl-month-label" id="cl-month-label"></span>
+        <button class="cl-nav-btn" id="cl-next">&#8250;</button>
+      </div>
+      <div class="cl-grid" id="cl-grid"></div>
+      <div class="cl-detail" id="cl-detail" style="display:none;">
+        <div class="cl-detail-date" id="cl-detail-date"></div>
+        <div id="cl-detail-entries"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
   <div class="footer-copy">&copy; 2026 Darren Lo. All rights reserved.</div>
   <div class="footer-links">
-    <a href="#">Privacy</a>
-    <a href="#">Disclosures</a>
     <a href="#" onclick="switchTab('contact'); return false;">Contact</a>
+    <a href="#" onclick="switchTab('changelog'); return false;">Changelog</a>
   </div>
 </footer>
 
@@ -1868,6 +2190,14 @@
     switchTab('directory');
     dropdown.classList.remove('open');
   });
+  document.getElementById('dd-events').addEventListener('click', () => {
+    switchTab('events');
+    dropdown.classList.remove('open');
+  });
+  document.getElementById('dd-library').addEventListener('click', () => {
+    switchTab('library');
+    dropdown.classList.remove('open');
+  });
 
   /* ══ TAB SWITCHING ════════════════════════════════ */
   function switchTab(name) {
@@ -1876,11 +2206,13 @@
     /* Highlight regular nav buttons */
     document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.remove('active'));
     /* Highlight resources dropdown trigger if resources or ai */
-    trigger.classList.toggle('active', name === 'resources' || name === 'ai' || name === 'directory');
+    trigger.classList.toggle('active', name === 'resources' || name === 'ai' || name === 'directory' || name === 'events' || name === 'library');
     /* Update dropdown item highlight */
     document.getElementById('dd-finance').classList.toggle('active', name === 'resources');
     document.getElementById('dd-ai').classList.toggle('active', name === 'ai');
     document.getElementById('dd-directory').classList.toggle('active', name === 'directory');
+    document.getElementById('dd-events').classList.toggle('active', name === 'events');
+    document.getElementById('dd-library').classList.toggle('active', name === 'library');
     /* Highlight plain buttons */
     const plain = document.querySelector(`nav button[data-tab="${name}"]`);
     if (plain) plain.classList.add('active');
@@ -2803,6 +3135,612 @@
       e.target.reset();
     }, 3000);
   }
+
+  /* ── CHANGELOG ─────────────────────────────────────────── */
+  let clData = null;
+  let clYear = new Date().getFullYear();
+  let clMonth = new Date().getMonth();
+  let clSelected = null;
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  async function loadChangelog() {
+    try {
+      const r = await fetch('/changelog.json');
+      const arr = await r.json();
+      clData = new Map();
+      arr.forEach(d => clData.set(d.date, d.entries));
+      renderCal();
+    } catch(e) { console.error('Changelog load failed', e); }
+  }
+
+  function renderCal() {
+    document.getElementById('cl-month-label').textContent = MONTH_NAMES[clMonth] + ' ' + clYear;
+    const grid = document.getElementById('cl-grid');
+    grid.innerHTML = DOW.map(d => `<div class="cl-dow">${d}</div>`).join('');
+    const firstDay = new Date(clYear, clMonth, 1).getDay(); // 0=Sun
+    const leadingBlanks = (firstDay === 0 ? 6 : firstDay - 1);
+    const daysInMonth = new Date(clYear, clMonth + 1, 0).getDate();
+    const today = new Date();
+    for (let i = 0; i < leadingBlanks; i++) grid.innerHTML += `<div class="cl-day empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${clYear}-${String(clMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasEntries = clData && clData.has(dateStr);
+      const isToday = today.getFullYear()===clYear && today.getMonth()===clMonth && today.getDate()===d;
+      const isSelected = clSelected === dateStr;
+      let cls = 'cl-day';
+      if (hasEntries) cls += ' has-entries';
+      if (isToday) cls += ' today';
+      if (isSelected) cls += ' selected';
+      grid.innerHTML += `<div class="${cls}" ${hasEntries ? `onclick="selectDay('${dateStr}')"` : ''}>${d}${hasEntries ? '<div class="cl-dot"></div>' : ''}</div>`;
+    }
+  }
+
+  function selectDay(dateStr) {
+    clSelected = dateStr;
+    renderCal();
+    const entries = clData.get(dateStr) || [];
+    const [y,m,d] = dateStr.split('-');
+    const label = MONTH_NAMES[parseInt(m)-1] + ' ' + parseInt(d) + ', ' + y;
+    document.getElementById('cl-detail-date').textContent = label;
+    const catClass = { Feature:'cl-cat-feature', UI:'cl-cat-ui', Content:'cl-cat-content', Fix:'cl-cat-fix', Performance:'cl-cat-performance' };
+    document.getElementById('cl-detail-entries').innerHTML = entries.map(e =>
+      `<div class="cl-entry"><span class="cl-cat ${catClass[e.category]||'cl-cat-content'}">${e.category}</span><span>${e.description}</span></div>`
+    ).join('');
+    document.getElementById('cl-detail').style.display = 'block';
+  }
+
+  document.getElementById('cl-prev').addEventListener('click', () => {
+    clMonth--; if (clMonth < 0) { clMonth = 11; clYear--; }
+    clSelected = null;
+    document.getElementById('cl-detail').style.display = 'none';
+    if (clData) renderCal();
+  });
+  document.getElementById('cl-next').addEventListener('click', () => {
+    clMonth++; if (clMonth > 11) { clMonth = 0; clYear++; }
+    clSelected = null;
+    document.getElementById('cl-detail').style.display = 'none';
+    if (clData) renderCal();
+  });
+
+  /* Lazy-load on first tab visit */
+  const _origSwitchTabCL = switchTab;
+  switchTab = function(name) {
+    _origSwitchTabCL(name);
+    if (name === 'changelog' && !clData) loadChangelog();
+  };
+
+  /* ── EVENT CALENDAR ─────────────────────────────────────────── */
+  const EVENTS_DATA = [
+    // FOMC
+    { date: '2026-01-27', end: '2026-01-28', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Jan 27-28', type: 'fomc' },
+    { date: '2026-03-17', end: '2026-03-18', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Mar 17-18', type: 'fomc' },
+    { date: '2026-04-28', end: '2026-04-29', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Apr 28-29', type: 'fomc' },
+    { date: '2026-06-09', end: '2026-06-10', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Jun 9-10', type: 'fomc' },
+    { date: '2026-07-28', end: '2026-07-29', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Jul 28-29', type: 'fomc' },
+    { date: '2026-09-15', end: '2026-09-16', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Sep 15-16', type: 'fomc' },
+    { date: '2026-10-27', end: '2026-10-28', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Oct 27-28', type: 'fomc' },
+    { date: '2026-12-08', end: '2026-12-09', name: 'FOMC Meeting', detail: 'Federal Reserve rate decision — Dec 8-9', type: 'fomc' },
+    // Economic Data
+    { date: '2026-01-09', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — December 2025 employment', type: 'econ' },
+    { date: '2026-01-15', name: 'CPI Release', detail: 'Consumer Price Index — December 2025', type: 'econ' },
+    { date: '2026-01-07', name: 'JOLTS Report', detail: 'Job Openings & Labor Turnover — November 2025', type: 'econ' },
+    { date: '2026-01-30', name: 'GDP Advance Estimate', detail: 'Q4 2025 GDP — First estimate', type: 'econ' },
+    { date: '2026-02-06', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — January 2026 employment', type: 'econ' },
+    { date: '2026-02-11', name: 'CPI Release', detail: 'Consumer Price Index — January 2026', type: 'econ' },
+    { date: '2026-02-04', name: 'JOLTS Report', detail: 'Job Openings & Labor Turnover — December 2025', type: 'econ' },
+    { date: '2026-03-06', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — February 2026 employment', type: 'econ' },
+    { date: '2026-03-11', name: 'CPI Release', detail: 'Consumer Price Index — February 2026', type: 'econ' },
+    { date: '2026-03-04', name: 'JOLTS Report', detail: 'Job Openings & Labor Turnover — January 2026', type: 'econ' },
+    { date: '2026-03-26', name: 'GDP Third Estimate', detail: 'Q4 2025 GDP — Final revision', type: 'econ' },
+    { date: '2026-04-03', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — March 2026 employment', type: 'econ' },
+    { date: '2026-04-10', name: 'CPI Release', detail: 'Consumer Price Index — March 2026', type: 'econ' },
+    { date: '2026-04-01', name: 'JOLTS Report', detail: 'Job Openings & Labor Turnover — February 2026', type: 'econ' },
+    { date: '2026-04-29', name: 'GDP Advance Estimate', detail: 'Q1 2026 GDP — First estimate', type: 'econ' },
+    { date: '2026-05-08', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — April 2026 employment', type: 'econ' },
+    { date: '2026-05-13', name: 'CPI Release', detail: 'Consumer Price Index — April 2026', type: 'econ' },
+    { date: '2026-06-05', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — May 2026 employment', type: 'econ' },
+    { date: '2026-06-10', name: 'CPI Release', detail: 'Consumer Price Index — May 2026', type: 'econ' },
+    { date: '2026-07-02', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — June 2026 employment', type: 'econ' },
+    { date: '2026-07-15', name: 'CPI Release', detail: 'Consumer Price Index — June 2026', type: 'econ' },
+    { date: '2026-07-30', name: 'GDP Advance Estimate', detail: 'Q2 2026 GDP — First estimate', type: 'econ' },
+    { date: '2026-08-07', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — July 2026 employment', type: 'econ' },
+    { date: '2026-08-12', name: 'CPI Release', detail: 'Consumer Price Index — July 2026', type: 'econ' },
+    { date: '2026-09-04', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — August 2026 employment', type: 'econ' },
+    { date: '2026-09-11', name: 'CPI Release', detail: 'Consumer Price Index — August 2026', type: 'econ' },
+    { date: '2026-10-02', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — September 2026 employment', type: 'econ' },
+    { date: '2026-10-14', name: 'CPI Release', detail: 'Consumer Price Index — September 2026', type: 'econ' },
+    { date: '2026-10-29', name: 'GDP Advance Estimate', detail: 'Q3 2026 GDP — First estimate', type: 'econ' },
+    { date: '2026-11-06', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — October 2026 employment', type: 'econ' },
+    { date: '2026-11-12', name: 'CPI Release', detail: 'Consumer Price Index — October 2026', type: 'econ' },
+    { date: '2026-12-04', name: 'Jobs Report (NFP)', detail: 'Bureau of Labor Statistics — November 2026 employment', type: 'econ' },
+    { date: '2026-12-10', name: 'CPI Release', detail: 'Consumer Price Index — November 2026', type: 'econ' },
+    // Finance & PE Conferences
+    { date: '2026-01-14', end: '2026-01-16', name: 'iConnections Global Alts', detail: 'Miami, FL — Largest alternative investment conference', type: 'pe' },
+    { date: '2026-01-20', end: '2026-01-22', name: 'IPEM Cannes', detail: 'Cannes, France — International Private Equity Market', type: 'pe' },
+    { date: '2026-02-03', end: '2026-02-05', name: 'Private Equity International CFO & COO Forum', detail: 'New York, NY — Fund operations & finance leaders', type: 'pe' },
+    { date: '2026-03-03', end: '2026-03-05', name: 'ACG InterGrowth', detail: 'Las Vegas, NV — Middle market M&A and dealmaking', type: 'conf' },
+    { date: '2026-03-10', end: '2026-03-11', name: 'ILPA Summit', detail: 'Washington, D.C. — LP community & fund governance', type: 'pe' },
+    { date: '2026-04-14', end: '2026-04-16', name: 'Milken Institute Global Conference', detail: 'Beverly Hills, CA — Capital markets & global finance', type: 'conf' },
+    { date: '2026-05-05', end: '2026-05-07', name: 'PEI Private Funds CFO Summit', detail: 'New York, NY — Private fund financial operations', type: 'pe' },
+    { date: '2026-05-12', end: '2026-05-14', name: 'SuperReturn North America', detail: 'Boston, MA — Private equity & venture capital', type: 'pe' },
+    { date: '2026-06-02', end: '2026-06-05', name: 'SuperReturn International', detail: 'Berlin, Germany — Global private equity summit', type: 'pe' },
+    { date: '2026-06-16', end: '2026-06-18', name: 'SIFMA Annual Meeting', detail: 'New York, NY — Securities industry & financial markets', type: 'conf' },
+    { date: '2026-09-15', end: '2026-09-17', name: 'PEI Operating Partners Forum', detail: 'New York, NY — Value creation in private equity', type: 'pe' },
+    { date: '2026-09-22', end: '2026-09-24', name: 'UNPRI in Person', detail: 'Toronto, Canada — Responsible investment conference', type: 'conf' },
+    { date: '2026-10-06', end: '2026-10-08', name: 'ACG Boston Private Equity Conference', detail: 'Boston, MA — New England private equity', type: 'pe' },
+    { date: '2026-10-20', end: '2026-10-22', name: 'SuperReturn Private Credit', detail: 'New York, NY — Private debt & direct lending', type: 'pe' },
+    { date: '2026-11-03', end: '2026-11-05', name: 'PEI Global Investor Forum', detail: 'New York, NY — LP & GP perspectives on private markets', type: 'pe' },
+    { date: '2026-11-17', end: '2026-11-18', name: 'ILPA Diversity, Equity & Inclusion Summit', detail: 'Virtual — DEI in private markets', type: 'pe' },
+    { date: '2026-12-01', end: '2026-12-03', name: 'IPEM New York', detail: 'New York, NY — Private equity & alternatives year-end', type: 'pe' },
+  // US Federal & Major Holidays
+  { date: '2026-01-01', name: "New Year's Day", detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-01-19', name: 'Martin Luther King Jr. Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-02-14', name: "Valentine's Day", detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-02-16', name: "Presidents' Day", detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-03-17', name: "St. Patrick's Day", detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-04-03', name: 'Good Friday', detail: 'US Holiday — Bond markets closed, NYSE closed', type: 'holiday' },
+  { date: '2026-04-05', name: 'Easter Sunday', detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-05-10', name: "Mother's Day", detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-05-25', name: 'Memorial Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-06-19', name: 'Juneteenth', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-06-21', name: "Father's Day", detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-07-03', name: 'Independence Day (Observed)', detail: 'Federal Holiday — Markets closed early', type: 'holiday' },
+  { date: '2026-07-04', name: 'Independence Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-09-07', name: 'Labor Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-10-12', name: 'Columbus Day', detail: 'Federal Holiday — Bond markets closed', type: 'holiday' },
+  { date: '2026-10-31', name: 'Halloween', detail: 'US Holiday', type: 'holiday' },
+  { date: '2026-11-11', name: "Veterans Day", detail: 'Federal Holiday — Bond markets closed', type: 'holiday' },
+  { date: '2026-11-26', name: 'Thanksgiving Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-11-27', name: 'Black Friday', detail: 'US Holiday — Markets close early (1pm ET)', type: 'holiday' },
+  { date: '2026-12-24', name: 'Christmas Eve', detail: 'US Holiday — Markets close early (1pm ET)', type: 'holiday' },
+  { date: '2026-12-25', name: 'Christmas Day', detail: 'Federal Holiday — Markets closed', type: 'holiday' },
+  { date: '2026-12-31', name: "New Year's Eve", detail: 'US Holiday — Markets close early (1pm ET)', type: 'holiday' },
+  ];
+
+  const MONTH_NAMES_EV = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let evActiveFilter = 'all';
+  let evcalYear = new Date().getFullYear();
+  let evcalMonth = new Date().getMonth();
+  let evcalSelected = null;
+
+  function renderEvcal() {
+    const grid = document.getElementById('evcal-grid');
+    const label = document.getElementById('evcal-month-label');
+    if (!grid || !label) return;
+    label.textContent = MONTH_NAMES_EV[evcalMonth] + ' ' + evcalYear;
+    const DOW_EV = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    grid.innerHTML = DOW_EV.map(d => `<div class="evcal-dow">${d}</div>`).join('');
+    const firstDay = new Date(evcalYear, evcalMonth, 1).getDay();
+    const blanks = firstDay; // 0=Sun, so no offset needed
+    const days = new Date(evcalYear, evcalMonth + 1, 0).getDate();
+    const today = new Date();
+    // build a map of date -> event types for this month
+    const dayMap = {};
+    EVENTS_DATA.forEach(e => {
+      if (evActiveFilter !== 'all' && e.type !== evActiveFilter) return;
+      const [ey, em, ed] = e.date.split('-');
+      if (parseInt(ey) === evcalYear && parseInt(em) - 1 === evcalMonth) {
+        if (!dayMap[ed]) dayMap[ed] = [];
+        if (!dayMap[ed].includes(e.type)) dayMap[ed].push(e.type);
+      }
+    });
+    for (let i = 0; i < blanks; i++) grid.innerHTML += `<div class="evcal-day empty"></div>`;
+    for (let d = 1; d <= days; d++) {
+      const dd = String(d).padStart(2, '0');
+      const dateStr = `${evcalYear}-${String(evcalMonth+1).padStart(2,'0')}-${dd}`;
+      const types = dayMap[dd] || [];
+      const hasEv = types.length > 0;
+      const isToday = today.getFullYear()===evcalYear && today.getMonth()===evcalMonth && today.getDate()===d;
+      const isSel = evcalSelected === dateStr;
+      let cls = 'evcal-day';
+      if (hasEv) cls += ' has-events';
+      if (isToday) cls += ' today';
+      if (isSel) cls += ' selected';
+      const dots = types.map(t => `<div class="evcal-dot evcal-dot-${t}"></div>`).join('');
+      const dayEvents = EVENTS_DATA.filter(e => e.date === dateStr && (evActiveFilter === 'all' || e.type === evActiveFilter));
+      const tooltipHTML = dayEvents.length ? `<div class="evcal-tooltip">${dayEvents.map(e => `<div class="evcal-tooltip-entry"><div class="evcal-tooltip-name">${e.name}</div><div class="evcal-tooltip-detail">${e.detail}</div></div>`).join('')}</div>` : '';
+      grid.innerHTML += `<div class="${cls}" ${hasEv ? `onclick="evcalSelectDay('${dateStr}')"` : ''}>${d}${dots ? `<div class="evcal-dots">${dots}</div>` : ''}${tooltipHTML}</div>`;
+    }
+  }
+
+  window.evcalSelectDay = function(dateStr) {
+    evcalSelected = dateStr;
+    renderEvcal();
+    // scroll to matching event row in listings
+    const rows = document.querySelectorAll('#events-list .event-row');
+    for (const row of rows) {
+      const dayEl = row.querySelector('.event-date-day');
+      const monEl = row.querySelector('.event-date-mon');
+      if (!dayEl || !monEl) continue;
+      const [y, m, d] = dateStr.split('-');
+      const mon = MONTH_NAMES_EV[parseInt(m)-1].slice(0,3).toUpperCase();
+      if (dayEl.textContent.trim() === String(parseInt(d)) && monEl.textContent.trim() === mon) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.style.background = 'rgba(255,255,255,0.1)';
+        setTimeout(() => row.style.background = '', 1500);
+        break;
+      }
+    }
+  };
+
+  document.getElementById('evcal-prev')?.addEventListener('click', () => {
+    evcalMonth--; if (evcalMonth < 0) { evcalMonth = 11; evcalYear--; }
+    evcalSelected = null; renderEvcal(); renderEvents();
+  });
+  document.getElementById('evcal-next')?.addEventListener('click', () => {
+    evcalMonth++; if (evcalMonth > 11) { evcalMonth = 0; evcalYear++; }
+    evcalSelected = null; renderEvcal(); renderEvents();
+  });
+
+  function renderEvents() {
+    const list = document.getElementById('events-list');
+    if (!list) return;
+    const curKey = `${evcalYear}-${String(evcalMonth + 1).padStart(2, '0')}`;
+    const filtered = EVENTS_DATA.filter(e =>
+      e.date.slice(0, 7) === curKey &&
+      (evActiveFilter === 'all' || e.type === evActiveFilter)
+    ).sort((a, b) => a.date.localeCompare(b.date));
+    const tagClass = { fomc: 'event-tag-fomc', econ: 'event-tag-econ', conf: 'event-tag-conf', pe: 'event-tag-pe', holiday: 'event-tag-holiday' };
+    const tagLabel = { fomc: 'FOMC', econ: 'Economic', conf: 'Conference', pe: 'Private Markets', holiday: 'Holiday' };
+    const monthLabel = MONTH_NAMES_EV[evcalMonth] + ' ' + evcalYear;
+    if (filtered.length === 0) { list.innerHTML = '<div class="event-empty">No events this month for this filter.</div>'; return; }
+    list.innerHTML = `<div class="events-month-group"><div class="events-month-title">${monthLabel}</div>${
+      filtered.map(e => {
+        const d = new Date(e.date + 'T00:00:00');
+        const day = d.getDate();
+        const mon = MONTH_NAMES_EV[d.getMonth()].slice(0, 3).toUpperCase();
+        return `<div class="event-row">
+          <div class="event-date-col"><div class="event-date-day">${day}</div><div class="event-date-mon">${mon}</div></div>
+          <div class="event-info">
+            <div class="event-name">${e.name}<span class="event-tag ${tagClass[e.type]}">${tagLabel[e.type]}</span></div>
+            <div class="event-detail">${e.detail}</div>
+          </div>
+        </div>`;
+      }).join('')
+    }</div>`;
+  }
+
+  document.querySelectorAll('.events-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.events-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      evActiveFilter = btn.dataset.filter;
+      renderEvents();
+    });
+  });
+
+  const _origSwitchTabEv = switchTab;
+  switchTab = function(name) {
+    _origSwitchTabEv(name);
+    if (name === 'events') { renderEvcal(); renderEvents(); }
+  };
+
+  // Re-render calendar when filter changes
+  const _origEvFilter = document.querySelectorAll('.events-filter-btn');
+  document.querySelectorAll('.events-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => { evcalSelected = null; renderEvcal(); });
+  });
+
+  /* ── PERSONAL LIBRARY ───────────────────────────────────────── */
+  const LIBRARY_ITEMS = [
+    {
+      id: 'meritech-analytics',
+      title: 'Meritech Analytics',
+      type: 'tool',
+      url: 'https://meritechanalytics.com/?source=capital',
+      description: 'Public SaaS comps and benchmarking tool — track revenue multiples, growth rates, and key metrics across publicly traded software companies.',
+      category: 'Data & Benchmarking',
+      tags: ['SaaS', 'Benchmarking', 'Public Comps', 'Valuation', 'Data'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Meritech Capital'
+    },
+    {
+      id: 'intern-list',
+      title: 'Intern List',
+      type: 'tool',
+      url: 'https://www.intern-list.com/?k=cd',
+      description: 'Curated database of internship opportunities across finance, tech, and other industries — useful for sourcing early-career talent pipelines.',
+      category: 'Career & Education',
+      tags: ['Internships', 'Recruiting', 'Career', 'Early Career'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Intern List'
+    },
+    {
+      id: 'failory',
+      title: 'Failory',
+      type: 'tool',
+      url: 'https://www.failory.com/',
+      description: 'Resource hub for startup founders — covering startup autopsies, founder interviews, and lessons from failed and successful companies.',
+      category: 'Industry Publications',
+      tags: ['Startups', 'Founder Stories', 'Entrepreneurship', 'Case Studies'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Failory'
+    },
+    {
+      id: 'producthunt',
+      title: 'ProductHunt',
+      type: 'tool',
+      url: 'https://www.producthunt.com/',
+      description: 'Daily feed of the newest products, tools, and startups — great for tracking emerging technology trends and early-stage company activity.',
+      category: 'Technology',
+      tags: ['Startups', 'Product', 'Technology', 'Innovation', 'Tools'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'ProductHunt'
+    },
+    {
+      id: 'standard-capital-series-a-docs',
+      title: 'Standard Capital: Series A Documents',
+      type: 'reference',
+      url: 'https://www.standardcap.com/docs',
+      description: 'Standardized Series A term sheet and legal document templates from Standard Capital — a practical reference for structuring early-stage venture deals.',
+      category: 'Investments & Deal Flow',
+      tags: ['Series A', 'Term Sheet', 'Venture Capital', 'Legal', 'Deal Docs'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Standard Capital'
+    },
+    {
+      id: 'ycombinator-documents',
+      title: 'YCombinator: Pre-seed & Seed Documents',
+      type: 'reference',
+      url: 'https://www.ycombinator.com/documents#about',
+      description: "YCombinator's standard legal documents for pre-seed and seed rounds — including SAFEs and other early-stage financing instruments widely used across the startup ecosystem.",
+      category: 'Investments & Deal Flow',
+      tags: ['Pre-seed', 'Seed', 'SAFE', 'YCombinator', 'Venture Capital', 'Legal'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'YCombinator'
+    },
+    {
+      id: 'bitcoin-treasuries',
+      title: 'Bitcoin Treasuries',
+      type: 'tool',
+      url: 'https://bitcointreasuries.net/',
+      description: 'Live tracker of public companies, ETFs, and governments holding Bitcoin on their balance sheets — useful for monitoring institutional crypto adoption.',
+      category: 'Data & Benchmarking',
+      tags: ['Bitcoin', 'Crypto', 'Treasury', 'Institutional', 'Data'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Bitcoin Treasuries'
+    },
+    {
+      id: 'bg2-nvidia',
+      title: 'Bg2 Podcast: NVIDIA',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=bUrCR4jQQg8',
+      description: 'Brad Gerstner and Bill Gurley discuss NVIDIA — covering its dominance in AI compute, competitive moat, valuation, and what the future of the semiconductor landscape looks like.',
+      category: 'Technology',
+      tags: ['NVIDIA', 'AI', 'Semiconductors', 'Podcast', 'Investing'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Bg2 Podcast'
+    },
+    {
+      id: 'invest-like-best-alan-waxman',
+      title: 'Invest Like The Best: Sixth Street CEO Alan Waxman',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=zPFor81KJx0',
+      description: 'Alan Waxman, CEO of Sixth Street, shares his philosophy on credit investing, building a diversified alternatives platform, and how to think about risk and opportunity in private markets.',
+      category: 'Industry Publications',
+      tags: ['Sixth Street', 'Private Credit', 'Podcast', 'Alternatives', 'CEO'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Invest Like The Best'
+    },
+    {
+      id: 'blackstone-cio-symposium-2025',
+      title: "Blackstone's 2025 CIO Symposium",
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=lUXy6Xp2j_I',
+      description: "Blackstone's annual CIO Symposium featuring perspectives on macro markets, private equity, real estate, and credit from Blackstone's senior investment leadership.",
+      category: 'Industry Publications',
+      tags: ['Blackstone', 'Private Equity', 'CIO', 'Macro', 'Investing'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Blackstone'
+    },
+    {
+      id: 'how-to-design-winnable-game',
+      title: 'How to Design a Winnable Game',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=0SQor2z2QAU',
+      description: 'A framework for setting yourself up to win by designing the right game — one where the rules, playing field, and goals are aligned with your strengths and long-term vision.',
+      category: 'Personal Development',
+      tags: ['Strategy', 'Mindset', 'Goals', 'Personal Development'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'YouTube'
+    },
+    {
+      id: 'how-to-live-full-power',
+      title: 'How to Live Your Life at Full Power',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=uxoCnxlxpIk',
+      description: 'Practical principles for operating at your highest level — covering energy management, focus, decision-making, and building habits that compound over time.',
+      category: 'Personal Development',
+      tags: ['Productivity', 'Mindset', 'Energy', 'Personal Development'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'YouTube'
+    },
+    {
+      id: 'how-to-live-asymmetric-life',
+      title: 'How to Live an Asymmetric Life',
+      type: 'video',
+      url: 'https://youtu.be/dZxbVGhpEkI?si=xgECtGobz9nfYuDr',
+      description: 'A compelling case for pursuing asymmetric opportunities — where the downside is limited but the upside is transformative — and how to apply this lens to career, investing, and life decisions.',
+      category: 'Personal Development',
+      tags: ['Asymmetric', 'Risk', 'Mindset', 'Career', 'Personal Development'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'YouTube'
+    },
+    {
+      id: 'hamilton-lane-market-overview',
+      title: 'Hamilton Lane Annual Market Overview',
+      type: 'reference',
+      url: 'https://www.hamiltonlane.com/en-US/Insight',
+      description: 'Annual private markets overview from Hamilton Lane covering fundraising trends, performance data, and outlook across PE, credit, real assets, and infrastructure.',
+      category: 'Data & Benchmarking',
+      tags: ['Hamilton Lane', 'Market Overview', 'Private Markets', 'Annual Report'],
+      dateAdded: '2026-03-28',
+      featured: false,
+      source: 'Hamilton Lane'
+    },
+  ];
+
+  const LIB_TYPE_LABELS = { article: '📄 Article', video: '🎬 Video', reference: '📋 Reference', tool: '🔧 Tool' };
+  const LIB_TYPE_CLASS  = { article: 'lib-type-article', video: 'lib-type-video', reference: 'lib-type-reference', tool: 'lib-type-tool' };
+  const LIB_MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function libFormatDate(str) {
+    const d = new Date(str + 'T00:00:00');
+    return LIB_MONTH_NAMES[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  function isNewItem(str) {
+    return (new Date() - new Date(str + 'T00:00:00')) < 14 * 86400000;
+  }
+
+  function buildLibCard(item, featured) {
+    const newBadge = isNewItem(item.dateAdded) ? `<span class="lib-new-badge">New</span>` : '';
+    const tags = (item.tags || []).map(t => `<span class="lib-tag" data-tag="${t}">${t}</span>`).join('');
+    const meta = [item.source, item.dateAdded ? 'Added ' + libFormatDate(item.dateAdded) : null, item.duration].filter(Boolean).join(' · ');
+    return `<div class="lib-card${featured ? ' featured' : ''}">
+      <div class="lib-card-header">
+        <span class="lib-type-badge ${LIB_TYPE_CLASS[item.type] || ''}">${LIB_TYPE_LABELS[item.type] || item.type}</span>
+        ${newBadge}
+      </div>
+      <div class="lib-card-title"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a></div>
+      <div class="lib-card-desc">${item.description}</div>
+      ${tags ? `<div class="lib-card-tags">${tags}</div>` : ''}
+      <div class="lib-card-footer">
+        <span class="lib-card-meta">${meta}</span>
+        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="lib-open-link">↗ Open</a>
+      </div>
+    </div>`;
+  }
+
+  let libViewMode = 'card';
+
+  function renderLibrary(items) {
+    const grid = document.getElementById('lib-grid');
+    const tableWrap = document.getElementById('lib-table-wrap');
+    const tableBody = document.getElementById('lib-table-body');
+    const empty = document.getElementById('lib-empty');
+    const count = document.getElementById('lib-count');
+    if (!grid) return;
+    if (items.length === 0) {
+      grid.innerHTML = ''; grid.style.display = 'none';
+      if (tableWrap) tableWrap.style.display = 'none';
+      empty.style.display = 'block';
+      count.textContent = '';
+    } else {
+      empty.style.display = 'none';
+      count.textContent = `Showing ${items.length} of ${LIBRARY_ITEMS.length}`;
+      if (libViewMode === 'card') {
+        grid.innerHTML = items.map(i => buildLibCard(i, false)).join('');
+        grid.style.display = '';
+        if (tableWrap) tableWrap.style.display = 'none';
+      } else {
+        grid.innerHTML = ''; grid.style.display = 'none';
+        if (tableWrap && tableBody) {
+          tableBody.innerHTML = items.map(i => {
+            const tags = (i.tags || []).map(t => `<span class="lib-tag" data-tag="${t}">${t}</span>`).join('');
+            return `<tr>
+              <td><span class="lib-type-badge ${LIB_TYPE_CLASS[i.type] || ''}">${LIB_TYPE_LABELS[i.type] || i.type}</span></td>
+              <td class="lib-table-title"><a href="${i.url}" target="_blank" rel="noopener noreferrer">${i.title}</a></td>
+              <td class="lib-table-meta">${i.category || ''}</td>
+              <td><div class="lib-table-tags">${tags}</div></td>
+              <td class="lib-table-meta">${i.source || ''}</td>
+              <td class="lib-table-meta">${libFormatDate(i.dateAdded)}</td>
+            </tr>`;
+          }).join('');
+          tableWrap.style.display = '';
+        }
+      }
+    }
+  }
+
+  function buildLibFeatured() {
+    const newest = [...LIBRARY_ITEMS].sort((a, b) => b.dateAdded.localeCompare(a.dateAdded)).slice(0, 3);
+    const wrap = document.getElementById('lib-featured-wrap');
+    const strip = document.getElementById('lib-featured-strip');
+    if (!wrap || !strip || newest.length === 0) return;
+    strip.innerHTML = newest.map(i => buildLibCard(i, true)).join('');
+    wrap.style.display = 'block';
+  }
+
+  function populateLibCatFilter() {
+    const sel = document.getElementById('lib-cat-filter');
+    if (!sel) return;
+    const cats = [...new Set(LIBRARY_ITEMS.map(i => i.category))].sort();
+    cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  }
+
+  function applyLibFilters() {
+    const q     = (document.getElementById('lib-search')?.value || '').toLowerCase();
+    const type  = document.getElementById('lib-type-filter')?.value || '';
+    const cat   = document.getElementById('lib-cat-filter')?.value || '';
+    const sort  = document.getElementById('lib-sort')?.value || 'newest';
+    let items = LIBRARY_ITEMS.filter(i => {
+      const haystack = (i.title + ' ' + i.description + ' ' + (i.tags || []).join(' ') + ' ' + (i.source || '')).toLowerCase();
+      return (!q || haystack.includes(q)) && (!type || i.type === type) && (!cat || i.category === cat);
+    });
+    if (sort === 'newest') items.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
+    else if (sort === 'oldest') items.sort((a, b) => a.dateAdded.localeCompare(b.dateAdded));
+    else items.sort((a, b) => a.title.localeCompare(b.title));
+    renderLibrary(items);
+  }
+
+  function initLibrary() {
+    populateLibCatFilter();
+    buildLibFeatured();
+    applyLibFilters();
+
+    document.getElementById('lib-view-card')?.addEventListener('click', () => {
+      libViewMode = 'card';
+      document.getElementById('lib-view-card').classList.add('active');
+      document.getElementById('lib-view-table').classList.remove('active');
+      applyLibFilters();
+    });
+    document.getElementById('lib-view-table')?.addEventListener('click', () => {
+      libViewMode = 'table';
+      document.getElementById('lib-view-table').classList.add('active');
+      document.getElementById('lib-view-card').classList.remove('active');
+      applyLibFilters();
+    });
+    document.getElementById('lib-search')?.addEventListener('input', applyLibFilters);
+    ['lib-type-filter','lib-cat-filter','lib-sort'].forEach(id =>
+      document.getElementById(id)?.addEventListener('change', applyLibFilters));
+    document.getElementById('lib-clear')?.addEventListener('click', () => {
+      document.getElementById('lib-search').value = '';
+      document.getElementById('lib-type-filter').value = '';
+      document.getElementById('lib-cat-filter').value = '';
+      document.getElementById('lib-sort').value = 'newest';
+      applyLibFilters();
+    });
+    document.getElementById('lib-grid')?.addEventListener('click', e => {
+      const tag = e.target.closest('.lib-tag');
+      if (tag) {
+        document.getElementById('lib-search').value = tag.dataset.tag;
+        applyLibFilters();
+      }
+    });
+  }
+
+  /* Lazy-init on first tab visit */
+  let libInitialized = false;
+  const _origSwitchTabLib = switchTab;
+  switchTab = function(name) {
+    _origSwitchTabLib(name);
+    if (name === 'library' && !libInitialized) { libInitialized = true; initLibrary(); }
+  };
 </script>
 
 </body>

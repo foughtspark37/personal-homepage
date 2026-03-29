@@ -1,0 +1,55 @@
+[
+  {
+    "date": "2026-03-28",
+    "entries": [
+      {
+        "category": "Feature",
+        "description": "Add news card/table view, headline tooltips, and center Home/About content"
+      },
+      {
+        "category": "Content",
+        "description": "Update content: remove Essential Reading box and rename AI Use Cases page"
+      },
+      {
+        "category": "UI",
+        "description": "Add NYC hero image, About page logos/certs, homepage buttons, and changelog calendar"
+      }
+    ]
+  },
+  {
+    "date": "2026-03-27",
+    "entries": [
+      {
+        "category": "Feature",
+        "description": "Add Market Map Maker, Private Market Directory, and News filter improvements"
+      }
+    ]
+  },
+  {
+    "date": "2026-03-26",
+    "entries": [
+      {
+        "category": "Feature",
+        "description": "Add News tab with RSS feeds, local proxy server, and AI Use Cases improvements"
+      }
+    ]
+  },
+  {
+    "date": "2026-03-22",
+    "entries": [
+      {
+        "category": "Content",
+        "description": "Update homepage with private markets focus and AI Use Cases section"
+      }
+    ]
+  },
+  {
+    "date": "2026-03-19",
+    "entries": [
+      {
+        "category": "Feature",
+        "description": "Initial commit: Darren Lo personal homepage"
+      }
+    ]
+  }
+]
