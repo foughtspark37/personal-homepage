@@ -141,6 +141,16 @@
       position: relative;
       overflow: hidden;
     }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('NewYorkBridge.jpg');
+      background-size: cover;
+      background-position: center 60%;
+      opacity: 0.13;
+      pointer-events: none;
+    }
     .hero::before {
       content: '';
       position: absolute;
@@ -158,8 +168,9 @@
           transparent 59px,
           rgba(255,255,255,0.028) 60px
         );
+      z-index: 1;
     }
-    .hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
+    .hero-inner { position: relative; z-index: 2; max-width: 860px; margin: 0 auto; }
     .hero-eyebrow {
       font-size: 0.78rem;
       font-family: 'Arial', sans-serif;
@@ -288,6 +299,19 @@
     }
     .timeline-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin: 3px 0; }
     .timeline-sub { font-family: 'Arial', sans-serif; font-size: 0.85rem; color: var(--gray); }
+    .timeline-logo { height: 18px; width: auto; vertical-align: middle; margin-right: 6px; opacity: 0.85; position: relative; top: -1px; }
+
+    /* ── CERTIFICATIONS ──────────────────────────── */
+    .cert-list { display: flex; flex-direction: column; gap: 14px; }
+    .cert-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--white); border: 1px solid var(--gray-light);
+      border-radius: 8px; padding: 12px 16px;
+    }
+    .cert-logo { height: 36px; width: 36px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
+    .cert-info { display: flex; flex-direction: column; gap: 2px; }
+    .cert-name { font-size: 0.9rem; font-weight: 700; color: var(--navy); }
+    .cert-issuer { font-family: 'Arial', sans-serif; font-size: 0.78rem; color: var(--gray); }
 
     .skills-section { background: var(--navy); }
     .skills-section h2, .skills-section .section-label { color: var(--white); }
@@ -994,6 +1018,33 @@
     .news-view-btn.active { background: var(--navy); color: var(--white); }
     .news-view-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
 
+    /* ── CHANGELOG ──────────────────────────────── */
+    .cl-section { background: var(--off-white, #f8f9fb); }
+    .cl-nav { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; }
+    .cl-nav-btn { background: none; border: 1px solid var(--gray-light); border-radius: 6px; padding: 6px 14px; font-size: 1.1rem; cursor: pointer; color: var(--navy); transition: all 0.15s; }
+    .cl-nav-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .cl-month-label { font-family: 'Arial', sans-serif; font-size: 1rem; font-weight: 700; color: var(--navy); min-width: 160px; text-align: center; letter-spacing: 0.04em; text-transform: uppercase; }
+    .cl-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 28px; }
+    .cl-dow { font-family: 'Arial', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-align: center; padding: 6px 0 10px; }
+    .cl-day { min-height: 52px; border: 1px solid var(--gray-light); border-radius: 6px; padding: 6px 8px; font-family: 'Arial', sans-serif; font-size: 0.82rem; color: var(--navy); position: relative; background: var(--white); }
+    .cl-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
+    .cl-day.has-entries { border-color: var(--navy-mid); cursor: pointer; }
+    .cl-day.has-entries:hover { background: #eef1f8; }
+    .cl-day.today { box-shadow: 0 0 0 2px var(--navy-mid); }
+    .cl-day.selected { background: var(--navy) !important; color: var(--white) !important; border-color: var(--navy) !important; }
+    .cl-day.selected .cl-dot { background: var(--white); }
+    .cl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--navy-mid); position: absolute; bottom: 6px; right: 6px; }
+    .cl-detail { background: var(--white); border: 1px solid var(--gray-light); border-radius: 10px; padding: 22px 24px; }
+    .cl-detail-date { font-family: 'Arial', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy-mid); margin-bottom: 14px; }
+    .cl-entry { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-light); }
+    .cl-entry:last-child { border-bottom: none; }
+    .cl-cat { font-family: 'Arial', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .cl-cat-feature { background: rgba(99,179,237,0.15); color: #2b6cb0; }
+    .cl-cat-ui { background: rgba(237,137,54,0.15); color: #c05621; }
+    .cl-cat-content { background: rgba(72,187,120,0.15); color: #276749; }
+    .cl-cat-fix { background: rgba(245,101,101,0.15); color: #c53030; }
+    .cl-cat-performance { background: rgba(159,122,234,0.15); color: #553c9a; }
+
     /* ── NEWS TABLE ──────────────────────────────── */
     .news-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-light); background: var(--white); }
     .news-table { width: 100%; border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 0.84rem; }
@@ -1121,10 +1172,11 @@
     <div class="hero-inner">
       <p class="hero-eyebrow">Private Markets &middot; Fund Operations &middot; Investor Relations &middot; Investor Services</p>
       <h1>Building and Supporting the<br>Growth of <em>Private Financial Markets</em></h1>
-      <p>Finance professional focused on private market operations, fund lifecycle management, and strengthening the infrastructure that enables GPs, LPs, and intermediaries to operate with clarity and confidence.</p>
+      <p>Finance professional focused on private market operations, fund lifecycle management, and investor relations.</p>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="switchTab('projects')">View My Work</button>
-        <button class="btn btn-outline" onclick="switchTab('contact')">Get in Touch</button>
+        <button class="btn btn-primary" onclick="switchTab('about')">About</button>
+        <button class="btn btn-primary" onclick="switchTab('projects')">My Projects</button>
+        <button class="btn btn-primary" onclick="switchTab('contact')">Get in Touch</button>
       </div>
     </div>
   </div>
@@ -1179,8 +1231,8 @@
     <h2>Who <span class="accent">I Am</span></h2>
     <div class="about-layout">
       <div class="about-text">
-        <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in capital events and performance across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
-        <p>My work sits at the intersection of fund operations and client partnership — translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
+        <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in managing fund capital activity across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
+        <p>My work sits at the intersection of fund operations and client partnership, translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
         <p>• <strong>Investments:</strong> Worked with private equity search funds to source and evaluate mature, industrial businesses in the southern US</p>
         <p>• <strong>Investor Relations:</strong> Successfully raised pre-seed/seed stage rounds to fuel product development</p>
         <p>• <strong>Fund Operations:</strong> Currently at Juniper Square, I partner with General Partners across the private market to streamline and manage their funds' capital activity and investor communications over its lifecycle while navigating complex fund structures.</p>
@@ -1191,32 +1243,32 @@
           <li>
             <div class="timeline-year">2025 – Present</div>
             <div class="timeline-title">Senior Associate, Fund Administration</div>
-            <div class="timeline-sub">Juniper Square — Capital Events &amp; Performance</div>
+            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
           </li>
           <li>
             <div class="timeline-year">2023 – 2025</div>
             <div class="timeline-title">Associate I &amp; II, Fund Administration</div>
-            <div class="timeline-sub">Juniper Square — Capital Events &amp; Performance</div>
+            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
           </li>
           <li>
             <div class="timeline-year">2022 – 2023</div>
             <div class="timeline-title">Private Equity Analyst</div>
-            <div class="timeline-sub">WIDEangle Ventures — Search Fund</div>
+            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
           </li>
           <li>
             <div class="timeline-year">2022</div>
             <div class="timeline-title">Investor Relations Intern</div>
-            <div class="timeline-sub">Objective Reality, Inc.</div>
+            <div class="timeline-sub"><img src="objective-reality.jpeg" class="timeline-logo" alt="Objective Reality">Objective Reality, Inc.</div>
           </li>
           <li>
             <div class="timeline-year">2022</div>
             <div class="timeline-title">Investment Analyst Intern</div>
-            <div class="timeline-sub">Vienna Holdings Group — Search Fund</div>
+            <div class="timeline-sub"><img src="vienna-holdings.jpeg" class="timeline-logo" alt="Vienna Holdings Group">Vienna Holdings Group — Search Fund</div>
           </li>
           <li>
             <div class="timeline-year">2021 – 2022</div>
             <div class="timeline-title">Private Equity Research Intern</div>
-            <div class="timeline-sub">WIDEangle Ventures — Search Fund</div>
+            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
           </li>
         </ul>
 
@@ -1225,9 +1277,27 @@
           <li>
             <div class="timeline-year">2023</div>
             <div class="timeline-title">B.A., Finance &amp; Data Analytics</div>
-            <div class="timeline-sub">Ohio Wesleyan University</div>
+            <div class="timeline-sub"><img src="ohio-wesleyan.png" class="timeline-logo" alt="Ohio Wesleyan University">Ohio Wesleyan University</div>
           </li>
         </ul>
+
+        <p class="section-label" style="margin-top:36px; margin-bottom:20px;">Licenses &amp; Certifications</p>
+        <div class="cert-list">
+          <div class="cert-item">
+            <img src="cfi.png" class="cert-logo" alt="Corporate Finance Institute">
+            <div class="cert-info">
+              <span class="cert-name">Financial Analysis and Modeling Professional Certificate</span>
+              <span class="cert-issuer">Corporate Finance Institute (CFI)</span>
+            </div>
+          </div>
+          <div class="cert-item">
+            <img src="anthropic.jpeg" class="cert-logo" alt="Anthropic">
+            <div class="cert-info">
+              <span class="cert-name">Claude 101</span>
+              <span class="cert-issuer">Anthropic</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     </div>
@@ -1539,6 +1609,26 @@
 
 </div>
 
+<!-- ══════════════════════ CHANGELOG ══════════════════════ -->
+<div id="tab-changelog" class="tab-panel">
+  <section class="section cl-section">
+    <div class="section-inner" style="max-width:760px;">
+      <p class="section-label">Site History</p>
+      <h2>Changelog <span class="accent">Calendar</span></h2>
+      <div class="cl-nav">
+        <button class="cl-nav-btn" id="cl-prev">&#8249;</button>
+        <span class="cl-month-label" id="cl-month-label"></span>
+        <button class="cl-nav-btn" id="cl-next">&#8250;</button>
+      </div>
+      <div class="cl-grid" id="cl-grid"></div>
+      <div class="cl-detail" id="cl-detail" style="display:none;">
+        <div class="cl-detail-date" id="cl-detail-date"></div>
+        <div id="cl-detail-entries"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
   <div class="footer-copy">&copy; 2026 Darren Lo. All rights reserved.</div>
@@ -1546,6 +1636,7 @@
     <a href="#">Privacy</a>
     <a href="#">Disclosures</a>
     <a href="#" onclick="switchTab('contact'); return false;">Contact</a>
+    <a href="#" onclick="switchTab('changelog'); return false;">Changelog</a>
   </div>
 </footer>
 
@@ -2803,6 +2894,80 @@
       e.target.reset();
     }, 3000);
   }
+
+  /* ── CHANGELOG ─────────────────────────────────────────── */
+  let clData = null;
+  let clYear = new Date().getFullYear();
+  let clMonth = new Date().getMonth();
+  let clSelected = null;
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  async function loadChangelog() {
+    try {
+      const r = await fetch('/changelog.json');
+      const arr = await r.json();
+      clData = new Map();
+      arr.forEach(d => clData.set(d.date, d.entries));
+      renderCal();
+    } catch(e) { console.error('Changelog load failed', e); }
+  }
+
+  function renderCal() {
+    document.getElementById('cl-month-label').textContent = MONTH_NAMES[clMonth] + ' ' + clYear;
+    const grid = document.getElementById('cl-grid');
+    grid.innerHTML = DOW.map(d => `<div class="cl-dow">${d}</div>`).join('');
+    const firstDay = new Date(clYear, clMonth, 1).getDay(); // 0=Sun
+    const leadingBlanks = (firstDay === 0 ? 6 : firstDay - 1);
+    const daysInMonth = new Date(clYear, clMonth + 1, 0).getDate();
+    const today = new Date();
+    for (let i = 0; i < leadingBlanks; i++) grid.innerHTML += `<div class="cl-day empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${clYear}-${String(clMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasEntries = clData && clData.has(dateStr);
+      const isToday = today.getFullYear()===clYear && today.getMonth()===clMonth && today.getDate()===d;
+      const isSelected = clSelected === dateStr;
+      let cls = 'cl-day';
+      if (hasEntries) cls += ' has-entries';
+      if (isToday) cls += ' today';
+      if (isSelected) cls += ' selected';
+      grid.innerHTML += `<div class="${cls}" ${hasEntries ? `onclick="selectDay('${dateStr}')"` : ''}>${d}${hasEntries ? '<div class="cl-dot"></div>' : ''}</div>`;
+    }
+  }
+
+  function selectDay(dateStr) {
+    clSelected = dateStr;
+    renderCal();
+    const entries = clData.get(dateStr) || [];
+    const [y,m,d] = dateStr.split('-');
+    const label = MONTH_NAMES[parseInt(m)-1] + ' ' + parseInt(d) + ', ' + y;
+    document.getElementById('cl-detail-date').textContent = label;
+    const catClass = { Feature:'cl-cat-feature', UI:'cl-cat-ui', Content:'cl-cat-content', Fix:'cl-cat-fix', Performance:'cl-cat-performance' };
+    document.getElementById('cl-detail-entries').innerHTML = entries.map(e =>
+      `<div class="cl-entry"><span class="cl-cat ${catClass[e.category]||'cl-cat-content'}">${e.category}</span><span>${e.description}</span></div>`
+    ).join('');
+    document.getElementById('cl-detail').style.display = 'block';
+  }
+
+  document.getElementById('cl-prev').addEventListener('click', () => {
+    clMonth--; if (clMonth < 0) { clMonth = 11; clYear--; }
+    clSelected = null;
+    document.getElementById('cl-detail').style.display = 'none';
+    if (clData) renderCal();
+  });
+  document.getElementById('cl-next').addEventListener('click', () => {
+    clMonth++; if (clMonth > 11) { clMonth = 0; clYear++; }
+    clSelected = null;
+    document.getElementById('cl-detail').style.display = 'none';
+    if (clData) renderCal();
+  });
+
+  /* Lazy-load on first tab visit */
+  const _origSwitchTabCL = switchTab;
+  switchTab = function(name) {
+    _origSwitchTabCL(name);
+    if (name === 'changelog' && !clData) loadChangelog();
+  };
 </script>
 
 </body>
