@@ -208,8 +208,8 @@
       transition: all 0.2s;
       text-decoration: none;
     }
-    .btn-primary { background: var(--white); color: var(--navy); border-color: var(--white); }
-    .btn-primary:hover { background: #e8eaf0; border-color: #e8eaf0; }
+    .btn-primary { background: var(--navy-light); color: var(--white); border-color: var(--white); }
+    .btn-primary:hover { background: var(--navy-mid); border-color: var(--white); }
     .btn-outline { background: transparent; color: var(--white); border-color: rgba(255,255,255,0.5); }
     .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
 
@@ -280,6 +280,19 @@
       margin-bottom: 18px;
     }
     .timeline { list-style: none; border-left: 2px solid var(--navy-mid); padding-left: 24px; }
+    /* Horizontal timeline (home page) */
+    .h-tl-outer { padding: 16px 20px; border: 1px solid var(--gray-light); border-radius: 12px; background: var(--white); }
+    .h-tl { display: flex; position: relative; height: 240px; }
+    .h-tl::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--navy-mid); transform: translateY(-50%); z-index: 0; }
+    .h-tl-item { position: relative; flex: 1; min-width: 0; padding: 0 8px; z-index: 1; }
+    .h-tl-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 11px; height: 11px; background: var(--navy-mid); border-radius: 50%; border: 2px solid var(--white); box-shadow: 0 0 0 2px var(--navy-mid); z-index: 2; }
+    .h-tl-content { position: absolute; left: 6px; right: 6px; text-align: center; }
+    .h-tl-item:nth-child(odd)  .h-tl-content { bottom: calc(50% + 18px); }
+    .h-tl-item:nth-child(even) .h-tl-content { top: calc(50% + 18px); }
+    .h-tl-logo { height: 18px; width: auto; opacity: 0.85; display: block; margin: 0 auto 4px; }
+    .h-tl-year { font-size: 0.75rem; font-weight: 700; color: var(--navy-mid); letter-spacing: 0.03em; margin-bottom: 3px; }
+    .h-tl-title { font-size: 0.78rem; font-weight: 700; color: var(--navy); line-height: 1.3; }
+    .h-tl-company { font-size: 0.7rem; color: var(--gray); margin-top: 2px; }
     .timeline li { margin-bottom: 28px; position: relative; }
     .timeline li::before {
       content: '';
@@ -300,6 +313,11 @@
     .timeline-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin: 3px 0; }
     .timeline-sub { font-family: 'Arial', sans-serif; font-size: 0.85rem; color: var(--gray); }
     .timeline-logo { height: 18px; width: auto; vertical-align: middle; margin-right: 6px; opacity: 0.85; position: relative; top: -1px; }
+
+    /* ── FOCUS PILLS ─────────────────────────────── */
+    .focus-boxes { display: flex; flex-wrap: wrap; gap: 10px; }
+    .focus-box { display: flex; align-items: center; gap: 8px; font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--navy); background: var(--white); border: 1px solid var(--gray-light); border-radius: 8px; padding: 8px 14px; }
+    .focus-box-icon { font-size: 1rem; line-height: 1; }
 
     /* ── CERTIFICATIONS ──────────────────────────── */
     .cert-list { display: flex; flex-direction: column; gap: 14px; }
@@ -599,6 +617,13 @@
     .mm-tooltip-rel { font-size: 0.74rem; color: rgba(255,255,255,0.5); margin-top: 5px; font-style: italic; }
     .mm-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px; color: rgba(255,255,255,0.3); font-family: 'Arial', sans-serif; }
     .mm-empty-icon { font-size: 3rem; opacity: 0.3; }
+    .mm-mode-bar { display: flex; gap: 8px; padding: 12px 0 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: -1px; }
+    .mm-mode-btn { background: none; border: none; border-bottom: 2px solid transparent; color: rgba(255,255,255,0.45); font-family: 'Arial', sans-serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.04em; padding: 8px 18px 10px; cursor: pointer; transition: all 0.18s; }
+    .mm-mode-btn:hover { color: rgba(255,255,255,0.8); }
+    .mm-mode-btn.active { color: var(--white); border-bottom-color: var(--white); }
+    .mm-axis-info { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px; }
+    .mm-axis-row { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: rgba(255,255,255,0.65); }
+    .mm-axis-label { font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.07); border-radius: 4px; padding: 2px 6px; flex-shrink: 0; }
 
     /* ── DIRECTORY ───────────────────────────────── */
     .dir-page { padding: 48px 48px 72px; background: var(--off-white); min-height: 60vh; }
@@ -859,7 +884,7 @@
     .evcal-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
     .evcal-day.has-events { color: var(--white); cursor: pointer; border-color: rgba(255,255,255,0.15); }
     .evcal-day.has-events:hover { background: rgba(255,255,255,0.1); }
-    .evcal-day.today { box-shadow: 0 0 0 2px var(--gold); }
+    .evcal-day.today { box-shadow: 0 0 0 2px var(--navy-mid); }
     .evcal-day.selected { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.4) !important; color: var(--white); }
     .evcal-dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     .evcal-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
@@ -905,7 +930,7 @@
     .lib-page .section-label { color: rgba(255,255,255,0.55); }
     .lib-page h2 { color: var(--white); }
     .lib-intro { font-family: 'Arial', sans-serif; font-size: 0.95rem; color: rgba(255,255,255,0.6); max-width: 640px; margin-bottom: 36px; line-height: 1.65; }
-    .lib-featured-label { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .lib-featured-label { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; }
     .lib-featured-strip { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 40px; scrollbar-width: thin; }
     .lib-featured-strip::-webkit-scrollbar { height: 4px; }
     .lib-featured-strip::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
@@ -938,18 +963,27 @@
     .lib-table-meta { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.4); white-space: nowrap; }
     .lib-clear { background: none; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: rgba(255,255,255,0.55); font-family: 'Arial', sans-serif; font-size: 0.8rem; padding: 8px 14px; cursor: pointer; transition: all 0.15s; }
     .lib-clear:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .lib-starred-btn { background: none; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: rgba(255,255,255,0.55); font-family: 'Arial', sans-serif; font-size: 0.8rem; padding: 8px 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+    .lib-starred-btn:hover { border-color: rgba(255,200,0,0.5); color: #fde68a; }
+    .lib-starred-btn.active { background: rgba(253,230,138,0.1); border-color: rgba(253,230,138,0.5); color: #fde68a; }
+    .lib-star-badge { font-size: 0.75rem; }
     .lib-count { font-family: 'Arial', sans-serif; font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-left: auto; }
     .lib-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .lib-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transition: background 0.2s, border-color 0.2s; }
+    .lib-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; gap: 0; transition: background 0.2s, border-color 0.2s; }
+    .lib-card-preview { width: 100%; height: 130px; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; background: rgba(255,255,255,0.03); }
+    .lib-card-preview img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: opacity 0.3s; }
+    .lib-card-preview img.hidden { display: none; }
+    .lib-card-body { padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     .lib-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
     .lib-card.featured { border-color: rgba(255,255,255,0.28); }
+    .lib-card-footer { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
     .lib-card-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .lib-type-badge { font-family: 'Arial', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
     .lib-type-article { background: rgba(99,179,237,0.18); color: #90cdf4; }
     .lib-type-video { background: rgba(245,101,101,0.18); color: #fc8181; }
     .lib-type-reference { background: rgba(72,187,120,0.18); color: #9ae6b4; }
     .lib-type-tool { background: rgba(237,137,54,0.18); color: #fbd38d; }
-    .lib-new-badge { font-family: 'Arial', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: var(--gold); color: var(--navy); margin-left: auto; }
+    .lib-new-badge { font-family: 'Arial', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: var(--gray-light); color: var(--navy); margin-left: auto; }
     .lib-card-title { font-size: 0.97rem; font-weight: 700; line-height: 1.4; }
     .lib-card-title a { color: var(--white); text-decoration: none; }
     .lib-card-title a:hover { text-decoration: underline; color: rgba(255,255,255,0.85); }
@@ -957,7 +991,6 @@
     .lib-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .lib-tag { font-family: 'Arial', sans-serif; font-size: 0.68rem; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 2px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .lib-tag:hover { border-color: rgba(255,255,255,0.4); color: var(--white); background: rgba(255,255,255,0.07); }
-    .lib-card-footer { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
     .lib-card-meta { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: rgba(255,255,255,0.38); }
     .lib-open-link { font-family: 'Arial', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.15s; }
     .lib-open-link:hover { color: var(--white); }
@@ -1285,7 +1318,6 @@
   <div class="logo" onclick="switchTab('home')" style="cursor:pointer;">Darren <span>Lo</span></div>
   <nav id="main-nav">
     <button class="active" data-tab="home">Home</button>
-    <button data-tab="about">About</button>
     <div class="nav-dropdown" id="projects-dropdown">
       <button class="nav-dropdown-trigger" id="projects-trigger">
         Projects <span class="chevron">▼</span>
@@ -1300,14 +1332,13 @@
         Resources <span class="chevron">▼</span>
       </button>
       <div class="nav-dropdown-menu">
-        <button data-tab="resources" id="dd-finance">Finance Resources</button>
         <button data-tab="ai" id="dd-ai">AI Use Case Ideas</button>
-        <button data-tab="directory" id="dd-directory">Private Market Directory</button>
         <button data-tab="events" id="dd-events">Event Calendar</button>
         <button data-tab="library" id="dd-library">Personal Library</button>
+        <button data-tab="directory" id="dd-directory">Private Market Directory</button>
       </div>
     </div>
-    <button data-tab="news">News</button>
+    <button data-tab="news">News Feed</button>
     <button data-tab="contact">Contact</button>
   </nav>
 </header>
@@ -1321,137 +1352,127 @@
       <h1>Building and Supporting the<br>Growth of <em>Private Financial Markets</em></h1>
       <p>Finance professional focused on private market operations, fund lifecycle management, and investor relations.</p>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="switchTab('about')">About</button>
         <button class="btn btn-primary" onclick="switchTab('projects')">My Projects</button>
         <button class="btn btn-primary" onclick="switchTab('contact')">Get in Touch</button>
       </div>
     </div>
   </div>
 
-  <section style="background: var(--off-white);">
+  <section style="background: var(--white);">
     <div class="section-inner">
-    <p class="section-label">Areas of Focus</p>
-    <h2>Core <span class="accent">Expertise</span></h2>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">🏗️</div>
-        <h3>Fund Operations</h3>
-        <p>End-to-end fund lifecycle management — from launch and structuring through capital deployment, reporting cycles, and wind-down.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🤝</div>
-        <h3>LP Relations</h3>
-        <p>Capital call and distribution management, investor communications, ILPA-aligned reporting, and LP due diligence support.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔢</div>
-        <h3>Portfolio Monitoring</h3>
-        <p>Data aggregation, performance attribution, and portfolio-level analytics across PE, VC, and real assets strategies.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔍</div>
-        <h3>Operational Due Diligence</h3>
-        <p>Process reviews assessing operational controls, fund governance, technology infrastructure, and regulatory readiness for emerging and established managers.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">💻</div>
-        <h3>Technology &amp; Data</h3>
-        <p>Fund tech stack evaluation and implementation — portfolio management systems, LP portals, data warehousing, and workflow automation.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🏦</div>
-        <h3>Private Equity &amp; Venture Capital Expertise</h3>
-        <p>Deep familiarity with PE and VC fund structures, deal lifecycle, valuation methodologies, and the investor dynamics that shape GP–LP relationships across the fund lifecycle.</p>
-      </div>
-    </div>
-    </div>
-  </section>
-
-</div>
-
-<!-- ══════════════════════ ABOUT ══════════════════════ -->
-<div id="tab-about" class="tab-panel">
-
-  <section style="background: var(--off-white);">
-    <div class="section-inner">
-    <p class="section-label">Background</p>
-    <h2>Who <span class="accent">I Am</span></h2>
-    <div class="about-layout">
-      <div class="about-text">
+      <h2>Background</h2>
+      <div class="about-text" style="max-width:760px;">
         <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in managing fund capital activity across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
         <p>My work sits at the intersection of fund operations and client partnership, translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
         <p>• <strong>Investments:</strong> Worked with private equity search funds to source and evaluate mature, industrial businesses in the southern US</p>
         <p>• <strong>Investor Relations:</strong> Successfully raised pre-seed/seed stage rounds to fuel product development</p>
         <p>• <strong>Fund Operations:</strong> Currently at Juniper Square, I partner with General Partners across the private market to streamline and manage their funds' capital activity and investor communications over its lifecycle while navigating complex fund structures.</p>
       </div>
-      <div>
-        <p class="section-label" style="margin-bottom:20px;">Career Timeline</p>
-        <ul class="timeline">
-          <li>
-            <div class="timeline-year">2025 – Present</div>
-            <div class="timeline-title">Senior Associate, Fund Administration</div>
-            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
-          </li>
-          <li>
-            <div class="timeline-year">2023 – 2025</div>
-            <div class="timeline-title">Associate I &amp; II, Fund Administration</div>
-            <div class="timeline-sub"><img src="juniper-square.png" class="timeline-logo" alt="Juniper Square">Juniper Square — Capital Events &amp; Performance</div>
-          </li>
-          <li>
-            <div class="timeline-year">2022 – 2023</div>
-            <div class="timeline-title">Private Equity Analyst</div>
-            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
-          </li>
-          <li>
-            <div class="timeline-year">2022</div>
-            <div class="timeline-title">Investor Relations Intern</div>
-            <div class="timeline-sub"><img src="objective-reality.jpeg" class="timeline-logo" alt="Objective Reality">Objective Reality, Inc.</div>
-          </li>
-          <li>
-            <div class="timeline-year">2022</div>
-            <div class="timeline-title">Investment Analyst Intern</div>
-            <div class="timeline-sub"><img src="vienna-holdings.jpeg" class="timeline-logo" alt="Vienna Holdings Group">Vienna Holdings Group — Search Fund</div>
-          </li>
-          <li>
-            <div class="timeline-year">2021 – 2022</div>
-            <div class="timeline-title">Private Equity Research Intern</div>
-            <div class="timeline-sub"><img src="wideangle.jpg" class="timeline-logo" alt="WIDEangle Ventures">WIDEangle Ventures — Search Fund</div>
-          </li>
-        </ul>
+      <p class="section-label" style="margin-top:32px; margin-bottom:12px;">Areas of Focus</p>
+      <div class="focus-boxes">
+        <div class="focus-box"><span class="focus-box-icon">🏗️</span>Fund Operations</div>
+        <div class="focus-box"><span class="focus-box-icon">🤝</span>LP Relations</div>
+        <div class="focus-box"><span class="focus-box-icon">🔢</span>Portfolio Monitoring</div>
+        <div class="focus-box"><span class="focus-box-icon">🔍</span>Operational Due Diligence</div>
+        <div class="focus-box"><span class="focus-box-icon">💻</span>Technology &amp; Data</div>
+        <div class="focus-box"><span class="focus-box-icon">🏦</span>Private Equity &amp; Venture Capital</div>
+      </div>
+      <div style="margin-bottom:40px;"></div>
 
-        <p class="section-label" style="margin-top:36px; margin-bottom:20px;">Education</p>
-        <ul class="timeline">
-          <li>
-            <div class="timeline-year">2023</div>
-            <div class="timeline-title">B.A., Finance &amp; Data Analytics</div>
-            <div class="timeline-sub"><img src="ohio-wesleyan.png" class="timeline-logo" alt="Ohio Wesleyan University">Ohio Wesleyan University</div>
-          </li>
-        </ul>
-
-        <p class="section-label" style="margin-top:36px; margin-bottom:20px;">Licenses &amp; Certifications</p>
-        <div class="cert-list">
-          <div class="cert-item">
-            <img src="cfi.png" class="cert-logo" alt="Corporate Finance Institute">
-            <div class="cert-info">
-              <span class="cert-name">Financial Analysis and Modeling Professional Certificate</span>
-              <span class="cert-issuer">Corporate Finance Institute (CFI)</span>
+      <p class="section-label" style="margin-bottom:20px;">Career Timeline</p>
+      <div class="h-tl-outer">
+        <div class="h-tl">
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="wideangle.jpg" class="h-tl-logo" alt="WIDEangle Ventures">
+              <div class="h-tl-year">2021 – 2022</div>
+              <div class="h-tl-title">PE Research Intern</div>
+              <div class="h-tl-company">WIDEangle Ventures</div>
             </div>
+            <div class="h-tl-dot"></div>
           </div>
-          <div class="cert-item">
-            <img src="anthropic.jpeg" class="cert-logo" alt="Anthropic">
-            <div class="cert-info">
-              <span class="cert-name">Claude 101</span>
-              <span class="cert-issuer">Anthropic</span>
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="vienna-holdings.jpeg" class="h-tl-logo" alt="Vienna Holdings Group">
+              <div class="h-tl-year">2022</div>
+              <div class="h-tl-title">Investment Analyst Intern</div>
+              <div class="h-tl-company">Vienna Holdings Group</div>
             </div>
+            <div class="h-tl-dot"></div>
+          </div>
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="objective-reality.jpeg" class="h-tl-logo" alt="Objective Reality">
+              <div class="h-tl-year">2022</div>
+              <div class="h-tl-title">IR Intern</div>
+              <div class="h-tl-company">Objective Reality, Inc.</div>
+            </div>
+            <div class="h-tl-dot"></div>
+          </div>
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="wideangle.jpg" class="h-tl-logo" alt="WIDEangle Ventures">
+              <div class="h-tl-year">2022 – 2023</div>
+              <div class="h-tl-title">Private Equity Analyst</div>
+              <div class="h-tl-company">WIDEangle Ventures</div>
+            </div>
+            <div class="h-tl-dot"></div>
+          </div>
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="juniper-square.png" class="h-tl-logo" alt="Juniper Square">
+              <div class="h-tl-year">2023 – 2025</div>
+              <div class="h-tl-title">Associate I &amp; II, Fund Admin</div>
+              <div class="h-tl-company">Juniper Square</div>
+            </div>
+            <div class="h-tl-dot"></div>
+          </div>
+          <div class="h-tl-item">
+            <div class="h-tl-content">
+              <img src="juniper-square.png" class="h-tl-logo" alt="Juniper Square">
+              <div class="h-tl-year">2025 – Present</div>
+              <div class="h-tl-title">Senior Associate, Fund Admin</div>
+              <div class="h-tl-company">Juniper Square</div>
+            </div>
+            <div class="h-tl-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label" style="margin-top:40px; margin-bottom:20px;">Education</p>
+      <div class="cert-list" style="max-width:480px;">
+        <div class="cert-item">
+          <img src="ohio-wesleyan.png" class="cert-logo" alt="Ohio Wesleyan University">
+          <div class="cert-info">
+            <span class="cert-name">B.A., Finance &amp; Data Analytics</span>
+            <span class="cert-issuer">Ohio Wesleyan University · 2023</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label" style="margin-top:36px; margin-bottom:20px;">Licenses &amp; Certifications</p>
+      <div class="cert-list" style="max-width:480px;">
+        <div class="cert-item">
+          <img src="cfi.png" class="cert-logo" alt="Corporate Finance Institute">
+          <div class="cert-info">
+            <span class="cert-name">Financial Analysis and Modeling Professional Certificate</span>
+            <span class="cert-issuer">Corporate Finance Institute (CFI)</span>
+          </div>
+        </div>
+        <div class="cert-item">
+          <img src="anthropic.jpeg" class="cert-logo" alt="Anthropic">
+          <div class="cert-info">
+            <span class="cert-name">Claude 101</span>
+            <span class="cert-issuer">Anthropic</span>
           </div>
         </div>
       </div>
     </div>
-    </div>
   </section>
 
-
 </div>
+
+<!-- ══════════════════════ ABOUT ══════════════════════ -->
 
 <!-- ══════════════════════ MARKET MAP MAKER ══════════════════════ -->
 <div id="tab-marketmap" class="tab-panel">
@@ -1467,6 +1488,11 @@
         </div>
         <div class="mm-sector-btns" id="mm-sector-btns"></div>
       </div>
+    </div>
+
+    <div class="mm-mode-bar">
+      <button class="mm-mode-btn active" data-mode="network">🕸 Network Map</button>
+      <button class="mm-mode-btn" data-mode="matrix">📊 Positioning Matrix</button>
     </div>
 
     <div class="mm-body">
@@ -1491,74 +1517,6 @@
   <section style="background: var(--off-white);">
     <p class="section-label">Selected Work</p>
     <h2>Featured <span class="accent">Projects</span></h2>
-  </section>
-
-</div>
-
-<!-- ══════════════════════ RESOURCES ══════════════════════ -->
-<div id="tab-resources" class="tab-panel">
-
-  <section class="resources-section">
-    <p class="section-label">Curated Reading &amp; Tools</p>
-    <h2>Finance <span class="accent">Resources</span></h2>
-    <div class="resource-grid">
-
-      <div class="resource-card">
-        <div class="resource-cat">Fund Operations &amp; Standards</div>
-        <ul>
-          <li>ILPA Reporting Template &amp; Standards</li>
-          <li>ILPA Diversity in Action Framework</li>
-          <li>AIFMD Regulatory Guidance</li>
-          <li>SEC Private Fund Adviser Rules</li>
-          <li>GIPS Standards for Private Markets</li>
-        </ul>
-      </div>
-
-      <div class="resource-card">
-        <div class="resource-cat">Fund Technology</div>
-        <ul>
-          <li>Allvue — Portfolio &amp; Fund Management</li>
-          <li>Chronograph — LP Portfolio Analytics</li>
-          <li>DealCloud — CRM &amp; Deal Flow</li>
-          <li>iLevel / SS&amp;C — Fund Monitoring</li>
-          <li>Carta — Fund Administration</li>
-        </ul>
-      </div>
-
-      <div class="resource-card">
-        <div class="resource-cat">Data &amp; Benchmarking</div>
-        <ul>
-          <li>Preqin — Private Markets Data</li>
-          <li>PitchBook — Deals &amp; Funds</li>
-          <li>Cambridge Associates — Benchmarks</li>
-          <li>Burgiss — Portfolio Analytics</li>
-          <li>MSCI Private Assets</li>
-        </ul>
-      </div>
-
-      <div class="resource-card">
-        <div class="resource-cat">Industry Publications</div>
-        <ul>
-          <li>Private Equity International (PEI)</li>
-          <li>Private Funds CFO</li>
-          <li>PERE — Real Estate Investors</li>
-          <li>Buyouts Magazine</li>
-          <li>The Term Sheet — Fortune</li>
-        </ul>
-      </div>
-
-      <div class="resource-card">
-        <div class="resource-cat">Industry Bodies &amp; Networks</div>
-        <ul>
-          <li>ILPA — LP Association</li>
-          <li>BVCA — British Private Equity</li>
-          <li>NVCA — Venture Capital Association</li>
-          <li>AVCAL — Australasian PE &amp; VC</li>
-          <li>Emerging Manager Alliance</li>
-        </ul>
-      </div>
-
-    </div>
   </section>
 
 </div>
@@ -1788,6 +1746,7 @@
         <option value="oldest">Oldest First</option>
         <option value="az">A – Z</option>
       </select>
+      <button class="lib-starred-btn" id="lib-starred-btn">⭐ Starred</button>
       <button class="lib-clear" id="lib-clear">Clear</button>
       <span class="lib-count" id="lib-count"></span>
       <div class="lib-view-toggle">
@@ -2178,10 +2137,6 @@
   });
   document.addEventListener('click', () => dropdown.classList.remove('open'));
 
-  document.getElementById('dd-finance').addEventListener('click', () => {
-    switchTab('resources');
-    dropdown.classList.remove('open');
-  });
   document.getElementById('dd-ai').addEventListener('click', () => {
     switchTab('ai');
     dropdown.classList.remove('open');
@@ -2206,9 +2161,8 @@
     /* Highlight regular nav buttons */
     document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.remove('active'));
     /* Highlight resources dropdown trigger if resources or ai */
-    trigger.classList.toggle('active', name === 'resources' || name === 'ai' || name === 'directory' || name === 'events' || name === 'library');
+    trigger.classList.toggle('active', name === 'ai' || name === 'directory' || name === 'events' || name === 'library');
     /* Update dropdown item highlight */
-    document.getElementById('dd-finance').classList.toggle('active', name === 'resources');
     document.getElementById('dd-ai').classList.toggle('active', name === 'ai');
     document.getElementById('dd-directory').classList.toggle('active', name === 'directory');
     document.getElementById('dd-events').classList.toggle('active', name === 'events');
@@ -2635,6 +2589,15 @@
         'Regulatory pressure in EU and US creating compliance-focused AI governance opportunities',
       ],
       categories: { 'Foundation Models': '#3b82f6', 'Infrastructure': '#8b5cf6', 'AI Applications': '#10b981', 'AI Tooling': '#f59e0b', 'Investors': '#ef4444' },
+      axisX: { low: 'Generalist', high: 'Specialist' },
+      axisY: { low: 'Emerging', high: 'Established' },
+      categoryMatrix: {
+        'Foundation Models': { x: 55, y: 82 },
+        'Infrastructure':    { x: 26, y: 90 },
+        'AI Applications':   { x: 80, y: 50 },
+        'AI Tooling':        { x: 65, y: 58 },
+        'Investors':         { x: 20, y: 88 },
+      },
       nodes: [
         { id: 'openai',      name: 'OpenAI',          cat: 'Foundation Models', domain: 'openai.com',           note: 'GPT-4o, ChatGPT, $157B valuation' },
         { id: 'anthropic',   name: 'Anthropic',        cat: 'Foundation Models', domain: 'anthropic.com',        note: 'Claude, $18B valuation' },
@@ -2704,6 +2667,15 @@
         'AI-powered deal sourcing, due diligence, and portfolio monitoring becoming table stakes for top GPs',
       ],
       categories: { 'Mega-Cap GPs': '#1e40af', 'Mid-Market GPs': '#3b82f6', 'LP Community': '#7c3aed', 'Secondaries & GP Solutions': '#059669', 'Service Providers': '#d97706' },
+      axisX: { low: 'Generalist', high: 'Sector Specialist' },
+      axisY: { low: 'Lower Middle Market', high: 'Mega-Cap' },
+      categoryMatrix: {
+        'Mega-Cap GPs':               { x: 30, y: 92 },
+        'Mid-Market GPs':             { x: 74, y: 55 },
+        'LP Community':               { x: 22, y: 78 },
+        'Secondaries & GP Solutions': { x: 48, y: 68 },
+        'Service Providers':          { x: 55, y: 30 },
+      },
       nodes: [
         { id: 'blackstone', name: 'Blackstone',       cat: 'Mega-Cap GPs',             domain: 'blackstone.com',         note: '$1.1T AUM, largest PE firm globally' },
         { id: 'kkr',        name: 'KKR',              cat: 'Mega-Cap GPs',             domain: 'kkr.com',                note: '$553B AUM, diversified alternatives' },
@@ -2766,6 +2738,15 @@
         'Open banking (CFPB 1033) expected to reshape financial data sharing and consent management',
       ],
       categories: { 'Payments': '#2563eb', 'Banking / Neobanks': '#7c3aed', 'Lending & Credit': '#059669', 'Wealth & Investing': '#d97706', 'Infrastructure / BaaS': '#dc2626' },
+      axisX: { low: 'B2C Consumer', high: 'B2B Enterprise' },
+      axisY: { low: 'Emerging', high: 'Established' },
+      categoryMatrix: {
+        'Payments':              { x: 55, y: 80 },
+        'Banking / Neobanks':    { x: 22, y: 58 },
+        'Lending & Credit':      { x: 38, y: 50 },
+        'Wealth & Investing':    { x: 30, y: 62 },
+        'Infrastructure / BaaS': { x: 80, y: 62 },
+      },
       nodes: [
         { id: 'stripe',     name: 'Stripe',        cat: 'Payments',             domain: 'stripe.com',      note: '$65B valuation, global payments' },
         { id: 'paypal',     name: 'PayPal',        cat: 'Payments',             domain: 'paypal.com',      note: 'Public, $70B mkt cap' },
@@ -2824,6 +2805,15 @@
         'Industrial AI enabling predictive maintenance, quality control, and yield optimization at scale',
       ],
       categories: { 'Advanced Manufacturing': '#1e40af', 'Automation & Robotics': '#7c3aed', 'Defense Tech': '#059669', 'Supply Chain Tech': '#d97706', 'Industrial PE': '#dc2626' },
+      axisX: { low: 'Traditional', high: 'Tech-Enabled' },
+      axisY: { low: 'Regional', high: 'Global' },
+      categoryMatrix: {
+        'Advanced Manufacturing': { x: 38, y: 82 },
+        'Automation & Robotics':  { x: 75, y: 58 },
+        'Defense Tech':           { x: 72, y: 52 },
+        'Supply Chain Tech':      { x: 68, y: 48 },
+        'Industrial PE':          { x: 48, y: 32 },
+      },
       nodes: [
         { id: 'rockwell',   name: 'Rockwell Automation', cat: 'Advanced Manufacturing', domain: 'rockwellautomation.com', note: 'Industrial automation leader' },
         { id: 'honeywell',  name: 'Honeywell',           cat: 'Advanced Manufacturing', domain: 'honeywell.com',          note: 'Diversified industrials' },
@@ -2881,6 +2871,15 @@
         'Carbon credit markets maturing with improved verification standards from Verra and Science Based Targets',
       ],
       categories: { 'Solar': '#f59e0b', 'Wind': '#3b82f6', 'Energy Storage': '#8b5cf6', 'Grid & Infrastructure': '#dc2626', 'CleanTech Investors': '#059669' },
+      axisX: { low: 'Early Stage', high: 'Commercial Scale' },
+      axisY: { low: 'Private', high: 'Public' },
+      categoryMatrix: {
+        'Solar':                { x: 72, y: 70 },
+        'Wind':                 { x: 68, y: 78 },
+        'Energy Storage':       { x: 45, y: 52 },
+        'Grid & Infrastructure':{ x: 65, y: 65 },
+        'CleanTech Investors':  { x: 30, y: 42 },
+      },
       nodes: [
         { id: 'nextracker', name: 'Nextracker',      cat: 'Solar',               domain: 'nextracker.com',            note: 'Solar tracking systems, public' },
         { id: 'firstsolar', name: 'First Solar',     cat: 'Solar',               domain: 'firstsolar.com',            note: 'US thin-film module leader' },
@@ -2953,17 +2952,30 @@
     }
   });
 
+  let mmMode = 'network';
   let currentSector = null;
   let mmSimulation = null;
+
+  /* Mode toggle */
+  document.querySelectorAll('.mm-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      mmMode = btn.dataset.mode;
+      document.querySelectorAll('.mm-mode-btn').forEach(b => b.classList.toggle('active', b === btn));
+      if (currentSector) loadMap(currentSector);
+    });
+  });
 
   function loadMap(sectorKey) {
     currentSector = sectorKey;
     const map = MARKET_MAPS[sectorKey];
-
-    /* Highlight active sector btn */
     document.querySelectorAll('.mm-sector-btn').forEach(b => b.classList.toggle('active', b.dataset.sector === sectorKey));
 
-    /* Update sidebar */
+    if (mmMode === 'matrix') {
+      renderMatrix(map);
+      return;
+    }
+
+    /* Network mode: update sidebar + render graph */
     const sidebar = document.getElementById('mm-sidebar');
     sidebar.innerHTML = `
       <p class="mm-sector-desc">${map.description}</p>
@@ -2981,8 +2993,6 @@
             <span>${cat}</span>
           </div>`).join('')}
       </div>`;
-
-    /* Render D3 graph */
     renderGraph(map);
   }
 
@@ -3110,6 +3120,179 @@
         .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
       node.attr('transform', d => `translate(${d.x},${d.y})`);
     });
+  }
+
+  /* ── POSITIONING MATRIX ────────────────────────── */
+  function getMatrixPos(node, allNodes, categoryMatrix) {
+    const center = categoryMatrix[node.cat] || { x: 50, y: 50 };
+    const catNodes = allNodes.filter(n => n.cat === node.cat);
+    const idx = catNodes.findIndex(n => n.id === node.id);
+    const total = catNodes.length;
+    const spread = total <= 1 ? 0 : Math.min(10, 40 / total);
+    const angle = total <= 1 ? 0 : (idx / (total - 1)) * Math.PI;
+    return {
+      x: Math.max(4, Math.min(96, center.x + Math.cos(angle) * spread)),
+      y: Math.max(4, Math.min(96, center.y + Math.sin(angle) * spread * 0.55))
+    };
+  }
+
+  function renderMatrix(map) {
+    const container = document.getElementById('mm-graph-col');
+    const W = container.clientWidth || 800;
+    const H = 620;
+    const PAD = { top: 48, right: 36, bottom: 64, left: 76 };
+    const pw = W - PAD.left - PAD.right;
+    const ph = H - PAD.top - PAD.bottom;
+    const tooltip = document.getElementById('mm-tooltip');
+
+    if (mmSimulation) { mmSimulation.stop(); mmSimulation = null; }
+
+    const svg = d3.select('#mm-svg').attr('width', W).attr('height', H);
+    svg.selectAll('*').remove();
+    const g = svg.append('g').attr('transform', `translate(${PAD.left},${PAD.top})`);
+
+    /* Subtle grid at 25% / 75% */
+    [0.25, 0.75].forEach(t => {
+      g.append('line').attr('x1', pw * t).attr('y1', 0).attr('x2', pw * t).attr('y2', ph)
+        .attr('stroke', 'rgba(255,255,255,0.05)').attr('stroke-width', 1);
+      g.append('line').attr('x1', 0).attr('y1', ph * t).attr('x2', pw).attr('y2', ph * t)
+        .attr('stroke', 'rgba(255,255,255,0.05)').attr('stroke-width', 1);
+    });
+
+    /* Border */
+    g.append('rect').attr('width', pw).attr('height', ph)
+      .attr('fill', 'none').attr('stroke', 'rgba(255,255,255,0.12)');
+
+    /* Center quadrant lines */
+    g.append('line').attr('x1', pw/2).attr('y1', 0).attr('x2', pw/2).attr('y2', ph)
+      .attr('stroke', 'rgba(255,255,255,0.18)').attr('stroke-dasharray', '5,4');
+    g.append('line').attr('x1', 0).attr('y1', ph/2).attr('x2', pw).attr('y2', ph/2)
+      .attr('stroke', 'rgba(255,255,255,0.18)').attr('stroke-dasharray', '5,4');
+
+    /* Axis labels */
+    const af = 'Arial, sans-serif', ac = 'rgba(255,255,255,0.4)', as = '11px';
+    g.append('text').text('← ' + map.axisX.low).attr('x', 0).attr('y', ph + 46)
+      .attr('fill', ac).attr('font-family', af).attr('font-size', as);
+    g.append('text').text(map.axisX.high + ' →').attr('x', pw).attr('y', ph + 46)
+      .attr('text-anchor', 'end').attr('fill', ac).attr('font-family', af).attr('font-size', as);
+    g.append('text').text('← ' + map.axisY.low)
+      .attr('transform', `rotate(-90) translate(${-ph + 2},${-PAD.left + 16})`)
+      .attr('fill', ac).attr('font-family', af).attr('font-size', as);
+    g.append('text').text(map.axisY.high + ' →')
+      .attr('transform', `rotate(-90) translate(${-2},${-PAD.left + 16})`)
+      .attr('text-anchor', 'end').attr('fill', ac).attr('font-family', af).attr('font-size', as);
+
+    /* Compute positions */
+    const nodes = map.nodes.map(n => ({ ...n }));
+    nodes.forEach(n => {
+      const pos = getMatrixPos(n, nodes, map.categoryMatrix);
+      n.mx = pos.x / 100 * pw;
+      n.my = (1 - pos.y / 100) * ph;
+    });
+
+    /* Quadrant gap analysis */
+    const quads = { tl: [], tr: [], bl: [], br: [] };
+    nodes.forEach(n => {
+      const qx = n.mx > pw / 2 ? 'r' : 'l';
+      const qy = n.my < ph / 2 ? 't' : 'b';
+      quads[qy + qx].push(n);
+    });
+    const minQ = Math.min(...Object.values(quads).map(q => q.length));
+    const gapKeys = Object.entries(quads).filter(([, q]) => q.length === minQ && q.length <= 2).map(([k]) => k);
+    const qOrigins = { tl: [0, 0], tr: [pw/2, 0], bl: [0, ph/2], br: [pw/2, ph/2] };
+
+    gapKeys.forEach(key => {
+      const [qx, qy] = qOrigins[key];
+      g.append('rect').attr('x', qx).attr('y', qy).attr('width', pw/2).attr('height', ph/2)
+        .attr('fill', 'rgba(99,179,237,0.05)')
+        .attr('stroke', 'rgba(99,179,237,0.22)').attr('stroke-dasharray', '4,3').attr('stroke-width', 1);
+      g.append('text').text('◈ Market Gap')
+        .attr('x', qx + pw/4).attr('y', qy + ph/4)
+        .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+        .attr('font-size', '12px').attr('font-family', af)
+        .attr('fill', 'rgba(99,179,237,0.45)');
+    });
+
+    const catColors = map.categories;
+    const color = d => catColors[d.cat] || '#94a3b8';
+
+    /* Render nodes */
+    const nodeGroups = g.append('g').selectAll('g').data(nodes).join('g')
+      .attr('class', 'mm-node')
+      .attr('transform', d => `translate(${d.mx},${d.my})`);
+
+    nodeGroups.append('circle').attr('r', 18)
+      .attr('fill', d => color(d) + '22').attr('stroke', d => color(d)).attr('stroke-width', 1.5);
+
+    nodeGroups.each(function(d) {
+      const grp = d3.select(this);
+      const img = grp.append('image').attr('x', -11).attr('y', -11).attr('width', 22).attr('height', 22)
+        .attr('href', `https://logo.clearbit.com/${d.domain}`).attr('clip-path', 'circle(10px)');
+      const txt = grp.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em')
+        .attr('font-size', '9px').attr('font-weight', '700').attr('fill', color(d))
+        .text(d.name.split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0,2).map(w=>w[0]).join(''))
+        .attr('display', 'none');
+      const im = new Image();
+      im.onerror = () => { img.attr('href', ''); txt.attr('display', null); };
+      im.src = `https://logo.clearbit.com/${d.domain}`;
+    });
+
+    nodeGroups.append('text').attr('text-anchor', 'middle').attr('y', 28)
+      .attr('font-size', '9px').attr('fill', 'rgba(255,255,255,0.72)')
+      .text(d => d.name.length > 16 ? d.name.slice(0,15) + '…' : d.name);
+
+    nodeGroups
+      .on('mouseover', function(event, d) {
+        nodeGroups.classed('highlighted', n => n.id === d.id).classed('dimmed', n => n.id !== d.id);
+        tooltip.innerHTML = `<div class="mm-tooltip-name">${d.name}</div>
+          <div class="mm-tooltip-cat" style="color:${color(d)}">${d.cat}</div>
+          <div class="mm-tooltip-note">${d.note}</div>`;
+        tooltip.style.opacity = 1;
+        tooltip.style.left = (event.offsetX + 16) + 'px';
+        tooltip.style.top  = (event.offsetY - 10) + 'px';
+      })
+      .on('mousemove', function(event) {
+        tooltip.style.left = (event.offsetX + 16) + 'px';
+        tooltip.style.top  = (event.offsetY - 10) + 'px';
+      })
+      .on('mouseout', function() {
+        nodeGroups.classed('highlighted dimmed', false);
+        tooltip.style.opacity = 0;
+      });
+
+    /* Sidebar: gap analysis */
+    const qNameMap = {
+      tr: `${map.axisX.high} + ${map.axisY.high}`,
+      tl: `${map.axisX.low} + ${map.axisY.high}`,
+      br: `${map.axisX.high} + ${map.axisY.low}`,
+      bl: `${map.axisX.low} + ${map.axisY.low}`,
+    };
+    const catCounts = {};
+    nodes.forEach(n => { catCounts[n.cat] = (catCounts[n.cat] || 0) + 1; });
+
+    const sidebar = document.getElementById('mm-sidebar');
+    sidebar.innerHTML = `
+      <p class="mm-sector-desc">${map.description}</p>
+      <div class="mm-sidebar-label">Positioning Axes</div>
+      <div class="mm-axis-info">
+        <div class="mm-axis-row"><span class="mm-axis-label">X</span><span>${map.axisX.low} → ${map.axisX.high}</span></div>
+        <div class="mm-axis-row"><span class="mm-axis-label">Y</span><span>${map.axisY.low} → ${map.axisY.high}</span></div>
+      </div>
+      <div class="mm-sidebar-label">Market Gaps${gapKeys.length ? ' 🔍' : ''}</div>
+      <ul class="mm-insights">
+        ${gapKeys.length
+          ? gapKeys.map(k => `<li><strong>${qNameMap[k]}</strong> — ${quads[k].length === 0 ? 'No players identified.' : `Only ${quads[k].length} player${quads[k].length === 1 ? '' : 's'}.`} Potential underserved segment.</li>`).join('')
+          : '<li>Competition is broadly distributed across all four quadrants.</li>'
+        }
+      </ul>
+      <div class="mm-sidebar-label">Categories</div>
+      <div class="mm-legend">
+        ${Object.entries(map.categories).map(([cat, clr]) => `
+          <div class="mm-legend-item">
+            <div class="mm-legend-dot" style="background:${clr}"></div>
+            <span>${cat} <em style="color:rgba(255,255,255,0.35)">(${catCounts[cat] || 0})</em></span>
+          </div>`).join('')}
+      </div>`;
   }
 
   /* Load AI map by default when market map tab is opened */
@@ -3425,6 +3608,571 @@
   /* ── PERSONAL LIBRARY ───────────────────────────────────────── */
   const LIBRARY_ITEMS = [
     {
+      id: 'axial',
+      title: 'Axial',
+      type: 'tool',
+      url: 'https://www.axial.net/',
+      description: 'A private deal network connecting financial investors, M&A advisors, and business owners to facilitate mergers, acquisitions, and capital raising in the North American lower middle market ($2.5M–$250M revenue).',
+      category: 'Investments & Deal Flow',
+      tags: ['M&A', 'Deal Flow', 'Lower Middle Market', 'Private Equity', 'Capital Raising'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Axial'
+    },
+    {
+      id: 'fiscal-ai-fund-letters',
+      title: 'Fiscal AI — Fund Letters',
+      type: 'tool',
+      url: 'https://fiscal.ai/fund-letters/',
+      description: 'A curated database of fund letters from leading private equity, venture capital, and hedge fund managers — useful for tracking GP perspectives, market commentary, and investor communication styles.',
+      category: 'Inspiration',
+      tags: ['Fund Letters', 'Private Equity', 'Venture Capital', 'GP Communications', 'AI'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      starred: true,
+      source: 'fiscal.ai'
+    },
+    {
+      id: 'ilpa-reporting-standards',
+      title: 'ILPA Reporting Template & Standards',
+      type: 'reference',
+      url: 'https://ilpa.org/reporting-standards/',
+      description: 'Industry-standard LP reporting templates from the Institutional Limited Partners Association — widely adopted by GPs for quarterly and annual fund reporting.',
+      category: 'Investments & Deal Flow',
+      tags: ['ILPA', 'Fund Reporting', 'LP Relations', 'Standards', 'Private Markets'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'ILPA'
+    },
+    {
+      id: 'ilpa-diversity-in-action',
+      title: 'ILPA Diversity in Action Framework',
+      type: 'reference',
+      url: 'https://ilpa.org/diversity-in-action/',
+      description: "ILPA's framework for advancing diversity, equity, and inclusion across the private equity industry — includes commitments, signatory firms, and best practice guidance.",
+      category: 'Investments & Deal Flow',
+      tags: ['ILPA', 'DEI', 'Diversity', 'Private Equity', 'Standards'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'ILPA'
+    },
+    {
+      id: 'aifmd-regulatory-guidance',
+      title: 'AIFMD Regulatory Guidance',
+      type: 'reference',
+      url: 'https://www.esma.europa.eu/convergence/aifmd',
+      description: "EU's Alternative Investment Fund Managers Directive — the key regulatory framework governing private fund managers operating in Europe, covering reporting, marketing, and compliance.",
+      category: 'Investments & Deal Flow',
+      tags: ['AIFMD', 'Regulation', 'EU', 'Compliance', 'Fund Management', 'Private Markets'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'ESMA'
+    },
+    {
+      id: 'sec-private-fund-adviser-rules',
+      title: 'SEC Private Fund Adviser Rules',
+      type: 'reference',
+      url: 'https://www.sec.gov/rules-regulations/investment-advisers-act',
+      description: "SEC's regulatory rules for registered private fund advisers — covers quarterly statements, audits, fairness opinions, and restricted activities affecting GPs and fund managers.",
+      category: 'Investments & Deal Flow',
+      tags: ['SEC', 'Regulation', 'Private Funds', 'Compliance', 'Fund Adviser', 'US Law'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'SEC'
+    },
+    {
+      id: 'gips-standards',
+      title: 'GIPS Standards for Private Markets',
+      type: 'reference',
+      url: 'https://www.gipsstandards.org/',
+      description: 'Global Investment Performance Standards — the ethical framework for calculating and presenting investment performance, increasingly adopted by private market GPs for LP transparency.',
+      category: 'Investments & Deal Flow',
+      tags: ['GIPS', 'Performance Standards', 'Private Markets', 'Compliance', 'CFA Institute'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'CFA Institute'
+    },
+    {
+      id: 'preqin',
+      title: 'Preqin — Private Markets Data',
+      type: 'tool',
+      url: 'https://www.preqin.com/',
+      description: 'Leading alternative assets data platform — covers fund performance, LP commitments, fundraising activity, and deal flow across private equity, credit, real estate, and infrastructure.',
+      category: 'Data & Benchmarking',
+      tags: ['Preqin', 'Private Markets', 'Data', 'Fundraising', 'Fund Performance', 'Alternatives'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Preqin'
+    },
+    {
+      id: 'pitchbook',
+      title: 'PitchBook — Deals & Funds',
+      type: 'tool',
+      url: 'https://pitchbook.com/',
+      description: 'Comprehensive private market data platform covering VC, PE, and M&A — track deals, valuations, fund raises, and company financials across the private and public ecosystem.',
+      category: 'Data & Benchmarking',
+      tags: ['PitchBook', 'Venture Capital', 'Private Equity', 'Deals', 'Valuations', 'Data'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'PitchBook'
+    },
+    {
+      id: 'cambridge-associates',
+      title: 'Cambridge Associates — Benchmarks',
+      type: 'reference',
+      url: 'https://www.cambridgeassociates.com/',
+      description: 'Institutional investment advisory firm known for its private market benchmarks — their PE and VC index returns are widely cited as the industry standard for performance comparison.',
+      category: 'Data & Benchmarking',
+      tags: ['Cambridge Associates', 'Benchmarks', 'Private Equity', 'VC', 'Performance', 'Institutional'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Cambridge Associates'
+    },
+    {
+      id: 'burgiss-msci',
+      title: 'Burgiss (MSCI) — Portfolio Analytics',
+      type: 'tool',
+      url: 'https://www.msci.com/private-capital/',
+      description: 'MSCI\'s private capital analytics platform (formerly Burgiss) — used by LPs to aggregate, analyze, and benchmark private fund portfolios across cash flows, valuations, and exposures.',
+      category: 'Data & Benchmarking',
+      tags: ['Burgiss', 'MSCI', 'Portfolio Analytics', 'LP', 'Private Markets', 'Performance'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'MSCI'
+    },
+    {
+      id: 'msci-private-assets',
+      title: 'MSCI Private Assets',
+      type: 'tool',
+      url: 'https://www.msci.com/private-assets',
+      description: 'MSCI\'s suite of private asset data, analytics, and benchmarks covering real estate, infrastructure, and private equity — used by institutional investors for portfolio construction and reporting.',
+      category: 'Data & Benchmarking',
+      tags: ['MSCI', 'Private Assets', 'Real Estate', 'Infrastructure', 'Benchmarks', 'Institutional'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'MSCI'
+    },
+    {
+      id: 'annual-reports',
+      title: 'AnnualReports.com',
+      type: 'reference',
+      url: 'https://www.annualreports.com/',
+      description: 'Comprehensive database of company annual reports — quickly access filings from public companies across industries for research, due diligence, and competitive analysis.',
+      category: 'Data & Benchmarking',
+      tags: ['Annual Reports', 'Public Companies', 'Investor Relations', 'Research', 'Due Diligence'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'AnnualReports.com'
+    },
+    {
+      id: 'frontier-optic',
+      title: 'FrontierOptic',
+      type: 'tool',
+      url: 'https://www.frontieroptic.com/',
+      description: 'Optic fiber and broadband infrastructure research and comparison tool — useful for tracking telecom and connectivity industry data.',
+      category: 'Data & Benchmarking',
+      tags: ['Telecom', 'Fiber', 'Infrastructure', 'Broadband', 'Research'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'FrontierOptic'
+    },
+    {
+      id: 'census-data',
+      title: 'US Census Bureau — Data Explorer',
+      type: 'tool',
+      url: 'https://data.census.gov/',
+      description: 'Official US Census data portal — explore demographic, economic, and housing data across geographies for market research, investment thesis building, and policy analysis.',
+      category: 'Data & Benchmarking',
+      tags: ['Census', 'Demographics', 'Economic Data', 'US Data', 'Government', 'Market Research'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'US Census Bureau'
+    },
+    {
+      id: 'pinterest-trends',
+      title: 'Pinterest Trends',
+      type: 'tool',
+      url: 'https://trends.pinterest.com/',
+      description: 'Explore what topics are trending on Pinterest — useful for identifying emerging consumer interests, seasonal patterns, and cultural trends ahead of the mainstream.',
+      category: 'Technology',
+      tags: ['Trends', 'Consumer Behavior', 'Social Media', 'Market Research', 'Pinterest'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Pinterest'
+    },
+    {
+      id: 'gummysearch',
+      title: 'GummySearch',
+      type: 'tool',
+      url: 'https://gummysearch.com/',
+      description: 'Reddit audience research tool — discover what communities are talking about, identify pain points, and surface early signals for product ideas or market trends.',
+      category: 'Technology',
+      tags: ['Reddit', 'Audience Research', 'Market Research', 'Community', 'Trends', 'Product Discovery'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'GummySearch'
+    },
+    {
+      id: 'fred-stlouisfed',
+      title: 'FRED — Federal Reserve Economic Data',
+      type: 'reference',
+      url: 'https://fred.stlouisfed.org/',
+      description: 'The go-to source for US macroeconomic time series data — covers GDP, inflation, employment, interest rates, and hundreds of other indicators maintained by the St. Louis Fed.',
+      category: 'Data & Benchmarking',
+      tags: ['Macro', 'Economic Data', 'Federal Reserve', 'GDP', 'Inflation', 'Interest Rates', 'Government'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Federal Reserve Bank of St. Louis'
+    },
+    {
+      id: 'datausa',
+      title: 'DataUSA',
+      type: 'tool',
+      url: 'https://datausa.io/',
+      description: 'Interactive visualization platform for US public data — explore economic, demographic, and workforce trends by geography, industry, or occupation.',
+      category: 'Data & Benchmarking',
+      tags: ['US Data', 'Visualization', 'Demographics', 'Workforce', 'Economic Data', 'Open Data'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'DataUSA'
+    },
+    {
+      id: 'oec-world',
+      title: 'OEC — Observatory of Economic Complexity',
+      type: 'tool',
+      url: 'https://oec.world/en',
+      description: 'Visualizes global trade flows and economic complexity — see which countries export and import which products, track trade relationships, and analyze comparative advantage.',
+      category: 'Data & Benchmarking',
+      tags: ['Trade', 'Global Economy', 'Economic Complexity', 'Exports', 'Imports', 'Macro', 'Data'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'OEC World'
+    },
+    {
+      id: 'cool-mind-maps',
+      title: 'CoolMindMaps',
+      type: 'reference',
+      url: 'https://www.coolmindmaps.com/',
+      description: 'Library of curated mind maps covering a wide range of topics — useful for quickly building mental models and exploring the structure of complex subjects.',
+      category: 'Personal Development',
+      tags: ['Mind Maps', 'Learning', 'Mental Models', 'Research', 'Visual Thinking'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'CoolMindMaps'
+    },
+    {
+      id: 'hive-index',
+      title: 'The Hive Index',
+      type: 'reference',
+      url: 'https://thehiveindex.com/',
+      description: 'Searchable directory of online communities organized by topic and niche — useful for finding relevant Slack groups, Discord servers, forums, and professional networks.',
+      category: 'Industry Publications',
+      tags: ['Communities', 'Networking', 'Slack', 'Discord', 'Niche', 'Founder Resources'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'The Hive Index'
+    },
+    {
+      id: 'bigdata-chat',
+      title: 'BigData.com — AI Chat',
+      type: 'tool',
+      url: 'https://app.bigdata.com/chat',
+      description: 'AI-powered chat interface for querying and analyzing large datasets — designed to surface insights from big data sources through conversational prompts.',
+      category: 'Data & Benchmarking',
+      tags: ['Big Data', 'AI', 'Analytics', 'Data Chat', 'Machine Learning'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'BigData.com'
+    },
+    {
+      id: 'shade-map',
+      title: 'ShadeMap',
+      type: 'tool',
+      url: 'https://shademap.app/',
+      description: 'Interactive map that simulates sun position and shadow patterns for any location at any time of day or year — useful for real estate analysis, site planning, and outdoor research.',
+      category: 'Personal Development',
+      tags: ['Sun', 'Shadow', 'Real Estate', 'Site Planning', 'Maps', 'Visualization'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'ShadeMap'
+    },
+    {
+      id: 'infranodus',
+      title: 'InfraNodus — Knowledge Graph Tool',
+      type: 'tool',
+      url: 'https://infranodus.com/',
+      description: 'Map out related topics and ideas using knowledge graphs — useful for research, ideation, and surfacing non-obvious connections across content.',
+      category: 'Technology',
+      tags: ['Knowledge Graph', 'Ideation', 'Research', 'Visualization'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'InfraNodus'
+    },
+    {
+      id: 'nicheprowler',
+      title: 'NicheProwler — Tool Search Engine',
+      type: 'tool',
+      url: 'https://www.nicheprowler.com/tools',
+      description: 'Search across millions of online tools to find solutions by category — useful for quickly identifying the right software for a given task.',
+      category: 'Technology',
+      tags: ['Tool Discovery', 'Search Engine', 'Resources', 'Software'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'NicheProwler'
+    },
+    {
+      id: 'john-rush-tools',
+      title: 'John Rush Tool Homepage',
+      type: 'reference',
+      url: 'https://johnrush.me/',
+      description: 'Curated library of SEO, analytics, and research tools compiled by indie maker John Rush — a useful starting point for discovering growth and research resources.',
+      category: 'Technology',
+      tags: ['SEO', 'Analytics', 'Research', 'Tools', 'Indie Makers'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'John Rush'
+    },
+    {
+      id: 'semrush',
+      title: 'Semrush',
+      type: 'tool',
+      url: 'https://www.semrush.com',
+      description: 'Digital marketing platform for SEO, keyword research, and competitive analysis — includes free tools for tracking top websites, search trends, and site visibility.',
+      category: 'Technology',
+      tags: ['SEO', 'Digital Marketing', 'Analytics', 'Keyword Research', 'Competitive Intel'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Semrush'
+    },
+    {
+      id: 'alteryx',
+      title: 'Alteryx',
+      type: 'tool',
+      url: 'https://www.alteryx.com',
+      description: 'Data analytics and automation platform for preparing, blending, and analyzing data from 300+ sources without heavy coding — widely used in finance and enterprise analytics.',
+      category: 'Data & Benchmarking',
+      tags: ['Data Analytics', 'Automation', 'Finance', 'Analytics', 'No-Code'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Alteryx'
+    },
+    {
+      id: 'subriff',
+      title: 'Subriff',
+      type: 'tool',
+      url: 'https://subriff.com',
+      description: 'Tracks which subreddits are growing fastest at daily and weekly rates — useful for identifying emerging communities and trends early.',
+      category: 'Technology',
+      tags: ['Reddit', 'Community', 'Trends', 'Social Media', 'Growth'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Subriff'
+    },
+    {
+      id: 'muscle-wiki',
+      title: 'Muscle Wiki',
+      type: 'tool',
+      url: 'https://musclewiki.com',
+      description: 'Interactive workout builder that recommends exercises based on target muscle groups and available equipment — visual and easy to use.',
+      category: 'Personal Development',
+      tags: ['Fitness', 'Health', 'Workout', 'Wellness'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Muscle Wiki'
+    },
+    {
+      id: 'roadmap-sh',
+      title: 'Roadmap.sh',
+      type: 'reference',
+      url: 'https://roadmap.sh',
+      description: 'Community-built and verified career roadmaps for technical and non-technical roles — helpful for planning learning paths and benchmarking skill development.',
+      category: 'Career & Education',
+      tags: ['Career', 'Learning', 'Roadmap', 'Tech Career', 'Skills'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Roadmap.sh'
+    },
+    {
+      id: 'zoo-dev',
+      title: 'Zoo Dev',
+      type: 'tool',
+      url: 'https://zoo.dev/',
+      description: 'AI-powered CAD tool that converts text prompts into 3D models — lowers the barrier to engineering design and rapid prototyping.',
+      category: 'Technology',
+      tags: ['CAD', 'AI', '3D Modeling', 'Engineering', 'Design'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Zoo Dev'
+    },
+    {
+      id: 'aicade',
+      title: 'Aicade',
+      type: 'tool',
+      url: 'https://beta.aicade.io/',
+      description: 'AI-powered game builder and community host — allows users to create and play browser-based games with natural language prompts.',
+      category: 'Technology',
+      tags: ['AI', 'Gaming', 'Builder', 'Community', 'No-Code'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Aicade'
+    },
+    {
+      id: 'delaware-library-research',
+      title: 'Delaware Library — Research Resources',
+      type: 'reference',
+      url: 'https://www.delawarelibrary.org/research/',
+      description: 'Free research resources offered through the Delaware public library system — includes databases, career tools, and educational materials available at no cost.',
+      category: 'Career & Education',
+      tags: ['Research', 'Library', 'Education', 'Free Resources', 'Career'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Delaware Library'
+    },
+    {
+      id: 'perplexity',
+      title: 'Perplexity',
+      type: 'tool',
+      url: 'https://www.perplexity.ai',
+      description: 'AI-powered search engine that synthesizes answers with cited sources — includes Spaces for organizing recurring research topics and queries.',
+      category: 'Technology',
+      tags: ['AI', 'Search', 'Research', 'AI Assistant', 'Knowledge'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Perplexity'
+    },
+    {
+      id: 'argil',
+      title: 'Argil',
+      type: 'tool',
+      url: 'https://argil.ai/',
+      description: 'Create AI-generated videos using cloned avatars and voices — useful for producing content, demos, or explainers at scale without a camera.',
+      category: 'Technology',
+      tags: ['AI Video', 'Avatar', 'Content Creation', 'AI', 'Video'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Argil'
+    },
+    {
+      id: 'indiemakerlist',
+      title: 'Indiemakerlist',
+      type: 'reference',
+      url: 'https://indiemakerlist.com',
+      description: 'Directory of indie makers and bootstrapped founders building SaaS, directories, and apps — a window into the self-funded startup ecosystem.',
+      category: 'Industry Publications',
+      tags: ['Startups', 'Indie Makers', 'SaaS', 'Bootstrapped', 'Founders'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Indiemakerlist'
+    },
+    {
+      id: 'lindy-ai',
+      title: 'Lindy AI',
+      type: 'tool',
+      url: 'https://www.lindy.ai/',
+      description: 'Build and deploy AI agents in minutes to automate workflows — covers email, scheduling, research, CRM, and other repetitive business tasks.',
+      category: 'Technology',
+      tags: ['AI Agents', 'Automation', 'Workflow', 'AI', 'Productivity'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Lindy AI'
+    },
+    {
+      id: 'crux',
+      title: 'Crux',
+      type: 'tool',
+      url: 'https://cruxapp.org/projects',
+      description: 'Platform for collaborating on programming projects, building a development portfolio, and connecting with developers worldwide — free to use.',
+      category: 'Career & Education',
+      tags: ['Programming', 'Portfolio', 'Community', 'Developers', 'Collaboration'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Crux'
+    },
+    {
+      id: 'scribehow',
+      title: 'Scribehow',
+      type: 'tool',
+      url: 'https://scribehow.com',
+      description: 'Automatically builds step-by-step process guides from screen recordings — useful for documenting workflows and onboarding materials quickly.',
+      category: 'Technology',
+      tags: ['Documentation', 'Process', 'Guides', 'AI', 'Workflow', 'Productivity'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Scribehow'
+    },
+    {
+      id: 'replit',
+      title: 'Replit',
+      type: 'tool',
+      url: 'https://replit.com/',
+      description: 'AI-powered software development and deployment platform — build, share, and ship software in the browser with instant cloud environments and AI code assistance.',
+      category: 'Technology',
+      tags: ['Software Development', 'AI', 'Coding', 'Deployment', 'Cloud IDE'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Replit'
+    },
+    {
+      id: 'spoken-io',
+      title: 'Spoken IO',
+      type: 'tool',
+      url: 'https://www.spoken.io/explore',
+      description: 'Marketplace for discovering deals on furniture and home goods — aggregates listings for quality items at reduced prices.',
+      category: 'Personal Development',
+      tags: ['Shopping', 'Furniture', 'Deals', 'Marketplace', 'Home'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Spoken IO'
+    },
+    {
+      id: 'pitch-com',
+      title: 'Pitch.com',
+      type: 'tool',
+      url: 'https://pitch.com/',
+      description: 'Collaborative pitch deck builder, library of templates, and hosting platform — streamlines the process of creating and sharing investor presentations.',
+      category: 'Investments & Deal Flow',
+      tags: ['Pitch Deck', 'Presentations', 'Fundraising', 'Design', 'Startups'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Pitch.com'
+    },
+    {
+      id: 'apption',
+      title: 'Apption',
+      type: 'tool',
+      url: 'https://apption.co/',
+      description: 'Convert third-party widgets and tools into embeddable components compatible with Notion and other platforms — expands what you can embed in your workspace.',
+      category: 'Technology',
+      tags: ['Widgets', 'Embeds', 'Notion', 'No-Code', 'Productivity'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Apption'
+    },
+    {
+      id: 'marblism',
+      title: 'Marblism',
+      type: 'tool',
+      url: 'https://www.marblism.com/',
+      description: 'Platform for building, preparing, and deploying AI agents — aimed at automating business workflows with minimal setup.',
+      category: 'Technology',
+      tags: ['AI Agents', 'Deployment', 'AI', 'Automation', 'No-Code'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Marblism'
+    },
+    {
+      id: 'old-maps-online',
+      title: 'Old Maps Online',
+      type: 'tool',
+      url: 'https://www.oldmapsonline.org/en/history/regions',
+      description: 'Interactive map viewer showing historical borders and geopolitical regions across different time periods — useful for historical research and context.',
+      category: 'Personal Development',
+      tags: ['Maps', 'History', 'Geography', 'Research', 'Visualization'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Old Maps Online'
+    },
+    {
       id: 'meritech-analytics',
       title: 'Meritech Analytics',
       type: 'tool',
@@ -3581,6 +4329,18 @@
       source: 'YouTube'
     },
     {
+      id: 'hoard-things-you-know-how-to-do',
+      title: 'Hoard Things You Know How to Do',
+      type: 'article',
+      url: 'https://simonwillison.net/guides/agentic-engineering-patterns/hoard-things-you-know-how-to-do/',
+      description: 'How building a personal collection of working code examples and technical solutions enables more effective problem-solving with coding agents — demonstrated by combining snippets to create a browser-based OCR tool.',
+      category: 'AI & Technology',
+      tags: ['AI', 'Coding', 'Agents', 'Productivity', 'Engineering'],
+      dateAdded: '2026-03-29',
+      featured: false,
+      source: 'Simon Willison\'s Weblog'
+    },
+    {
       id: 'hamilton-lane-market-overview',
       title: 'Hamilton Lane Annual Market Overview',
       type: 'reference',
@@ -3611,17 +4371,23 @@
     const newBadge = isNewItem(item.dateAdded) ? `<span class="lib-new-badge">New</span>` : '';
     const tags = (item.tags || []).map(t => `<span class="lib-tag" data-tag="${t}">${t}</span>`).join('');
     const meta = [item.source, item.dateAdded ? 'Added ' + libFormatDate(item.dateAdded) : null, item.duration].filter(Boolean).join(' · ');
+    const previewUrl = `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(item.url)}?w=600&h=260`;
     return `<div class="lib-card${featured ? ' featured' : ''}">
-      <div class="lib-card-header">
-        <span class="lib-type-badge ${LIB_TYPE_CLASS[item.type] || ''}">${LIB_TYPE_LABELS[item.type] || item.type}</span>
-        ${newBadge}
+      <div class="lib-card-preview">
+        <img src="${previewUrl}" alt="" loading="lazy" onerror="this.closest('.lib-card-preview').style.display='none'">
       </div>
-      <div class="lib-card-title"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a></div>
-      <div class="lib-card-desc">${item.description}</div>
-      ${tags ? `<div class="lib-card-tags">${tags}</div>` : ''}
-      <div class="lib-card-footer">
-        <span class="lib-card-meta">${meta}</span>
-        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="lib-open-link">↗ Open</a>
+      <div class="lib-card-body">
+        <div class="lib-card-header">
+          <span class="lib-type-badge ${LIB_TYPE_CLASS[item.type] || ''}">${LIB_TYPE_LABELS[item.type] || item.type}</span>
+          ${newBadge}
+        </div>
+        <div class="lib-card-title"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a></div>
+        <div class="lib-card-desc">${item.description}</div>
+        ${tags ? `<div class="lib-card-tags">${tags}</div>` : ''}
+        <div class="lib-card-footer">
+          <span class="lib-card-meta">${meta}</span>
+          <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="lib-open-link">↗ Open</a>
+        </div>
       </div>
     </div>`;
   }
@@ -3683,6 +4449,8 @@
     cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
   }
 
+  let libStarredOnly = false;
+
   function applyLibFilters() {
     const q     = (document.getElementById('lib-search')?.value || '').toLowerCase();
     const type  = document.getElementById('lib-type-filter')?.value || '';
@@ -3690,7 +4458,7 @@
     const sort  = document.getElementById('lib-sort')?.value || 'newest';
     let items = LIBRARY_ITEMS.filter(i => {
       const haystack = (i.title + ' ' + i.description + ' ' + (i.tags || []).join(' ') + ' ' + (i.source || '')).toLowerCase();
-      return (!q || haystack.includes(q)) && (!type || i.type === type) && (!cat || i.category === cat);
+      return (!q || haystack.includes(q)) && (!type || i.type === type) && (!cat || i.category === cat) && (!libStarredOnly || i.starred);
     });
     if (sort === 'newest') items.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
     else if (sort === 'oldest') items.sort((a, b) => a.dateAdded.localeCompare(b.dateAdded));
@@ -3718,11 +4486,18 @@
     document.getElementById('lib-search')?.addEventListener('input', applyLibFilters);
     ['lib-type-filter','lib-cat-filter','lib-sort'].forEach(id =>
       document.getElementById(id)?.addEventListener('change', applyLibFilters));
+    document.getElementById('lib-starred-btn')?.addEventListener('click', () => {
+      libStarredOnly = !libStarredOnly;
+      document.getElementById('lib-starred-btn').classList.toggle('active', libStarredOnly);
+      applyLibFilters();
+    });
     document.getElementById('lib-clear')?.addEventListener('click', () => {
       document.getElementById('lib-search').value = '';
       document.getElementById('lib-type-filter').value = '';
       document.getElementById('lib-cat-filter').value = '';
       document.getElementById('lib-sort').value = 'newest';
+      libStarredOnly = false;
+      document.getElementById('lib-starred-btn').classList.remove('active');
       applyLibFilters();
     });
     document.getElementById('lib-grid')?.addEventListener('click', e => {
