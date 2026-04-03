@@ -1038,6 +1038,58 @@
       color: var(--navy);
       font-weight: 600;
     }
+    .contact-value a {
+      color: var(--navy);
+      text-decoration: none;
+    }
+    .contact-value a:hover { text-decoration: underline; }
+    .contact-divider {
+      border: none;
+      border-top: 1px solid var(--gray-light);
+      margin: 8px 0 24px;
+    }
+    .contact-open-title {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    .contact-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .contact-topic {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+    }
+    .contact-topic-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .contact-topic-text {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      color: var(--navy);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .contact-topic-sub {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.76rem;
+      color: var(--gray);
+      line-height: 1.4;
+      margin-top: 1px;
+    }
     form { display: flex; flex-direction: column; gap: 16px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     label {
@@ -1308,6 +1360,7 @@
       footer { padding: 22px 20px; }
       nav button { padding: 8px 10px; font-size: 0.74rem; letter-spacing: 0.05em; }
       .about-layout, .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+      .contact-topics { gap: 8px; }
       .form-row { grid-template-columns: 1fr; }
     }
   </style>
@@ -1362,11 +1415,11 @@
     <div class="section-inner">
       <h2>Background</h2>
       <div class="about-text" style="max-width:760px;">
-        <p>I'm a fund administration professional based in Columbus, Ohio, currently at Juniper Square where I specialize in managing fund capital activity across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $2B AUM.</p>
-        <p>My work sits at the intersection of fund operations and client partnership, translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
+        <p>Finance professional based in Columbus, Ohio with end-to-end private fund experience from origination and due diligence to performance reporting and fund management. Specialize in partnering directly with general partners and private market leadership teams across private equity, private credit, commercial real estate, and venture capital funds ranging from $100M to $10B assets under management.</p>
         <p>• <strong>Investments:</strong> Worked with private equity search funds to source and evaluate mature, industrial businesses in the southern US</p>
         <p>• <strong>Investor Relations:</strong> Successfully raised pre-seed/seed stage rounds to fuel product development</p>
         <p>• <strong>Fund Operations:</strong> Currently at Juniper Square, I partner with General Partners across the private market to streamline and manage their funds' capital activity and investor communications over its lifecycle while navigating complex fund structures.</p>
+        <p>My work sits at the intersection of fund operations and client partnership, translating complex LP agreements into accurate waterfall models, managing capital call and distribution workflows, and helping GP teams navigate the financial mechanics that underpin their investor relationships.</p>
       </div>
       <p class="section-label" style="margin-top:32px; margin-bottom:12px;">Areas of Focus</p>
       <div class="focus-boxes">
@@ -1462,7 +1515,7 @@
         <div class="cert-item">
           <img src="anthropic.jpeg" class="cert-logo" alt="Anthropic">
           <div class="cert-info">
-            <span class="cert-name">Claude 101</span>
+            <span class="cert-name">Claude, Claude Cowork, and Claude Code</span>
             <span class="cert-issuer">Anthropic</span>
           </div>
         </div>
@@ -1517,6 +1570,30 @@
   <section style="background: var(--off-white);">
     <p class="section-label">Selected Work</p>
     <h2>Featured <span class="accent">Projects</span></h2>
+    <p style="font-size:1.05rem; color:var(--gray); margin: -8px 0 40px; line-height:1.7; max-width:620px;">Interactive tools and resources built around private markets, fund operations, and investor intelligence.</p>
+
+    <div class="project-grid">
+
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-icon">🗺️</div>
+          <div>
+            <h3>Market Map Maker</h3>
+            <span class="project-tag">Tool &middot; Private Markets</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <p>An interactive private markets explorer that maps the competitive landscape across private equity, venture capital, private credit, and real estate. Search companies, filter by sector, and visualize relationships through a network map or positioning matrix.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;">
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Network Map</span>
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Positioning Matrix</span>
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Company Search</span>
+          </div>
+          <a class="project-link" href="#" onclick="switchTab('marketmap'); return false;">Launch Tool →</a>
+        </div>
+      </div>
+
+    </div>
   </section>
 
 </div>
@@ -1776,9 +1853,10 @@
   <section style="background: var(--off-white);">
     <p class="section-label">Reach Out</p>
     <h2>Get in <span class="accent">Touch</span></h2>
-    <p style="font-size:1.05rem; color:var(--gray); margin: -8px 0 36px; line-height:1.7;">I'm happy to chat virtually and in-person! Best way to reach out is through <a href="https://www.linkedin.com/in/darren-lo-989886183/" target="_blank" rel="noopener noreferrer" style="color:var(--navy); font-weight:600;">LinkedIn</a> and connecting there.</p>
+    <p style="font-size:1.05rem; color:var(--gray); margin: -8px 0 36px; line-height:1.7;">Happy to connect virtually or in person. The best way to reach me is through LinkedIn.</p>
     <div class="contact-layout">
 
+      <!-- Left: contact details -->
       <div class="contact-info">
         <div class="contact-detail">
           <div class="contact-icon">🏙️</div>
@@ -1788,10 +1866,74 @@
           </div>
         </div>
         <div class="contact-detail">
-          <div class="contact-icon">💼</div>
+          <div class="contact-icon">🕐</div>
+          <div>
+            <div class="contact-label">Timezone</div>
+            <div class="contact-value">Eastern Standard Time (EST, UTC−5)</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">🏢</div>
+          <div>
+            <div class="contact-label">Currently At</div>
+            <div class="contact-value">Juniper Square</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">📋</div>
+          <div>
+            <div class="contact-label">Focus</div>
+            <div class="contact-value">Private Fund Operations &amp; Investor Services</div>
+          </div>
+        </div>
+        <hr class="contact-divider">
+        <div class="contact-detail">
+          <div class="contact-icon">🔗</div>
           <div>
             <div class="contact-label">LinkedIn</div>
-            <div class="contact-value">linkedin.com/in/darren-lo-989886183</div>
+            <div class="contact-value"><a href="https://www.linkedin.com/in/darren-lo-989886183/" target="_blank" rel="noopener noreferrer">linkedin.com/in/darren-lo</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: open to discussing -->
+      <div>
+        <div class="contact-open-title">Open to Discussing</div>
+        <div class="contact-topics">
+          <div class="contact-topic">
+            <div class="contact-topic-icon">🏗️</div>
+            <div>
+              <div class="contact-topic-text">Fund Operations &amp; Structures</div>
+              <div class="contact-topic-sub">Capital activity, waterfall mechanics, LP agreement interpretation</div>
+            </div>
+          </div>
+          <div class="contact-topic">
+            <div class="contact-topic-icon">🤝</div>
+            <div>
+              <div class="contact-topic-text">Founder Meetings &amp; Advisory</div>
+              <div class="contact-topic-sub">Early-stage conversations, fundraising strategy, and investor readiness</div>
+            </div>
+          </div>
+          <div class="contact-topic">
+            <div class="contact-topic-icon">💻</div>
+            <div>
+              <div class="contact-topic-text">AI &amp; Technology in Private Markets</div>
+              <div class="contact-topic-sub">Automation, tooling, and workflow improvements in fund administration</div>
+            </div>
+          </div>
+          <div class="contact-topic">
+            <div class="contact-topic-icon">🔍</div>
+            <div>
+              <div class="contact-topic-text">Private Equity &amp; Venture Capital</div>
+              <div class="contact-topic-sub">Fund lifecycles, deal structures, and portfolio monitoring</div>
+            </div>
+          </div>
+          <div class="contact-topic">
+            <div class="contact-topic-icon">🧭</div>
+            <div>
+              <div class="contact-topic-text">Career Paths in Private Markets</div>
+              <div class="contact-topic-sub">Breaking in, navigating roles, and building expertise in the space</div>
+            </div>
           </div>
         </div>
       </div>
@@ -3618,6 +3760,19 @@
       dateAdded: '2026-03-29',
       featured: false,
       source: 'Axial'
+    },
+    {
+      id: 'how-inconceivable-startups-happen',
+      title: 'How Inconceivable Startups Happen',
+      type: 'article',
+      url: 'https://dcahn.substack.com/p/how-inconceivable-startups-happen',
+      description: 'How successful founders accomplish seemingly impossible things — examining three mechanisms behind groundbreaking companies: unique knowledge, unwavering belief in necessity, and creative experimentation.',
+      category: 'Inspiration',
+      tags: ['Startups', 'Founders', 'Venture Capital', 'Strategy', 'Entrepreneurship'],
+      dateAdded: '2026-03-31',
+      featured: false,
+      starred: true,
+      source: 'David Cahn'
     },
     {
       id: 'fiscal-ai-fund-letters',

@@ -5,6 +5,10 @@
       {
         "category": "UI",
         "description": "Add Personal Library, Event Calendar, 14 library items, and UI polish"
+      },
+      {
+        "category": "Content",
+        "description": "Rehaul homepage, library, and market map with major UX improvements"
       }
     ]
   },
