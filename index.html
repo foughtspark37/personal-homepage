@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Darren Lo — Finance Professional</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -446,6 +450,27 @@
     }
     .ai-filter-select option { background: var(--navy-mid); color: var(--white); }
     .ai-filter-select:focus { border-color: rgba(255,255,255,0.4); }
+    .ex-starred-toggle {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.5);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .ex-starred-toggle:hover {
+      border-color: rgba(255,215,0,0.4);
+      color: rgba(255,215,0,0.8);
+    }
+    .ex-starred-toggle.active {
+      background: rgba(255,215,0,0.12);
+      border-color: rgba(255,215,0,0.55);
+      color: #ffd700;
+    }
     .filter-clear {
       background: none;
       border: 1px solid rgba(255,255,255,0.2);
@@ -729,6 +754,58 @@
     }
     .dir-count { font-size: 0.82rem; color: var(--gray); }
     .dir-no-results { padding: 40px 20px; text-align: center; color: var(--gray); font-family: 'Arial', sans-serif; font-size: 0.9rem; }
+    #dir-map {
+      height: 420px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(13,27,62,0.15);
+      overflow: hidden;
+    }
+    .dir-map-marker { background: none !important; border: none !important; }
+    .dir-cluster    { background: none !important; border: none !important; }
+    .dir-cluster-badge {
+      border-radius: 50%;
+      background: rgba(64, 160, 255, 0.18);
+      border: 2px solid rgba(100, 195, 255, 0.75);
+      color: #e8f4ff;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      transition: transform 0.15s;
+      width: 100%; height: 100%;
+    }
+    .dir-cluster-badge:hover { transform: scale(1.1); }
+    .dir-cluster-sm  { font-size: 0.72rem; }
+    .dir-cluster-md  { font-size: 0.8rem;  background: rgba(64, 160, 255, 0.24); border-color: rgba(100, 195, 255, 0.9); }
+    .dir-cluster-lg  { font-size: 0.9rem;  background: rgba(64, 160, 255, 0.32); border-color: #64c3ff; box-shadow: 0 2px 14px rgba(64,160,255,0.3); }
+    .dir-map-pin {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #2b6cb0;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .dir-map-pin:hover { transform: scale(1.25); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+    .dir-map-pin img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
+    .dir-map-pin-initials {
+      display: none; font-size: 0.58rem; font-weight: 700;
+      color: var(--navy); font-family: Arial, sans-serif; text-align: center;
+    }
+    .leaflet-tooltip {
+      background: var(--navy) !important;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+      padding: 10px 13px !important;
+      color: var(--white) !important;
+    }
+    .leaflet-tooltip::before { display: none !important; }
 
     /* ── AI TABLE ────────────────────────────────── */
     .ai-table-wrap { overflow-x: auto; }
@@ -760,6 +837,134 @@
     }
     .ai-table tbody tr:hover td { background: rgba(255,255,255,0.04); }
     .ai-table tbody tr:last-child td { border-bottom: none; }
+    /* ── AI EXAMPLES — additions only ──────────── */
+    .ex-card-preview {
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ex-card-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    .ex-type-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(99,179,237,0.15);
+      color: rgba(144,205,244,0.9);
+      white-space: nowrap;
+    }
+    .ex-view-project-btn {
+      display: inline-block;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 5px;
+      padding: 6px 14px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .ex-view-project-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.45);
+    }
+    .home-viewall-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.75);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .home-viewall-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.4);
+    }
+    /* ── HOME CAROUSEL ──────────────────────────── */
+    .home-carousel {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .home-carousel-track-wrap {
+      overflow: hidden;
+      flex: 1;
+      border-radius: 10px;
+    }
+    .home-carousel-track {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .home-carousel-track .ai-card {
+      flex: 0 0 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .home-carousel-arrow {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: none;
+      color: rgba(255,255,255,0.75);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .home-carousel-arrow:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.5);
+      color: var(--white);
+    }
+    .home-carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .home-carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .home-carousel-dot.active {
+      background: var(--white);
+      transform: scale(1.4);
+    }
     .outcome-tag {
       display: inline-block;
       font-size: 0.67rem;
@@ -1373,7 +1578,7 @@
     <button class="active" data-tab="home">Home</button>
     <div class="nav-dropdown" id="projects-dropdown">
       <button class="nav-dropdown-trigger" id="projects-trigger">
-        Projects <span class="chevron">▼</span>
+        My Projects <span class="chevron">▼</span>
       </button>
       <div class="nav-dropdown-menu">
         <button data-tab="projects" id="dd-projects-overview">Featured Projects</button>
@@ -1389,6 +1594,7 @@
         <button data-tab="events" id="dd-events">Event Calendar</button>
         <button data-tab="library" id="dd-library">Personal Library</button>
         <button data-tab="directory" id="dd-directory">Private Market Directory</button>
+        <button data-tab="ai-examples" id="dd-ai-examples">AI Public Projects</button>
       </div>
     </div>
     <button data-tab="news">News Feed</button>
@@ -1523,6 +1729,33 @@
     </div>
   </section>
 
+  <section style="background:var(--navy-mid); padding:60px 48px;">
+    <div style="max-width:1200px; margin:0 auto;">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:32px;">
+        <div>
+          <h2 style="color:var(--white); margin:0 0 8px;">My Projects</h2>
+          <p style="font-family:'Arial',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.5); margin:0; line-height:1.5;">Highlighted list of my personal AI projects and tools used for workflow automation and insights.</p>
+        </div>
+        <button class="home-viewall-btn" onclick="switchTab('projects')">View All →</button>
+      </div>
+      <div id="home-proj-preview"></div>
+    </div>
+  </section>
+
+  <section style="background:var(--navy); padding:60px 48px;">
+    <div style="max-width:1200px; margin:0 auto;">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:32px;">
+        <div>
+          <p class="section-label" style="color:rgba(255,255,255,0.45); margin-bottom:8px;">AI Ecosystem</p>
+          <h2 style="color:var(--white); margin:0 0 8px;">Featured AI Public Projects</h2>
+          <p style="font-family:'Arial',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.5); margin:0; line-height:1.5;">Curated list of AI open-source projects used for inspiration and reference.</p>
+        </div>
+        <button class="home-viewall-btn" onclick="switchTab('ai-examples')">View All →</button>
+      </div>
+      <div id="home-ex-preview"></div>
+    </div>
+  </section>
+
 </div>
 
 <!-- ══════════════════════ ABOUT ══════════════════════ -->
@@ -1593,6 +1826,25 @@
         </div>
       </div>
 
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-icon">🔍</div>
+          <div>
+            <h3>Topical Cluster</h3>
+            <span class="project-tag">Tool &middot; Market Research</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <p>Enter any topic to cluster Google Autocomplete suggestions and top Reddit discussions into keyword groups. Switch between list and tree views, and surface high-signal cross-source overlaps and trending posts algorithmically.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;">
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Keyword Clustering</span>
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Reddit + Google</span>
+            <span style="font-family:'Arial',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; background:rgba(13,27,62,0.07); color:var(--navy); border-radius:4px; padding:3px 9px;">Trend Analysis</span>
+          </div>
+          <a class="project-link" href="http://localhost:3004" target="_blank">Launch Tool →</a>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1628,6 +1880,9 @@
       </div>
     </div>
 
+    <div id="dir-map"></div>
+    <div id="dir-count" class="dir-count" style="margin-bottom:12px;"></div>
+
     <div class="dir-table-wrap">
       <table class="dir-table" id="dir-table">
         <thead>
@@ -1645,14 +1900,12 @@
         <tbody id="dir-tbody"></tbody>
       </table>
     </div>
-    <div id="dir-count" class="dir-count" style="margin-top:12px;"></div>
   </div>
 </div>
 
 <!-- ══════════════════════ AI USE CASES ══════════════════════ -->
 <div id="tab-ai" class="tab-panel">
   <div class="ai-page">
-    <p class="section-label">Private Markets</p>
     <h2 style="margin-bottom:28px;">AI Use Case <span class="accent">Ideas</span></h2>
 
     <div class="ai-controls">
@@ -1660,6 +1913,7 @@
         <select class="ai-filter-select" id="filter-category">
           <option value="">All Categories</option>
           <option>Education</option>
+          <option>Engineering</option>
           <option>Fund Operations</option>
           <option>Investments</option>
           <option>Investor Relations</option>
@@ -1684,6 +1938,7 @@
           <option>Claude</option>
           <option>Harvey AI</option>
           <option>Notion AI</option>
+          <option>OpenAI Codex</option>
           <option>Perplexity</option>
           <option>Power BI</option>
           <option>Sourcescrub</option>
@@ -1706,6 +1961,55 @@
             </tr>
           </thead>
           <tbody id="ai-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ AI PROJECT EXAMPLES ══════════════════════ -->
+<div id="tab-ai-examples" class="tab-panel">
+  <div class="ai-page">
+    <p class="section-label">AI Ecosystem</p>
+    <h2 style="margin-bottom:28px;">AI Public <span class="accent">Projects</span></h2>
+
+    <div class="ai-controls">
+      <div class="ai-filters">
+        <select class="ai-filter-select" id="ex-filter-category">
+          <option value="">All Categories</option>
+          <option>Energy</option>
+          <option>Finance</option>
+          <option>Healthcare</option>
+          <option>Technology</option>
+        </select>
+        <select class="ai-filter-select" id="ex-filter-type">
+          <option value="">All Types</option>
+          <option>Dashboard</option>
+          <option>Guide</option>
+          <option>Map / Visualization</option>
+          <option>Report</option>
+          <option>Resource</option>
+          <option>Tool</option>
+        </select>
+        <button class="ex-starred-toggle" id="ex-filter-starred">★ Starred</button>
+        <button class="filter-clear" id="ex-filter-clear">Clear Filters</button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="ex-view-card" title="Card view">⊞</button>
+        <button class="view-btn" id="ex-view-table" title="Table view">☰</button>
+      </div>
+    </div>
+
+    <div id="ex-card-view"></div>
+    <div id="ex-table-view" style="display:none;">
+      <div class="ai-table-wrap">
+        <table class="ai-table">
+          <thead>
+            <tr>
+              <th>Project</th><th>Category</th><th>Type</th><th>Description</th><th>Creator</th><th>Date</th><th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="ex-table-body"></tbody>
         </table>
       </div>
     </div>
@@ -2178,6 +2482,91 @@
       outcomes: ['Save Time', 'Save Money'],
       description: 'Notion AI organizes logistics for team offsites — comparing venues, generating budget tables by location, and drafting agendas — so planning stays collaborative and cost-efficient.',
       tools: ['Notion AI']
+    },
+    // ── OpenAI Codex use cases ──────────────────────
+    {
+      title: 'Review Pull Requests Faster',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Catch regressions and potential issues before human review. Codex scans diffs, flags risky changes, and surfaces edge cases so engineers spend review time on judgment calls rather than obvious mistakes.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Build Responsive Front-End Designs',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Turn screenshots and visual references into responsive UI with visual checks. Codex translates design mockups into clean, production-ready front-end code and verifies the output renders correctly across breakpoints.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Analyze Datasets and Ship Reports',
+      category: 'Engineering',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Turn messy data into clear analysis and visualizations. Codex writes and runs data pipelines end-to-end — cleaning inputs, running aggregations, and generating charts or summary reports ready to share.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Bring Your App to ChatGPT',
+      category: 'Engineering',
+      outcomes: ['Make Money'],
+      description: 'Turn your use cases into focused apps for ChatGPT. Codex scaffolds the integration layer so your product\'s functionality is accessible directly from the ChatGPT interface with minimal custom code.',
+      tools: ['OpenAI Codex', 'ChatGPT']
+    },
+    {
+      title: 'Build for iOS and macOS',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Use Codex to scaffold, build, and debug SwiftUI apps. From boilerplate setup to feature implementation, Codex accelerates native Apple platform development by handling repetitive structure and common patterns.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Create Browser-Based Games',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Define a game plan and let Codex build and test it in a live browser. Codex implements game logic, handles rendering, and runs iterative test loops so you can focus on design and mechanics.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Generate Slide Decks',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Manipulate PPTX files and use image generation to automate slide creation. Codex writes scripts that pull in data, apply templates, and assemble finished decks without manual formatting work.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Iterate on Difficult Problems',
+      category: 'Engineering',
+      outcomes: ['Save Time', 'Make Money'],
+      description: 'Use Codex as a scored improvement loop to solve hard tasks. Codex generates candidate solutions, evaluates them against defined criteria, and refines iteratively — compressing what would take days of debugging into hours.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Kick Off Coding Tasks from Slack',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Turn Slack threads into scoped cloud tasks. Codex reads a Slack message or thread, spins up a task with the right context, and starts executing — closing the loop between discussion and implementation.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Turn Figma Designs into Code',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Turn Figma selections into polished UI with structured design context and visual checks. Codex ingests design tokens and component specs from Figma and outputs faithful, production-ready front-end code.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Understand Large Codebases',
+      category: 'Engineering',
+      outcomes: ['Save Time'],
+      description: 'Trace request flows, map unfamiliar modules, and find the right files fast. Codex navigates complex repos, explains architecture decisions, and surfaces the exact code paths relevant to any task or bug.',
+      tools: ['OpenAI Codex']
+    },
+    {
+      title: 'Upgrade Your API Integration',
+      category: 'Engineering',
+      outcomes: ['Save Time', 'Save Money'],
+      description: 'Upgrade your app to the latest OpenAI API models. Codex audits existing integration code, identifies deprecated patterns, and rewrites call sites to use updated endpoints, parameters, and response formats.',
+      tools: ['OpenAI Codex']
     }
   ];
 
@@ -2295,6 +2684,10 @@
     switchTab('library');
     dropdown.classList.remove('open');
   });
+  document.getElementById('dd-ai-examples').addEventListener('click', () => {
+    switchTab('ai-examples');
+    dropdown.classList.remove('open');
+  });
 
   /* ══ TAB SWITCHING ════════════════════════════════ */
   function switchTab(name) {
@@ -2303,12 +2696,13 @@
     /* Highlight regular nav buttons */
     document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.remove('active'));
     /* Highlight resources dropdown trigger if resources or ai */
-    trigger.classList.toggle('active', name === 'ai' || name === 'directory' || name === 'events' || name === 'library');
+    trigger.classList.toggle('active', name === 'ai' || name === 'ai-examples' || name === 'directory' || name === 'events' || name === 'library');
     /* Update dropdown item highlight */
     document.getElementById('dd-ai').classList.toggle('active', name === 'ai');
     document.getElementById('dd-directory').classList.toggle('active', name === 'directory');
     document.getElementById('dd-events').classList.toggle('active', name === 'events');
     document.getElementById('dd-library').classList.toggle('active', name === 'library');
+    document.getElementById('dd-ai-examples').classList.toggle('active', name === 'ai-examples');
     /* Highlight plain buttons */
     const plain = document.querySelector(`nav button[data-tab="${name}"]`);
     if (plain) plain.classList.add('active');
@@ -2591,6 +2985,69 @@
     { name: 'Wynnchurch Capital', type: 'Private Equity', city: 'Rosemont', state: 'IL', aum: '$7B', funds: 7, investments: 80, stages: ['Buyout'], website: 'wynnchurch.com' },
     { name: 'Energy Impact Partners', type: 'Venture Capital', city: 'New York', state: 'NY', aum: '$4B', funds: 5, investments: 150, stages: ['Early Stage', 'Growth'], website: 'energyimpactpartners.com' },
     { name: 'Breakthrough Energy Ventures', type: 'Venture Capital', city: 'Kirkland', state: 'WA', aum: '$3B', funds: 3, investments: 100, stages: ['Early Stage', 'Growth'], website: 'breakthroughenergy.com' },
+
+    /* ── PERE 100 — Real Estate Private Equity ── */
+    { name: 'Starwood Capital Group', type: 'Real Estate', city: 'Miami', state: 'FL', aum: '$115B', funds: 15, investments: 300, stages: ['Opportunistic', 'Value-Add', 'Debt'], website: 'starwoodcapital.com' },
+    { name: 'BGO (BentallGreenOak)', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$83B', funds: 18, investments: 400, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'bgo.com' },
+    { name: 'AEW Capital Management', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$90B', funds: 20, investments: 450, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'aew.com' },
+    { name: 'Cerberus Capital Management', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$60B', funds: 10, investments: 200, stages: ['Value-Add', 'Opportunistic', 'Debt'], website: 'cerberuscapital.com' },
+    { name: 'Blue Owl Real Estate', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$25B', funds: 8, investments: 500, stages: ['Core', 'Net Lease'], website: 'blueowl.com' },
+    { name: 'Hines', type: 'Real Estate', city: 'Houston', state: 'TX', aum: '$93B', funds: 25, investments: 600, stages: ['Core', 'Core-Plus', 'Value-Add', 'Development'], website: 'hines.com' },
+    { name: 'Rockpoint Group', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$13B', funds: 8, investments: 150, stages: ['Value-Add', 'Opportunistic'], website: 'rockpointgroup.com' },
+    { name: 'Bridge Investment Group', type: 'Real Estate', city: 'Salt Lake City', state: 'UT', aum: '$50B', funds: 12, investments: 400, stages: ['Value-Add', 'Opportunistic', 'Debt'], website: 'bridgeinvestmentgroup.com' },
+    { name: 'Tishman Speyer', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$65B', funds: 14, investments: 300, stages: ['Core', 'Core-Plus', 'Value-Add', 'Development'], website: 'tishmanspeyer.com' },
+    { name: 'Pretium Partners', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$50B', funds: 8, investments: 75000, stages: ['Value-Add', 'Debt'], website: 'pretium.com' },
+    { name: 'Angelo Gordon', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$73B', funds: 15, investments: 250, stages: ['Value-Add', 'Opportunistic', 'Debt'], website: 'angelogordon.com' },
+    { name: 'CBRE Investment Management', type: 'Real Estate', city: 'Los Angeles', state: 'CA', aum: '$144B', funds: 22, investments: 800, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'cbrecm.com' },
+    { name: 'LaSalle Investment Management', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$84B', funds: 20, investments: 500, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'lasalle.com' },
+    { name: 'Harrison Street Real Estate Capital', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$56B', funds: 16, investments: 350, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'harrisonst.com' },
+    { name: 'Rockwood Capital', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$6B', funds: 7, investments: 80, stages: ['Value-Add', 'Opportunistic'], website: 'rockwoodcapital.com' },
+    { name: 'Greystar Real Estate Partners', type: 'Real Estate', city: 'Charleston', state: 'SC', aum: '$76B', funds: 20, investments: 800, stages: ['Core', 'Value-Add', 'Development'], website: 'greystar.com' },
+    { name: 'Crow Holdings Capital', type: 'Real Estate', city: 'Dallas', state: 'TX', aum: '$33B', funds: 10, investments: 200, stages: ['Value-Add', 'Development'], website: 'crowholdings.com' },
+    { name: 'PIMCO Real Estate', type: 'Real Estate', city: 'Newport Beach', state: 'CA', aum: '$35B', funds: 8, investments: 200, stages: ['Debt', 'Value-Add', 'Opportunistic'], website: 'pimco.com' },
+    { name: 'Morgan Stanley Real Estate Investing', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$44B', funds: 12, investments: 250, stages: ['Core', 'Value-Add', 'Opportunistic'], website: 'morganstanley.com' },
+    { name: 'Goldman Sachs Real Estate', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$40B', funds: 10, investments: 200, stages: ['Value-Add', 'Opportunistic', 'Debt'], website: 'goldmansachs.com' },
+    { name: 'Lone Star Funds', type: 'Real Estate', city: 'Dallas', state: 'TX', aum: '$85B', funds: 14, investments: 600, stages: ['Opportunistic', 'Debt', 'Value-Add'], website: 'lonestarfunds.com' },
+    { name: 'Harbor Group International', type: 'Real Estate', city: 'Norfolk', state: 'VA', aum: '$20B', funds: 10, investments: 250, stages: ['Value-Add', 'Core-Plus'], website: 'harborgroupintl.com' },
+    { name: 'CIM Group', type: 'Real Estate', city: 'Los Angeles', state: 'CA', aum: '$30B', funds: 12, investments: 200, stages: ['Value-Add', 'Development', 'Core'], website: 'cimgroup.com' },
+    { name: 'Invesco Real Estate', type: 'Real Estate', city: 'Dallas', state: 'TX', aum: '$90B', funds: 20, investments: 500, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'invesco.com' },
+    { name: 'IPI Partners', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$12B', funds: 5, investments: 80, stages: ['Value-Add', 'Development', 'Core'], website: 'ipipartners.com' },
+    { name: 'Rialto Capital Management', type: 'Real Estate', city: 'Miami', state: 'FL', aum: '$8B', funds: 6, investments: 150, stages: ['Debt', 'Value-Add'], website: 'rialtocapital.com' },
+    { name: 'Fortress Investment Group', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$46B', funds: 12, investments: 300, stages: ['Opportunistic', 'Debt', 'Value-Add'], website: 'fortress.com' },
+    { name: 'Almanac Realty Investors', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$6B', funds: 8, investments: 60, stages: ['Value-Add', 'Development'], website: 'almanacrealty.com' },
+    { name: 'StepStone Group', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$65B', funds: 15, investments: 400, stages: ['Core', 'Value-Add', 'Debt'], website: 'stepstoneglobal.com' },
+    { name: 'Oaktree Capital Management', type: 'Real Estate', city: 'Los Angeles', state: 'CA', aum: '$185B', funds: 24, investments: 600, stages: ['Debt', 'Opportunistic', 'Value-Add'], website: 'oaktreecapital.com' },
+    { name: 'PGIM Real Estate', type: 'Real Estate', city: 'Madison', state: 'NJ', aum: '$206B', funds: 25, investments: 700, stages: ['Core', 'Core-Plus', 'Value-Add', 'Debt'], website: 'pgimrealestate.com' },
+    { name: 'Heitman', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$50B', funds: 18, investments: 400, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'heitman.com' },
+    { name: 'BlackRock Real Estate', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$35B', funds: 10, investments: 250, stages: ['Core', 'Value-Add', 'Debt'], website: 'blackrock.com' },
+    { name: 'Kayne Anderson Real Estate', type: 'Real Estate', city: 'Boca Raton', state: 'FL', aum: '$16B', funds: 8, investments: 150, stages: ['Value-Add', 'Development', 'Opportunistic'], website: 'kaynecapital.com' },
+    { name: 'DivcoWest', type: 'Real Estate', city: 'San Francisco', state: 'CA', aum: '$18B', funds: 10, investments: 120, stages: ['Value-Add', 'Core-Plus'], website: 'divcowest.com' },
+    { name: 'Artemis Real Estate Partners', type: 'Real Estate', city: 'Chevy Chase', state: 'MD', aum: '$9B', funds: 6, investments: 120, stages: ['Value-Add', 'Opportunistic'], website: 'artemisrep.com' },
+    { name: 'DRA Advisors', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$12B', funds: 8, investments: 150, stages: ['Core-Plus', 'Value-Add'], website: 'draadvisors.com' },
+    { name: 'Westbrook Partners', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$9B', funds: 7, investments: 80, stages: ['Value-Add', 'Opportunistic'], website: 'westbrookpartners.com' },
+    { name: 'Nuveen Real Estate', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$150B', funds: 22, investments: 600, stages: ['Core', 'Core-Plus', 'Value-Add', 'Debt'], website: 'nuveen.com' },
+    { name: 'Sculptor Capital Management', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$34B', funds: 10, investments: 150, stages: ['Opportunistic', 'Value-Add', 'Debt'], website: 'sculptor.com' },
+    { name: 'HIG Realty Partners', type: 'Real Estate', city: 'Miami', state: 'FL', aum: '$8B', funds: 6, investments: 100, stages: ['Value-Add', 'Opportunistic'], website: 'higcapital.com' },
+    { name: 'PCCP', type: 'Real Estate', city: 'Los Angeles', state: 'CA', aum: '$22B', funds: 12, investments: 200, stages: ['Debt', 'Value-Add'], website: 'pccpllc.com' },
+    { name: 'Lionstone Investments', type: 'Real Estate', city: 'Houston', state: 'TX', aum: '$7B', funds: 7, investments: 80, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'lionstone.com' },
+    { name: 'GTIS Partners', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$5B', funds: 5, investments: 60, stages: ['Value-Add', 'Development'], website: 'gtispartners.com' },
+    { name: 'Asana Partners', type: 'Real Estate', city: 'Charlotte', state: 'NC', aum: '$6B', funds: 5, investments: 80, stages: ['Value-Add', 'Core-Plus'], website: 'asanapartners.com' },
+    { name: 'Harbert Management Corporation', type: 'Real Estate', city: 'Birmingham', state: 'AL', aum: '$9B', funds: 8, investments: 100, stages: ['Value-Add', 'Opportunistic'], website: 'harbert.net' },
+    { name: 'Square Mile Capital', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$13B', funds: 7, investments: 120, stages: ['Debt', 'Value-Add'], website: 'squaremilecapital.com' },
+    { name: 'Waterton', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$11B', funds: 8, investments: 180, stages: ['Value-Add', 'Core-Plus'], website: 'waterton.com' },
+    { name: 'Prologis', type: 'Real Estate', city: 'San Francisco', state: 'CA', aum: '$212B', funds: 12, investments: 5500, stages: ['Core', 'Development'], website: 'prologis.com' },
+    { name: 'Walton Street Capital', type: 'Real Estate', city: 'Chicago', state: 'IL', aum: '$5B', funds: 7, investments: 80, stages: ['Value-Add', 'Opportunistic'], website: 'waltonst.com' },
+    { name: 'Wheelock Street Capital', type: 'Real Estate', city: 'Greenwich', state: 'CT', aum: '$3B', funds: 5, investments: 60, stages: ['Value-Add', 'Opportunistic'], website: 'wheelockstreet.com' },
+    { name: 'GLP Capital Partners', type: 'Real Estate', city: 'San Francisco', state: 'CA', aum: '$114B', funds: 10, investments: 400, stages: ['Core', 'Value-Add', 'Development'], website: 'glpcapitalpartners.com' },
+    { name: 'Kennedy Wilson', type: 'Real Estate', city: 'Beverly Hills', state: 'CA', aum: '$27B', funds: 14, investments: 300, stages: ['Value-Add', 'Core-Plus', 'Development'], website: 'kennedywilson.com' },
+    { name: 'Related Companies', type: 'Real Estate', city: 'New York', state: 'NY', aum: '$30B', funds: 8, investments: 150, stages: ['Development', 'Value-Add'], website: 'related.com' },
+    { name: 'TA Realty', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$14B', funds: 12, investments: 250, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'tarealty.com' },
+    { name: 'Canyon Partners Real Estate', type: 'Real Estate', city: 'Dallas', state: 'TX', aum: '$27B', funds: 10, investments: 300, stages: ['Debt', 'Value-Add', 'Opportunistic'], website: 'canyonpartners.com' },
+    { name: 'Cabot Properties', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$7B', funds: 7, investments: 100, stages: ['Core', 'Value-Add'], website: 'cabotproperties.com' },
+    { name: 'Berkshire Residential Investments', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$18B', funds: 12, investments: 350, stages: ['Core', 'Core-Plus', 'Value-Add'], website: 'berkshirere.com' },
+    { name: 'Beacon Capital Partners', type: 'Real Estate', city: 'Boston', state: 'MA', aum: '$12B', funds: 8, investments: 80, stages: ['Value-Add', 'Core-Plus'], website: 'beaconcapital.com' },
+    { name: 'FCP', type: 'Real Estate', city: 'Chevy Chase', state: 'MD', aum: '$10B', funds: 8, investments: 150, stages: ['Value-Add', 'Opportunistic'], website: 'fcprealestate.com' },
+    { name: 'EQT Exeter', type: 'Real Estate', city: 'Philadelphia', state: 'PA', aum: '$12B', funds: 8, investments: 300, stages: ['Core', 'Value-Add'], website: 'eqtexeter.com' },
   ];
 
   let dirSortCol = 'name';
@@ -2664,6 +3121,8 @@
       th.classList.remove('sort-asc', 'sort-desc');
       if (th.dataset.col === dirSortCol) th.classList.add('sort-' + dirSortDir);
     });
+
+    if (dirMapInitialized) updateDirMap();
   }
 
   function buildDirFilterOptions() {
@@ -2674,6 +3133,11 @@
     stageSel.innerHTML = `<option value="all">All Stages</option>` + stages.map(s => `<option>${s}</option>`).join('');
     stateSel.innerHTML = `<option value="all">All States</option>` + states.map(s => `<option>${s}</option>`).join('');
   }
+
+  let dirMap = null;
+  let dirCluster = null;
+  const dirMarkers = new Map();
+  let dirMapInitialized = false;
 
   buildDirFilterOptions();
   renderDir();
@@ -4670,6 +5134,457 @@
   switchTab = function(name) {
     _origSwitchTabLib(name);
     if (name === 'library' && !libInitialized) { libInitialized = true; initLibrary(); }
+  };
+
+  /* ── AI PROJECT EXAMPLES ────────────────────── */
+
+  function formatExDate(iso) {
+    const [y, m, d] = iso.split('-').map(Number);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[m - 1]} ${d}, ${y}`;
+  }
+
+  const EX_PROJECTS = [
+    {
+      title: 'U.S. Power Plant Map',
+      category: 'Energy',
+      type: 'Map / Visualization',
+      description: 'Interactive map visualizing all U.S. energy infrastructure by power plant, with bubble scaling to represent generation capacity.',
+      creator: 'OpenGridWorks',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://opengridworks.com/power-plants?bubbleScale=0.65',
+      image: 'https://opengridworks.com/logo-dark.webp',
+      starred: true
+    },
+    {
+      title: 'Awesome Prompts',
+      category: 'Technology',
+      type: 'Resource',
+      description: 'A curated collection of effective prompts and templates for browser-use agents, with best practices for crafting prompts that maximize browser automation capabilities.',
+      creator: 'browser-use',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://github.com/browser-use/awesome-prompts'
+    },
+    {
+      title: 'Trends Checker',
+      category: 'Technology',
+      type: 'Tool',
+      description: 'A Python CLI tool for Google Trends analysis with enterprise-grade rate limiting, cookie authentication, and multi-backend support to reliably track search trends across Web, YouTube, Images, News, and Shopping.',
+      creator: 'akvise',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://github.com/akvise/trends-checker',
+      starred: true
+    },
+    {
+      title: 'Claude How To',
+      category: 'Technology',
+      type: 'Guide',
+      description: 'A visual, example-driven guide to Claude Code covering 10 tutorial modules from basic concepts to advanced agents, with copy-paste templates for immediate implementation.',
+      creator: 'luongnv89',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://github.com/luongnv89/claude-howto',
+      starred: true
+    },
+    {
+      title: 'Claude for Financial Services',
+      category: 'Finance',
+      type: 'Tool',
+      description: 'A collection of plugins enabling Claude to handle financial services workflows including equity research, financial modeling, deal materials, and portfolio analysis integrated with industry data providers.',
+      creator: 'Anthropic',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://github.com/anthropics/financial-services-plugins'
+    },
+    {
+      title: 'Healthcare Marketplace for Claude',
+      category: 'Healthcare',
+      type: 'Tool',
+      description: 'A marketplace of healthcare-specialized skills and plugins for Claude Code, providing tools for clinical trial protocol generation, prior authorization review, and FHIR API development.',
+      creator: 'Anthropic',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://github.com/anthropics/healthcare'
+    },
+    {
+      title: 'Soar Atlas — Satellites',
+      category: 'Technology',
+      type: 'Map / Visualization',
+      description: 'An interactive satellite imagery explorer powered by Sentinel and NASA Landsat data, letting you view, download, and animate Earth imagery with annotation and timelapse tools.',
+      creator: 'Soar Atlas',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://soaratlas.com/satellites',
+      starred: true
+    },
+    {
+      title: 'Scientific Discovery AI Map',
+      category: 'Technology',
+      type: 'Map / Visualization',
+      description: 'An interactive map visualizing the landscape of AI in scientific discovery, tracking $22B+ in capital deployment across foundation models, application domains, and infrastructure.',
+      creator: 'Topology Research',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://app.topology.vc/scientific-ai-map'
+    },
+    {
+      title: 'Wells Intelligence',
+      category: 'Energy',
+      type: 'Dashboard',
+      description: 'A web application providing mapping, production data analysis, and alert monitoring for oil and gas wells across Texas.',
+      creator: 'Clearfork Intelligence',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://wells.clearforkintelligence.com/',
+      starred: true
+    },
+    {
+      title: 'Arnis',
+      category: 'Technology',
+      type: 'Tool',
+      description: 'A free, open-source desktop app that converts real-world geographic locations into playable Minecraft Java and Bedrock worlds using OpenStreetMap and elevation datasets.',
+      creator: 'Louis Erbkamm',
+      dateAdded: '2026-04-05',
+      sourceUrl: 'https://arnismc.com/'
+    }
+  ];
+
+  function exRenderCards(data) {
+    const el = document.getElementById('ex-card-view');
+    if (!data.length) { el.innerHTML = '<p class="ai-empty">No projects match your filters.</p>'; return; }
+    el.innerHTML = `<div class="ai-card-grid">${data.map(d => `
+      <div class="ai-card">
+        <div class="ex-card-preview">
+          <img src="${d.image || `https://api.microlink.io/?url=${encodeURIComponent(d.sourceUrl)}&screenshot=true&meta=false&embed=screenshot.url`}" alt="${d.title} preview" loading="lazy" />
+        </div>
+        <div class="ai-card-title">${d.title}</div>
+        <div class="ai-card-meta">
+          <span class="cat-badge">${d.category}</span>
+          <span class="ex-type-badge">${d.type}</span>
+        </div>
+        <div class="ai-card-desc">${d.description}</div>
+        <div class="ai-card-footer">
+          <div class="ai-card-tools-label">Creator: ${d.creator} &nbsp;·&nbsp; Added: ${formatExDate(d.dateAdded)}</div>
+          <a class="ex-view-project-btn" href="${d.sourceUrl}" target="_blank" rel="noopener noreferrer">View Project →</a>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  function exRenderTable(data) {
+    const tbody = document.getElementById('ex-table-body');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="ai-empty">No projects match your filters.</td></tr>'; return; }
+    tbody.innerHTML = data.map(d => `
+      <tr>
+        <td><strong>${d.title}</strong></td>
+        <td><span class="cat-badge">${d.category}</span></td>
+        <td><span class="ex-type-badge">${d.type}</span></td>
+        <td>${d.description}</td>
+        <td>${d.creator}</td>
+        <td>${formatExDate(d.dateAdded)}</td>
+        <td><a class="ex-view-project-btn" href="${d.sourceUrl}" target="_blank" rel="noopener noreferrer">View →</a></td>
+      </tr>`).join('');
+  }
+
+  let exStarredOnly = false;
+
+  function exApplyFilters() {
+    const cat  = document.getElementById('ex-filter-category').value;
+    const type = document.getElementById('ex-filter-type').value;
+    const filtered = EX_PROJECTS.filter(d =>
+      (!cat  || d.category === cat) &&
+      (!type || d.type === type) &&
+      (!exStarredOnly || d.starred)
+    );
+    exRenderCards(filtered);
+    exRenderTable(filtered);
+  }
+
+  document.getElementById('ex-filter-starred').addEventListener('click', () => {
+    exStarredOnly = !exStarredOnly;
+    document.getElementById('ex-filter-starred').classList.toggle('active', exStarredOnly);
+    exApplyFilters();
+  });
+
+  /* View toggle */
+  document.getElementById('ex-view-card').addEventListener('click', () => {
+    document.getElementById('ex-card-view').style.display = '';
+    document.getElementById('ex-table-view').style.display = 'none';
+    document.getElementById('ex-view-card').classList.add('active');
+    document.getElementById('ex-view-table').classList.remove('active');
+  });
+  document.getElementById('ex-view-table').addEventListener('click', () => {
+    document.getElementById('ex-card-view').style.display = 'none';
+    document.getElementById('ex-table-view').style.display = '';
+    document.getElementById('ex-view-card').classList.remove('active');
+    document.getElementById('ex-view-table').classList.add('active');
+  });
+
+  /* Filter listeners */
+  ['ex-filter-category', 'ex-filter-type'].forEach(id =>
+    document.getElementById(id).addEventListener('change', exApplyFilters)
+  );
+  document.getElementById('ex-filter-clear').addEventListener('click', () => {
+    ['ex-filter-category', 'ex-filter-type'].forEach(id =>
+      document.getElementById(id).value = ''
+    );
+    exStarredOnly = false;
+    document.getElementById('ex-filter-starred').classList.remove('active');
+    exApplyFilters();
+  });
+
+  function renderHomeExamples() {
+    const el = document.getElementById('home-ex-preview');
+    if (!el) return;
+
+    const newest = EX_PROJECTS.filter(d => d.starred);
+
+    el.innerHTML = `
+      <div class="home-carousel">
+        <button class="home-carousel-arrow" id="home-car-prev">&#8592;</button>
+        <div class="home-carousel-track-wrap">
+          <div class="home-carousel-track" id="home-car-track">
+            ${newest.map(d => `
+              <div class="ai-card">
+                <div class="ex-card-preview">
+                  <img src="${d.image || `https://api.microlink.io/?url=${encodeURIComponent(d.sourceUrl)}&screenshot=true&meta=false&embed=screenshot.url`}" alt="${d.title} preview" loading="lazy" />
+                </div>
+                <div class="ai-card-title">${d.title}</div>
+                <div class="ai-card-meta">
+                  <span class="cat-badge">${d.category}</span>
+                  <span class="ex-type-badge">${d.type}</span>
+                </div>
+                <div class="ai-card-desc">${d.description}</div>
+                <div class="ai-card-footer">
+                  <div class="ai-card-tools-label">Creator: ${d.creator} &nbsp;·&nbsp; Added: ${formatExDate(d.dateAdded)}</div>
+                  <a class="ex-view-project-btn" href="${d.sourceUrl}" target="_blank" rel="noopener noreferrer">View Project →</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <button class="home-carousel-arrow" id="home-car-next">&#8594;</button>
+      </div>
+      <div class="home-carousel-dots" id="home-car-dots">
+        ${newest.map((_, i) => `<button class="home-carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></button>`).join('')}
+      </div>`;
+
+    let current = 0;
+    const total   = newest.length;
+    const track   = document.getElementById('home-car-track');
+    const prevBtn = document.getElementById('home-car-prev');
+    const nextBtn = document.getElementById('home-car-next');
+    const dots    = document.querySelectorAll('#home-car-dots .home-carousel-dot');
+
+    function goTo(idx) {
+      current = ((idx % total) + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)));
+
+    goTo(0);
+  }
+
+  /* ── MY PROJECTS CAROUSEL ──────────────────── */
+  const MY_PROJECTS = [
+    {
+      title: 'Market Map Maker',
+      icon: '🗺️',
+      tag: 'Tool · Private Markets',
+      description: 'An interactive private markets explorer that maps the competitive landscape across private equity, venture capital, private credit, and real estate. Search companies, filter by sector, and visualize relationships through a network map or positioning matrix.',
+      linkLabel: 'Launch Tool →',
+      href: '#',
+      onclick: "switchTab('marketmap')"
+    },
+    {
+      title: 'Topical Cluster',
+      icon: '🔍',
+      tag: 'Tool · Market Research',
+      description: 'Enter any topic to cluster Google Autocomplete suggestions and top Reddit discussions into keyword groups. Switch between list and tree views, and surface high-signal cross-source overlaps and trending posts algorithmically.',
+      linkLabel: 'Launch Tool →',
+      href: 'http://localhost:3004',
+      onclick: null
+    }
+  ];
+
+  function renderHomeProjects() {
+    const el = document.getElementById('home-proj-preview');
+    if (!el) return;
+
+    el.innerHTML = `
+      <div class="home-carousel">
+        <button class="home-carousel-arrow" id="proj-car-prev">&#8592;</button>
+        <div class="home-carousel-track-wrap">
+          <div class="home-carousel-track" id="proj-car-track">
+            ${MY_PROJECTS.map(d => `
+              <div class="ai-card">
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div class="project-icon">${d.icon}</div>
+                  <div>
+                    <div class="ai-card-title">${d.title}</div>
+                    <span class="project-tag">${d.tag}</span>
+                  </div>
+                </div>
+                <div class="ai-card-desc">${d.description}</div>
+                <div class="ai-card-footer">
+                  ${d.onclick
+                    ? `<a class="ex-view-project-btn" href="#" onclick="${d.onclick}; return false;">${d.linkLabel}</a>`
+                    : `<a class="ex-view-project-btn" href="${d.href}" target="_blank" rel="noopener noreferrer">${d.linkLabel}</a>`
+                  }
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <button class="home-carousel-arrow" id="proj-car-next">&#8594;</button>
+      </div>
+      <div class="home-carousel-dots" id="proj-car-dots">
+        ${MY_PROJECTS.map((_, i) => `<button class="home-carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></button>`).join('')}
+      </div>`;
+
+    let current = 0;
+    const total   = MY_PROJECTS.length;
+    const track   = document.getElementById('proj-car-track');
+    const prevBtn = document.getElementById('proj-car-prev');
+    const nextBtn = document.getElementById('proj-car-next');
+    const dots    = document.querySelectorAll('#proj-car-dots .home-carousel-dot');
+
+    function projGoTo(idx) {
+      current = ((idx % total) + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    prevBtn.addEventListener('click', () => projGoTo(current - 1));
+    nextBtn.addEventListener('click', () => projGoTo(current + 1));
+    dots.forEach(d => d.addEventListener('click', () => projGoTo(+d.dataset.idx)));
+
+    projGoTo(0);
+  }
+
+  /* Initial render */
+  exRenderCards(EX_PROJECTS);
+  exRenderTable(EX_PROJECTS);
+  renderHomeExamples();
+  renderHomeProjects();
+
+  /* ── DIRECTORY MAP ────────────────────────── */
+  const CITY_COORDS = {
+    'New York-NY':       [40.7128, -74.0060],
+    'Washington-DC':     [38.9072, -77.0369],
+    'Fort Worth-TX':     [32.7555, -97.3308],
+    'Boston-MA':         [42.3601, -71.0589],
+    'Austin-TX':         [30.2672, -97.7431],
+    'San Francisco-CA':  [37.7749, -122.4194],
+    'Menlo Park-CA':     [37.4529, -122.1817],
+    'Chicago-IL':        [41.8781, -87.6298],
+    'Los Angeles-CA':    [34.0522, -118.2437],
+    'Palo Alto-CA':      [37.4419, -122.1430],
+    'Redwood City-CA':   [37.4852, -122.2364],
+    'Chevy Chase-MD':    [38.9837, -77.0794],
+    'Cambridge-MA':      [42.3736, -71.1097],
+    'Mountain View-CA':  [37.3861, -122.0839],
+    'Jackson-WY':        [43.4799, -110.7624],
+    'Detroit-MI':        [42.3314, -83.0458],
+    'Mount Kisco-NY':    [41.2040, -73.7271],
+    'Santa Clara-CA':    [37.3541, -121.9552],
+    'Rosemont-IL':       [41.9836, -87.8662],
+    'Kirkland-WA':       [47.6815, -122.2087],
+    'Houston-TX':        [29.7604, -95.3698],
+    'Miami-FL':          [25.7617, -80.1918],
+    'Dallas-TX':         [32.7767, -96.7970],
+    'Charleston-SC':     [32.7765, -79.9311],
+    'Newport Beach-CA':  [33.6189, -117.9289],
+    'Norfolk-VA':        [36.8508, -76.2859],
+    'Greenwich-CT':      [41.0262, -73.6282],
+    'Salt Lake City-UT': [40.7608, -111.8910],
+    'Philadelphia-PA':   [39.9526, -75.1652],
+    'Madison-NJ':        [40.7598, -74.4174],
+    'Boca Raton-FL':     [26.3683, -80.1289],
+    'Charlotte-NC':      [35.2271, -80.8431],
+    'Birmingham-AL':     [33.5186, -86.8104],
+    'Beverly Hills-CA':  [34.0736, -118.4004]
+  };
+
+  function nameJitter(s) {
+    let h = 0;
+    for (let c of s) h = (h * 31 + c.charCodeAt(0)) % 10000;
+    return (h / 10000 - 0.5) * 0.05;
+  }
+
+  function initDirMap() {
+    dirMap = L.map('dir-map', { center: [38.5, -96], zoom: 4, scrollWheelZoom: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(dirMap);
+
+    dirCluster = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 55,
+      disableClusteringAtZoom: 8,
+      iconCreateFunction: function(cluster) {
+        const count = cluster.getChildCount();
+        const sizeClass = count < 10 ? 'dir-cluster-sm' : count < 30 ? 'dir-cluster-md' : 'dir-cluster-lg';
+        const px = count < 10 ? 36 : count < 30 ? 44 : 54;
+        return L.divIcon({
+          html: `<div class="dir-cluster-badge ${sizeClass}">${count}</div>`,
+          className: 'dir-cluster',
+          iconSize:   L.point(px, px),
+          iconAnchor: L.point(px / 2, px / 2)
+        });
+      }
+    });
+
+    FIRMS.forEach(f => {
+      const base = CITY_COORDS[`${f.city}-${f.state}`];
+      if (!base) return;
+      const lat = base[0] + nameJitter(f.name);
+      const lng = base[1] + nameJitter(f.name + '~');
+
+      const initials = f.name.split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join('');
+      const clearbitUrl = `https://logo.clearbit.com/${f.website}`;
+      const googleUrl   = `https://www.google.com/s2/favicons?domain=${f.website}&sz=64`;
+
+      const icon = L.divIcon({
+        className: 'dir-map-marker',
+        html: `<div class="dir-map-pin">
+          <img src="${clearbitUrl}" alt="${f.name}"
+            onerror="this.src='${googleUrl}';this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};">
+          <div class="dir-map-pin-initials">${initials}</div>
+        </div>`,
+        iconSize:    [34, 34],
+        iconAnchor:  [17, 17],
+        tooltipAnchor: [0, -20]
+      });
+
+      const marker = L.marker([lat, lng], { icon });
+
+      marker.bindTooltip(`
+        <div style="font-family:Arial,sans-serif; min-width:190px; line-height:1.5;">
+          <div style="font-weight:700; font-size:0.9rem; margin-bottom:3px;">${f.name}</div>
+          <div style="font-size:0.75rem; color:rgba(255,255,255,0.55); margin-bottom:6px;">${f.type}</div>
+          <div style="font-size:0.78rem;">📍 ${f.city}, ${f.state}</div>
+          <div style="font-size:0.78rem;">💼 AUM: <strong>${f.aum}</strong></div>
+          <div style="font-size:0.78rem;">🏷 ${f.stages.join(' · ')}</div>
+        </div>`, { direction: 'top', offset: [0, -8] });
+
+      marker.on('click', () => window.open(`https://${f.website}`, '_blank', 'noopener'));
+      dirMarkers.set(f.name, marker);
+      dirCluster.addLayer(marker);
+    });
+
+    dirMap.addLayer(dirCluster);
+  }
+
+  function updateDirMap() {
+    if (!dirMap || !dirCluster) return;
+    const visibleNames = new Set(getDirFiltered().map(f => f.name));
+    dirCluster.clearLayers();
+    dirMarkers.forEach((marker, name) => {
+      if (visibleNames.has(name)) dirCluster.addLayer(marker);
+    });
+  }
+
+  const _origSwitchTabDirMap = switchTab;
+  switchTab = function(name) {
+    _origSwitchTabDirMap(name);
+    if (name === 'directory' && !dirMapInitialized) { dirMapInitialized = true; initDirMap(); }
   };
 </script>
 
